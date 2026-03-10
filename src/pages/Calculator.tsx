@@ -70,23 +70,39 @@ function StatCard({ label, value, highlight = false, muted = false }: {
   );
 }
 
-function TierColumn({ title, subtitle, results, currentState, recommended = false, isCurrent = false }: {
+function TierColumn({ title, subtitle, results, currentState, recommended = false, isCurrent = false, onRecommend }: {
   title: string; subtitle?: string; results?: TierResults; currentState?: CurrentState;
-  recommended?: boolean; isCurrent?: boolean;
+  recommended?: boolean; isCurrent?: boolean; onRecommend?: () => void;
 }) {
-  const glassClass = isCurrent
+  const glassClass = recommended
+    ? 'glass-accent glow-primary'
+    : isCurrent
       ? 'glass-subtle'
       : 'glass';
 
   return (
-    <div className={`${glassClass} rounded-xl p-5 space-y-5 relative overflow-hidden transition-all duration-500 hover:scale-[1.01] hover:shadow-lg`}>
+    <div className={`${glassClass} rounded-xl p-5 space-y-5 relative overflow-hidden transition-all duration-500 hover:scale-[1.01] hover:shadow-lg ${recommended ? 'ring-1 ring-primary/40' : ''}`}>
       {/* Liquid highlight at top */}
-      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+      <div className={`absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r ${recommended ? 'from-transparent via-primary/60 to-transparent' : 'from-transparent via-white/10 to-transparent'}`} />
 
       <div className="text-center min-h-[48px] flex flex-col items-center justify-center">
         <span className={`inline-block font-bold text-base px-4 py-1.5 rounded-full border ${isCurrent ? 'bg-muted text-muted-foreground border-border' : 'bg-primary/20 text-primary border-primary/30'}`}>{title}</span>
         {subtitle ? <p className="text-[10px] text-muted-foreground/60 mt-1.5">{subtitle}</p> : <p className="text-[10px] mt-1.5">&nbsp;</p>}
       </div>
+
+      {/* Recommend toggle */}
+      {!isCurrent && onRecommend && (
+        <button
+          onClick={onRecommend}
+          className={`w-full text-[10px] font-semibold uppercase tracking-[0.12em] py-1.5 rounded-full border transition-all duration-300 ${
+            recommended
+              ? 'bg-primary text-primary-foreground border-primary'
+              : 'bg-transparent text-muted-foreground border-border hover:border-primary/50 hover:text-primary'
+          }`}
+        >
+          {recommended ? '★ Recommended' : '☆ Recommend'}
+        </button>
+      )}
 
       {/* Activity Metrics */}
       <div className="space-y-3">
