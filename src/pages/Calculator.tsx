@@ -9,9 +9,9 @@ import titanxLogo from '@/assets/titanx-logo.svg';
 import { calculate, type CustomerInputs, type TitanXInputs, type TierResults, type CurrentState } from '@/lib/calculations';
 import { fCurrency, fNumber, fPercent, fReps, fMeetings } from '@/lib/formatters';
 
-function NumericInput({ label, value, onChange, prefix, suffix, placeholder = '—', tooltip }: {
+function NumericInput({ label, value, onChange, prefix, suffix, placeholder = '—', tooltip, step }: {
   label: string; value: number | null; onChange: (v: number | null) => void;
-  prefix?: string; suffix?: string; placeholder?: string; tooltip?: string;
+  prefix?: string; suffix?: string; placeholder?: string; tooltip?: string; step?: string;
 }) {
   return (
     <div className="space-y-1.5">
@@ -28,9 +28,10 @@ function NumericInput({ label, value, onChange, prefix, suffix, placeholder = '�
         {prefix && <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground/70">{prefix}</span>}
         <Input
           type="number"
+          step={step}
           className={`glass-subtle border-none h-9 text-sm text-foreground placeholder:text-muted-foreground/40 focus:ring-1 focus:ring-primary/40 transition-all duration-300 group-hover:bg-[hsla(220,20%,18%,0.4)] ${prefix ? 'pl-7' : ''} ${suffix ? 'pr-7' : ''}`}
           placeholder={placeholder}
-          value={value ?? ''}
+          value={value != null && step === '0.01' ? value.toFixed(2) : (value ?? '')}
           onChange={(e) => onChange(e.target.value === '' ? null : parseFloat(e.target.value))}
         />
         {suffix && <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground/70">{suffix}</span>}
@@ -278,9 +279,9 @@ export default function Calculator() {
               <NumericInput label="HI Reach" value={titanx.highIntentReach} onChange={updateTitanx('highIntentReach')} suffix="%" tooltip="Reachability of High Intent contacts" />
               <NumericInput label="Avg Phones / Contact" value={titanx.avgPhones} onChange={updateTitanx('avgPhones')} />
               <NumericInput label="TitanX Connect Rate" value={titanx.titanxConnectRate} onChange={updateTitanx('titanxConnectRate')} suffix="%" tooltip="Connect rate on TitanX High Intent data" />
-              <NumericInput label="Credit Price — Grow" value={titanx.creditPriceGrow} onChange={updateTitanx('creditPriceGrow')} prefix="$" />
-              <NumericInput label="Credit Price — Accelerate" value={titanx.creditPriceAccelerate} onChange={updateTitanx('creditPriceAccelerate')} prefix="$" />
-              <NumericInput label="Credit Price — Scale" value={titanx.creditPriceScale} onChange={updateTitanx('creditPriceScale')} prefix="$" />
+              <NumericInput label="Credit Price — Grow" value={titanx.creditPriceGrow} onChange={updateTitanx('creditPriceGrow')} prefix="$" step="0.01" />
+              <NumericInput label="Credit Price — Accelerate" value={titanx.creditPriceAccelerate} onChange={updateTitanx('creditPriceAccelerate')} prefix="$" step="0.01" />
+              <NumericInput label="Credit Price — Scale" value={titanx.creditPriceScale} onChange={updateTitanx('creditPriceScale')} prefix="$" step="0.01" />
             </div>
           </div>
         </div>
