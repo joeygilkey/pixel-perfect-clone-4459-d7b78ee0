@@ -1,3 +1,5 @@
+export type FunnelDepth = 'meetings_set' | 'meetings_held' | 'opps' | 'closed_won';
+
 export interface CustomerInputs {
   reps: number | null;
   annualCostPerRep: number | null;
@@ -5,6 +7,10 @@ export interface CustomerInputs {
   connectRate: number | null;
   conversationRate: number | null;
   meetingRate: number | null;
+  meetingShowRate: number | null;
+  oppQualificationRate: number | null;
+  winRate: number | null;
+  acv: number | null;
 }
 
 export interface TitanXInputs {
@@ -18,6 +24,17 @@ export interface TitanXInputs {
   multipleGrow: number | null;
   multipleAccelerate: number | null;
   multipleScale: number | null;
+}
+
+export interface FunnelMetrics {
+  monthlyMeetingsHeld?: number;
+  annualMeetingsHeld?: number;
+  monthlyOpps?: number;
+  annualOpps?: number;
+  monthlyClosedWon?: number;
+  annualClosedWon?: number;
+  annualPipelineGenerated?: number;
+  annualClosedWonRevenue?: number;
 }
 
 export interface TierResults {
@@ -35,6 +52,7 @@ export interface TierResults {
   repProductionEquivalent: number;
   costOfEquivReps: number;
   pctOfCurrentDials: number;
+  funnel: FunnelMetrics;
 }
 
 export interface CurrentState {
@@ -46,6 +64,7 @@ export interface CurrentState {
   annualCostReps: number;
   costPerConnect: number;
   costPerMeeting: number;
+  funnel: FunnelMetrics;
 }
 
 export interface CalculationResults {
@@ -55,7 +74,6 @@ export interface CalculationResults {
 }
 
 const WORKING_DAYS = 20;
-
 
 function mround(value: number, multiple: number): number {
   return Math.round(value / multiple) * multiple;
@@ -80,6 +98,35 @@ function allInputsValid(c: CustomerInputs, t: TitanXInputs): boolean {
     t.multipleAccelerate != null && t.multipleAccelerate > 0 &&
     t.multipleScale != null && t.multipleScale > 0
   );
+}
+
+function calcFunnel(monthlyMeetings: number, c: CustomerInputs): FunnelMetrics {
+  const funnel: FunnelMetrics = {};
+
+  if (c.meetingShowRate != null && c.meetingShowRate > 0) {
+    funnel.monthlyMeetingsHeld = monthlyMeetings * (c.meetingShowRate / 100);
+    funnel.annualMeetingsHeld = funnel.monthlyMeetingsHeld * 12;
+
+    if (c.oppQualificationRate != null && c.oppQualificationRate > 0) {
+      funnel.monthlyOpps = funnel.monthlyMeetingsHeld * (c.oppQualificationRate / 100);
+      funnel.annualOpps = funnel.monthlyOpps * 12;
+
+      if (c.acv != null && c.acv > 0) {
+        funnel.annualPipelineGenerated = funnel.annualOpps * c.acv;
+      }
+
+      if (c.winRate != null && c.winRate > 0) {
+        funnel.monthlyClosedWon = funnel.monthlyOpps * (c.winRate / 100);
+        funnel.annualClosedWon = funnel.monthlyClosedWon * 12;
+
+        if (c.acv != null && c.acv > 0) {
+          funnel.annualClosedWonRevenue = funnel.annualClosedWon * c.acv;
+        }
+      }
+    }
+  }
+
+  return funnel;
 }
 
 export function calculate(c: CustomerInputs, t: TitanXInputs): CalculationResults | null {
@@ -120,6 +167,7 @@ export function calculate(c: CustomerInputs, t: TitanXInputs): CalculationResult
     monthlyDials, monthlyConnects, monthlyConversations,
     monthlyMeetings, annualMeetings, annualCostReps,
     costPerConnect, costPerMeeting,
+    funnel: calcFunnel(monthlyMeetings, c),
   };
 
   function calcBlended(tier: 'grow' | 'accelerate' | 'scale'): TierResults {
@@ -127,7 +175,6 @@ export function calculate(c: CustomerInputs, t: TitanXInputs): CalculationResult
     const creditPrice = creditPrices[tier];
     const connectTarget = monthlyConnects * multiple;
 
-    // HI share formula derived from spreadsheet constraint
     const hiShare = multiple / (1 + multiple * (1 - connectRate / titanxCR));
     const hiConnects = connectTarget * hiShare;
     const liConnects = connectTarget - hiConnects;
@@ -139,7 +186,6 @@ export function calculate(c: CustomerInputs, t: TitanXInputs): CalculationResult
     const meetings = conversations * meetingRate;
     const annMeetings = meetings * 12;
 
-    // Credits: based on HI contacts needed
     const contactsRequired = hiConnects / (highIntent * highIntentReach);
     const creditsPerMonth = mround(contactsRequired * avgPhones * 3, 1000);
     const costMo = creditsPerMonth * creditPrice;
@@ -161,6 +207,7 @@ export function calculate(c: CustomerInputs, t: TitanXInputs): CalculationResult
       repProductionEquivalent: reps * multiple,
       costOfEquivReps: costAnn / annualCostPerRep,
       pctOfCurrentDials: totalDials / monthlyDials,
+      funnel: calcFunnel(meetings, c),
     };
   }
 
@@ -195,6 +242,7 @@ export function calculate(c: CustomerInputs, t: TitanXInputs): CalculationResult
       repProductionEquivalent: reps * multiple,
       costOfEquivReps: costAnn / annualCostPerRep,
       pctOfCurrentDials: dialsRequired / monthlyDials,
+      funnel: calcFunnel(meetings, c),
     };
   }
 
