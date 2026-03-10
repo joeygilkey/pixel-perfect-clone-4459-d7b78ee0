@@ -7,7 +7,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { toast } from 'sonner';
-import { HelpCircle, Copy, Plus, Save, CalendarIcon } from 'lucide-react';
+import { HelpCircle, Copy, Plus, Save, CalendarIcon, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import titanxLogo from '@/assets/titanx-logo.svg';
 import { calculate, type CustomerInputs, type TitanXInputs, type TierResults, type CurrentState } from '@/lib/calculations';
