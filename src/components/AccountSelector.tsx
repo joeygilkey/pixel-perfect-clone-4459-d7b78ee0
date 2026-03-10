@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
-import { Search, ChevronDown } from 'lucide-react';
+import { Search, ChevronDown, X } from 'lucide-react';
 
 interface Account {
   name: string;
@@ -102,7 +102,17 @@ export default function AccountSelector({ value, onChange }: { value: string; on
         ) : (
           <span className="text-muted-foreground/40">Search accounts…</span>
         )}
-        <ChevronDown className={`h-3.5 w-3.5 text-muted-foreground/50 ml-auto flex-shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
+        {selectedAccount && (
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); onChange(''); }}
+            className="ml-auto flex-shrink-0 p-0.5 rounded-full text-muted-foreground/40 hover:text-foreground transition-colors"
+            aria-label="Clear selection"
+          >
+            <X className="h-3 w-3" />
+          </button>
+        )}
+        <ChevronDown className={`h-3.5 w-3.5 text-muted-foreground/50 ${selectedAccount ? '' : 'ml-auto'} flex-shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
       </button>
 
       {/* Dropdown */}
