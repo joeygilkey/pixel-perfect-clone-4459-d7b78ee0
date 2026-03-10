@@ -656,12 +656,13 @@ export default function Calculator() {
                       <ResponsiveContainer width="100%" height={320}>
                         <BarChart data={chartData} barCategoryGap="20%" barGap={4}>
                           <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border) / 0.3)" vertical={false} />
-                          <XAxis dataKey="group" tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }} axisLine={false} tickLine={false} />
+                          <XAxis dataKey="tier" tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }} axisLine={false} tickLine={false} />
                           <YAxis tickFormatter={formatYAxis} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }} axisLine={false} tickLine={false} width={65} />
                           <RechartsTooltip
                             cursor={{ fill: 'rgba(255, 0, 76, 0.1)' }}
                             content={({ active, payload, label }) => {
                               if (!active || !payload?.length) return null;
+                              const tierIdx = tiers.findIndex(t => t.name === label);
                               return (
                                 <div style={{
                                   background: 'rgba(0, 0, 0, 0.7)',
@@ -672,10 +673,9 @@ export default function Calculator() {
                                   padding: '10px 14px',
                                   boxShadow: '0 8px 32px hsl(var(--foreground) / 0.08)',
                                 }}>
-                                  <div style={{ fontSize: 11, color: 'hsl(var(--muted-foreground))', marginBottom: 6, fontWeight: 600 }}>{label}</div>
+                                  <div style={{ fontSize: 12, color: tierIdx >= 0 ? TIER_COLORS[tierIdx] : 'hsl(var(--muted-foreground))', marginBottom: 6, fontWeight: 700 }}>{label}</div>
                                   {payload.map((p: any, i: number) => (
                                     <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, marginBottom: 2 }}>
-                                      <div style={{ width: 8, height: 8, borderRadius: 2, background: p.fill || p.color, flexShrink: 0 }} />
                                       <span style={{ color: 'hsl(var(--muted-foreground))' }}>{p.name}</span>
                                       <span style={{ fontWeight: 700, color: 'hsl(var(--foreground))', marginLeft: 'auto', fontVariantNumeric: 'tabular-nums' }}>{fCurrency(p.value)}</span>
                                     </div>
@@ -684,8 +684,12 @@ export default function Calculator() {
                               );
                             }}
                           />
-                          {tiers.map((t, i) => (
-                            <Bar key={t.name} dataKey={t.name} fill={TIER_COLORS[i]} radius={[4, 4, 0, 0]} />
+                          {groups.map((g, gi) => (
+                            <Bar key={g.key} dataKey={g.label} radius={[4, 4, 0, 0]}>
+                              {chartData.map((entry, index) => (
+                                <Cell key={index} fill={TIER_COLORS[index]} />
+                              ))}
+                            </Bar>
                           ))}
                         </BarChart>
                       </ResponsiveContainer>
