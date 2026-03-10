@@ -74,9 +74,7 @@ function TierColumn({ title, subtitle, results, currentState, recommended = fals
   title: string; subtitle?: string; results?: TierResults; currentState?: CurrentState;
   recommended?: boolean; isCurrent?: boolean;
 }) {
-  const glassClass = recommended
-    ? 'glass-accent glow-primary'
-    : isCurrent
+  const glassClass = isCurrent
       ? 'glass-subtle'
       : 'glass';
 
@@ -84,14 +82,9 @@ function TierColumn({ title, subtitle, results, currentState, recommended = fals
     <div className={`${glassClass} rounded-xl p-5 space-y-5 relative overflow-hidden transition-all duration-500 hover:scale-[1.01] hover:shadow-lg`}>
       {/* Liquid highlight at top */}
       {!isCurrent && (
-        <div className={`absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r ${recommended ? 'from-transparent via-primary/60 to-transparent' : 'from-transparent via-white/10 to-transparent'}`} />
+        <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
       )}
 
-      {recommended && (
-        <span className="absolute top-3 right-3 bg-primary/20 text-primary text-[9px] font-bold uppercase tracking-[0.15em] px-2.5 py-1 rounded-full border border-primary/30 backdrop-blur-sm">
-          <Sparkles className="inline h-3 w-3 mr-0.5 -mt-0.5" /> Recommended
-        </span>
-      )}
       <div className="text-center">
         <span className={`inline-block font-bold text-base px-4 py-1.5 rounded-full ${isCurrent ? 'bg-muted text-muted-foreground' : 'bg-primary/20 text-primary border border-primary/30'}`}>{title}</span>
         {subtitle && <p className="text-[10px] text-muted-foreground/60 mt-1.5">{subtitle}</p>}
