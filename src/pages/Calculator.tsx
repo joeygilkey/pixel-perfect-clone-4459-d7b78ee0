@@ -662,7 +662,7 @@ export default function Calculator() {
                               if (!active || !payload?.length) return null;
                               return (
                                 <div style={{
-                                  background: 'hsl(var(--card) / 0.6)',
+                                  background: 'rgba(0, 0, 0, 0.7)',
                                   backdropFilter: 'blur(16px)',
                                   WebkitBackdropFilter: 'blur(16px)',
                                   border: '1px solid hsl(var(--foreground) / 0.08)',
