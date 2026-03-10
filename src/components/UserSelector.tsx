@@ -82,7 +82,7 @@ export default function UserSelector({ value, onChange }: { value: string; onCha
       </button>
 
       {open && (
-        <div className="absolute top-full left-0 right-0 mt-1.5 z-[100] rounded-lg overflow-hidden border border-border/50 shadow-2xl animate-fade-in" style={{ background: 'hsla(0, 0%, 5%, 0.97)', WebkitBackdropFilter: 'blur(60px)', backdropFilter: 'blur(60px)' }}>
+        <div className="absolute top-full left-0 right-0 mt-1.5 z-[100] rounded-lg overflow-hidden border border-border/50 shadow-2xl animate-fade-in bg-background/97 backdrop-blur-3xl" style={{ WebkitBackdropFilter: 'blur(60px)', backdropFilter: 'blur(60px)' }}>
           <div className="flex items-center gap-2 px-3 py-2 border-b border-border/30">
             <Search className="h-3.5 w-3.5 text-muted-foreground/50 flex-shrink-0" />
             <input
