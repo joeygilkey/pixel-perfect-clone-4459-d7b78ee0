@@ -169,11 +169,15 @@ export function calculate(c: CustomerInputs, t: TitanXInputs): CalculationResult
   const costPerConnect = annualCostReps / (monthlyConnects * 12);
   const costPerMeeting = annualCostReps / (monthlyMeetings * 12);
 
+  const currentFunnel = calcFunnel(monthlyMeetings, c);
   const currentState: CurrentState = {
     monthlyDials, monthlyConnects, monthlyConversations,
     monthlyMeetings, annualMeetings, annualCostReps,
     costPerConnect, costPerMeeting,
-    funnel: calcFunnel(monthlyMeetings, c),
+    ...(currentFunnel.annualMeetingsHeld ? { costPerMeetingHeld: annualCostReps / currentFunnel.annualMeetingsHeld } : {}),
+    ...(currentFunnel.annualOpps ? { costPerOpp: annualCostReps / currentFunnel.annualOpps } : {}),
+    ...(currentFunnel.annualClosedWon ? { costPerAcquisition: annualCostReps / currentFunnel.annualClosedWon } : {}),
+    funnel: currentFunnel,
   };
 
   function calcBlended(tier: 'grow' | 'accelerate' | 'scale'): TierResults {
