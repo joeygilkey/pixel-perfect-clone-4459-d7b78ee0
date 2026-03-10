@@ -331,7 +331,7 @@ export default function Calculator() {
                 <TierColumn title="Current State" isCurrent currentState={results.currentState} />
                 <TierColumn title="Grow" subtitle={`${titanx.multipleGrow ?? 1.5}× connects`} results={tierData.grow} currentState={results.currentState} />
                 <TierColumn title="Accelerate" subtitle={`${titanx.multipleAccelerate ?? 2}× connects`} results={tierData.accelerate} currentState={results.currentState} />
-                <TierColumn title="Scale" subtitle={`${titanx.multipleScale ?? 2.5}× connects`} results={tierData.scale} currentState={results.currentState} recommended />
+                <TierColumn title="Scale" subtitle={`${titanx.multipleScale ?? 2.5}× connects`} results={tierData.scale} currentState={results.currentState} />
               </div>
 
               {/* Financial Section */}
