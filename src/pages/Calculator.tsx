@@ -659,6 +659,7 @@ export default function Calculator() {
                           <XAxis dataKey="group" tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }} axisLine={false} tickLine={false} />
                           <YAxis tickFormatter={formatYAxis} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }} axisLine={false} tickLine={false} width={65} />
                           <RechartsTooltip
+                            cursor={{ fill: 'rgba(0, 0, 0, 0.3)' }}
                             content={({ active, payload, label }) => {
                               if (!active || !payload?.length) return null;
                               return (
