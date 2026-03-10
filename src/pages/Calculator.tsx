@@ -85,24 +85,17 @@ function TierColumn({ title, subtitle, results, currentState, recommended = fals
       {/* Liquid highlight at top */}
       <div className={`absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r ${recommended ? 'from-transparent via-primary/60 to-transparent' : 'from-transparent via-white/10 to-transparent'}`} />
 
+      {/* Star recommend toggle */}
+      {!isCurrent && onRecommend && (
+        <button onClick={onRecommend} className="absolute top-3 left-3 z-10 transition-all duration-300">
+          <Star className={`h-4 w-4 ${recommended ? 'fill-primary text-primary drop-shadow-[0_0_6px_hsla(342,100%,50%,0.5)]' : 'text-muted-foreground/40 hover:text-primary/60'}`} />
+        </button>
+      )}
+
       <div className="text-center min-h-[48px] flex flex-col items-center justify-center">
         <span className={`inline-block font-bold text-base px-4 py-1.5 rounded-full border ${isCurrent ? 'bg-muted text-muted-foreground border-border' : 'bg-primary/20 text-primary border-primary/30'}`}>{title}</span>
         {subtitle ? <p className="text-[10px] text-muted-foreground/60 mt-1.5">{subtitle}</p> : <p className="text-[10px] mt-1.5">&nbsp;</p>}
       </div>
-
-      {/* Recommend toggle */}
-      {!isCurrent && onRecommend && (
-        <button
-          onClick={onRecommend}
-          className={`w-full text-[10px] font-semibold uppercase tracking-[0.12em] py-1.5 rounded-full border transition-all duration-300 ${
-            recommended
-              ? 'bg-primary text-primary-foreground border-primary'
-              : 'bg-transparent text-muted-foreground border-border hover:border-primary/50 hover:text-primary'
-          }`}
-        >
-          {recommended ? '★ Recommended' : '☆ Recommend'}
-        </button>
-      )}
 
       {/* Activity Metrics */}
       <div className="space-y-3">
