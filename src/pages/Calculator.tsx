@@ -319,7 +319,7 @@ export default function Calculator() {
         {/* Results */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold text-foreground tracking-tight">Live Results</h2>
+            <h2 className="text-lg font-bold text-foreground tracking-tight border-l-2 border-primary pl-3">Live Results</h2>
             <ToggleGroup type="single" value={model} onValueChange={(v) => v && setModel(v)} className="glass rounded-lg p-0.5">
               <ToggleGroupItem value="blended" className="text-xs px-5 py-2 rounded-md data-[state=on]:bg-primary/20 data-[state=on]:text-primary data-[state=on]:shadow-[0_0_12px_hsla(348,100%,50%,0.2)] border-none transition-all duration-300">
                 Blended Calling
