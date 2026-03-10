@@ -90,7 +90,7 @@ function TierColumn({ title, subtitle, results, currentState, recommended = fals
 
       {/* Activity Metrics */}
       <div className="space-y-3">
-        <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/80 font-medium">Activity</p>
+        <p className="text-xs uppercase tracking-[0.15em] text-muted-foreground font-semibold pb-1 border-b-2 border-primary">Activity</p>
         {isCurrent && currentState ? (
           <>
             <StatCard label="Monthly Dials" value={fNumber(currentState.monthlyDials)} muted />
