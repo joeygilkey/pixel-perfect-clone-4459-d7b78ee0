@@ -194,6 +194,7 @@ export default function Calculator() {
   const [aeName, setAeName] = useState('');
   const [sessionDate, setSessionDate] = useState<Date>(new Date());
   const [model, setModel] = useState<string>('blended');
+  const [recommendedTier, setRecommendedTier] = useState<string | null>(null);
 
   const [customer, setCustomer] = useState<CustomerInputs>({
     reps: null, annualCostPerRep: null, dialsPerDay: null,
