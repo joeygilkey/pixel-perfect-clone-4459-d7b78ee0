@@ -556,7 +556,7 @@ export default function Calculator() {
                             width={80}
                           />
                           <RechartsTooltip
-                            cursor={{ fill: 'rgba(0, 0, 0, 0.3)' }}
+                            cursor={{ fill: 'rgba(255, 0, 76, 0.1)' }}
                             content={({ active, payload }) => {
                               if (!active || !payload?.length) return null;
                               const item = payload[0]?.payload;
