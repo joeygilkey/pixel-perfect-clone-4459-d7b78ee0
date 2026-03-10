@@ -188,6 +188,15 @@ export default function Calculator() {
   const [sessionDate, setSessionDate] = useState<Date>(new Date());
   const [model, setModel] = useState<string>('blended');
   const [recommendedTier, setRecommendedTier] = useState<string | null>(null);
+  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+
+  const toggleTheme = useCallback(() => {
+    setTheme(prev => {
+      const next = prev === 'dark' ? 'light' : 'dark';
+      document.documentElement.classList.toggle('light', next === 'light');
+      return next;
+    });
+  }, []);
 
   const [customer, setCustomer] = useState<CustomerInputs>({
     reps: null, annualCostPerRep: null, dialsPerDay: null,
