@@ -342,7 +342,7 @@ export default function Calculator() {
 
               {/* Financial Section */}
               <div>
-                <h3 className="text-sm font-bold text-foreground/70 uppercase tracking-[0.12em] mb-3">Financial Metrics</h3>
+                <h3 className="text-sm font-bold text-foreground uppercase tracking-[0.12em] mb-3 border-l-2 border-primary pl-3">Financial Metrics</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                   <FinancialColumn title="Current State" isCurrent currentState={results.currentState} />
                   <FinancialColumn title="Grow" results={tierData.grow} currentState={results.currentState} />
