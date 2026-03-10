@@ -380,10 +380,10 @@ export default function Calculator() {
           <Button onClick={handleSave} className="bg-primary/90 text-primary-foreground hover:bg-primary glow-primary transition-all duration-300 border-none">
             <Save className="h-4 w-4 mr-1.5" /> Save Session
           </Button>
-          <Button variant="outline" onClick={() => { navigator.clipboard.writeText(window.location.href); toast.info('Link copied!'); }} className="glass-subtle border-none text-foreground/80 hover:text-foreground hover:bg-white/10 transition-all duration-300">
+          <Button variant="outline" onClick={() => { navigator.clipboard.writeText(window.location.href); toast.info('Link copied!'); }} className="glass-subtle border-none text-foreground/80 hover:text-foreground transition-all duration-300">
             <Copy className="h-4 w-4 mr-1.5" /> Copy Link
           </Button>
-          <Button variant="outline" onClick={handleNewSession} className="glass-subtle border-none text-foreground/80 hover:text-foreground hover:bg-white/10 transition-all duration-300">
+          <Button variant="outline" onClick={handleNewSession} className="glass-subtle border-none text-foreground/80 hover:text-foreground transition-all duration-300">
             <Plus className="h-4 w-4 mr-1.5" /> New Session
           </Button>
         </div>
