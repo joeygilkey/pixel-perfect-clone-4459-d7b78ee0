@@ -241,6 +241,7 @@ export function calculate(c: CustomerInputs, t: TitanXInputs): CalculationResult
     const costAnn = creditsPerMonth * 12 * creditPrice;
     const totalAnnual = annualCostReps + costAnn;
 
+    const funnel = calcFunnel(meetings, c);
     return {
       monthlyDials: dialsRequired,
       monthlyConnects: connectTarget,
@@ -253,10 +254,13 @@ export function calculate(c: CustomerInputs, t: TitanXInputs): CalculationResult
       totalAnnualCost: totalAnnual,
       costPerConnect: totalAnnual / (connectTarget * 12),
       costPerMeeting: totalAnnual / (meetings * 12),
+      ...(funnel.annualMeetingsHeld ? { costPerMeetingHeld: totalAnnual / funnel.annualMeetingsHeld } : {}),
+      ...(funnel.annualOpps ? { costPerOpp: totalAnnual / funnel.annualOpps } : {}),
+      ...(funnel.annualClosedWon ? { costPerAcquisition: totalAnnual / funnel.annualClosedWon } : {}),
       repProductionEquivalent: reps * multiple,
       costOfEquivReps: costAnn / annualCostPerRep,
       pctOfCurrentDials: dialsRequired / monthlyDials,
-      funnel: calcFunnel(meetings, c),
+      funnel,
     };
   }
 
