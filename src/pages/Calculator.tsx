@@ -92,9 +92,9 @@ function TierColumn({ title, subtitle, results, currentState, recommended = fals
           <Sparkles className="inline h-3 w-3 mr-0.5 -mt-0.5" /> Recommended
         </span>
       )}
-      <div>
-        <h4 className={`font-bold text-sm ${isCurrent ? 'text-muted-foreground' : 'text-foreground'}`}>{title}</h4>
-        {subtitle && <p className="text-[10px] text-muted-foreground/60 mt-0.5">{subtitle}</p>}
+      <div className="text-center">
+        <span className={`inline-block font-bold text-base px-4 py-1.5 rounded-full ${isCurrent ? 'bg-muted text-muted-foreground' : recommended ? 'bg-primary/20 text-primary border border-primary/30' : 'bg-secondary text-foreground border border-border'}`}>{title}</span>
+        {subtitle && <p className="text-[10px] text-muted-foreground/60 mt-1.5">{subtitle}</p>}
         {!isCurrent && results ? (
           <div className="flex gap-4 mt-1.5">
             <p className="text-[10px] text-muted-foreground"><span className="text-foreground/80 font-medium">{fNumber(results.creditsPerMonth)}</span> credits/mo</p>
@@ -156,8 +156,8 @@ function FinancialColumn({ title, results, currentState, recommended = false, is
       {!isCurrent && (
         <div className={`absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r ${recommended ? 'from-transparent via-primary/60 to-transparent' : 'from-transparent via-white/10 to-transparent'}`} />
       )}
-      <div className="flex items-center justify-between">
-        <h4 className={`font-bold text-sm ${isCurrent ? 'text-muted-foreground' : 'text-foreground'}`}>{title}</h4>
+      <div className="flex items-center justify-center">
+        <span className={`inline-block font-bold text-base px-4 py-1.5 rounded-full ${isCurrent ? 'bg-muted text-muted-foreground' : recommended ? 'bg-primary/20 text-primary border border-primary/30' : 'bg-secondary text-foreground border border-border'}`}>{title}</span>
         {recommended && (
           <span className="bg-primary/20 text-primary text-[9px] font-bold uppercase tracking-[0.15em] px-2 py-0.5 rounded-full border border-primary/30">
             <Sparkles className="inline h-2.5 w-2.5 mr-0.5 -mt-0.5" /> Best Value
