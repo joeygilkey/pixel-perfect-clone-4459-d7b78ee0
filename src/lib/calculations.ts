@@ -55,7 +55,7 @@ export interface CalculationResults {
 }
 
 const WORKING_DAYS = 20;
-const MULTIPLES = { grow: 1.5, accelerate: 2.0, scale: 2.5 };
+
 
 function mround(value: number, multiple: number): number {
   return Math.round(value / multiple) * multiple;
