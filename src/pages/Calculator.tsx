@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils';
 import titanxLogo from '@/assets/titanx-logo.svg';
 import titanxLogoLight from '@/assets/titanx-logo-light.svg';
 import bgDark from '@/assets/bg-dark.png';
+import bgLight from '@/assets/bg-light.png';
 import { calculate, type CustomerInputs, type TitanXInputs, type TierResults, type CurrentState } from '@/lib/calculations';
 import { fCurrency, fNumber, fPercent, fReps, fMeetings } from '@/lib/formatters';
 
@@ -233,12 +234,10 @@ export default function Calculator() {
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* Background image (dark mode) */}
-      {theme === 'dark' && (
-        <div className="fixed inset-0 pointer-events-none">
-          <img src={bgDark} alt="" className="w-full h-full object-cover" />
-        </div>
-      )}
+      {/* Background image */}
+      <div className="fixed inset-0 pointer-events-none">
+        <img src={theme === 'light' ? bgLight : bgDark} alt="" className="w-full h-full object-cover" />
+      </div>
       {/* Ambient background glows */}
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute top-[-20%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-primary/[0.03] blur-[120px]" />
