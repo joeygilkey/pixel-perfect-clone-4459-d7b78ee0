@@ -1,10 +1,14 @@
 import { useState, useMemo, useCallback } from 'react';
+import { format } from 'date-fns';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { toast } from 'sonner';
-import { HelpCircle, Copy, Plus, Save, Sparkles } from 'lucide-react';
+import { HelpCircle, Copy, Plus, Save, Sparkles, CalendarIcon } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import titanxLogo from '@/assets/titanx-logo.svg';
 import { calculate, type CustomerInputs, type TitanXInputs, type TierResults, type CurrentState } from '@/lib/calculations';
 import { fCurrency, fNumber, fPercent, fReps, fMeetings } from '@/lib/formatters';
@@ -178,10 +182,9 @@ function FinancialColumn({ title, results, currentState, recommended = false, is
 }
 
 export default function Calculator() {
-  const [customerName, setCustomerName] = useState('');
   const [company, setCompany] = useState('');
   const [aeName, setAeName] = useState('');
-  const [sessionDate] = useState(new Date().toISOString().split('T')[0]);
+  const [sessionDate, setSessionDate] = useState<Date>(new Date());
   const [model, setModel] = useState<string>('blended');
 
   const [customer, setCustomer] = useState<CustomerInputs>({
@@ -206,7 +209,7 @@ export default function Calculator() {
 
   const handleNewSession = () => {
     if (!confirm('Clear all inputs and start a new session?')) return;
-    setCustomerName(''); setCompany(''); setAeName('');
+    setCompany(''); setAeName(''); setSessionDate(new Date());
     setCustomer({ reps: null, annualCostPerRep: null, dialsPerDay: null, connectRate: null, conversationRate: null, meetingRate: null });
     setTitanx({ highIntent: 20, highIntentReach: 85, avgPhones: 2, titanxConnectRate: 25, creditPriceGrow: 0.50, creditPriceAccelerate: 0.50, creditPriceScale: 0.50, multipleGrow: 1.5, multipleAccelerate: 2.0, multipleScale: 2.5 });
   };
@@ -235,11 +238,7 @@ export default function Calculator() {
 
       <div className="max-w-[1440px] mx-auto p-6 space-y-6 relative z-10">
         {/* Session Info */}
-        <div className="glass rounded-xl grid grid-cols-2 md:grid-cols-4 gap-4 p-5">
-          <div className="space-y-1.5">
-            <label className="text-[11px] font-medium uppercase tracking-[0.1em] text-muted-foreground">Customer Name</label>
-            <Input className="glass-subtle border-none h-9 text-sm focus:ring-1 focus:ring-primary/40" value={customerName} onChange={e => setCustomerName(e.target.value)} placeholder="—" />
-          </div>
+        <div className="glass rounded-xl grid grid-cols-1 md:grid-cols-3 gap-4 p-5">
           <div className="space-y-1.5">
             <label className="text-[11px] font-medium uppercase tracking-[0.1em] text-muted-foreground">Company</label>
             <Input className="glass-subtle border-none h-9 text-sm focus:ring-1 focus:ring-primary/40" value={company} onChange={e => setCompany(e.target.value)} placeholder="—" />
@@ -250,7 +249,17 @@ export default function Calculator() {
           </div>
           <div className="space-y-1.5">
             <label className="text-[11px] font-medium uppercase tracking-[0.1em] text-muted-foreground">Date</label>
-            <Input className="glass-subtle border-none h-9 text-sm text-muted-foreground" value={sessionDate} readOnly />
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className={cn("glass-subtle border-none h-9 w-full justify-start text-sm font-normal focus:ring-1 focus:ring-primary/40", !sessionDate && "text-muted-foreground")}>
+                  <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground/70" />
+                  {sessionDate ? format(sessionDate, 'PPP') : <span>Pick a date</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0 glass-strong border-none" align="start">
+                <Calendar mode="single" selected={sessionDate} onSelect={(d) => d && setSessionDate(d)} initialFocus className={cn("p-3 pointer-events-auto")} />
+              </PopoverContent>
+            </Popover>
           </div>
         </div>
 
