@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
-import { BarChart, Bar, XAxis, YAxis, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, ReferenceLine } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, ReferenceLine, CartesianGrid, Legend } from 'recharts';
 import { format } from 'date-fns';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -266,71 +266,6 @@ function FinancialColumn({ title, results, currentState, recommended = false, is
             <StatCard label="Cost Per Acquisition" value={fCurrency(data.costPerAcquisition, 2)} muted={muted} />
           )}
         </>
-      )}
-    </div>
-  );
-}
-
-function ROICard({ title, results, currentState, isCurrent = false, recommended = false, funnelDepth, acv }: {
-  title: string; results?: TierResults; currentState?: CurrentState;
-  isCurrent?: boolean; recommended?: boolean; funnelDepth: FunnelDepth; acv: number;
-}) {
-  const glassClass = recommended ? 'glass-accent glow-primary' : isCurrent ? 'glass-subtle' : 'glass';
-  const funnel = isCurrent ? (currentState?.funnel ?? {}) : (results?.funnel ?? {});
-  const totalAnnualCost = isCurrent ? (currentState?.annualCostReps ?? 0) : (results?.totalAnnualCost ?? 0);
-  const titanxCost = results?.costAnnual ?? 0;
-
-  const pipeline = funnel.annualPipelineGenerated ?? 0;
-  const revenue = funnel.annualClosedWonRevenue ?? 0;
-
-  return (
-    <div className={`${glassClass} rounded-xl p-5 space-y-4 relative overflow-hidden transition-all duration-500 hover:scale-[1.01] hover:shadow-lg ${recommended ? 'ring-1 ring-primary/40' : ''}`}>
-      <div className="text-center">
-        <span className={`inline-block font-bold text-base px-4 py-1.5 rounded-full border ${isCurrent ? 'bg-muted text-muted-foreground border-border' : 'bg-primary/20 text-primary border-primary/30'}`}>{title}</span>
-      </div>
-
-      {/* Pipeline */}
-      {depthAtLeast(funnelDepth, 'opps') && (
-        <div className="space-y-2">
-          <div className="text-center">
-            <div className="text-2xl font-bold tabular-nums tracking-tight text-foreground">{fCurrency(pipeline)}</div>
-            <div className="text-[10px] uppercase tracking-[0.12em] text-muted-foreground mt-0.5">Annual Pipeline</div>
-          </div>
-          <div className="text-center">
-            <div className="text-sm font-semibold tabular-nums text-primary">
-              {!isCurrent && titanxCost > 0 ? `$${(pipeline / titanxCost).toFixed(2)} pipeline per $1 spent` : '—'}
-            </div>
-            <div className="text-[9px] uppercase tracking-[0.12em] text-muted-foreground/60 mt-0.5">Per $1 TitanX Spend</div>
-          </div>
-          <div className="text-center">
-            <div className="text-xs tabular-nums text-muted-foreground">
-              {totalAnnualCost > 0 ? `$${(pipeline / totalAnnualCost).toFixed(2)} per $1 total` : '—'}
-            </div>
-            <div className="text-[9px] uppercase tracking-[0.12em] text-muted-foreground/60 mt-0.5">Per $1 Total Cost</div>
-          </div>
-        </div>
-      )}
-
-      {/* Revenue */}
-      {funnelDepth === 'closed_won' && (
-        <div className="space-y-2 border-t border-border/30 pt-3">
-          <div className="text-center">
-            <div className="text-2xl font-bold tabular-nums tracking-tight text-foreground">{fCurrency(revenue)}</div>
-            <div className="text-[10px] uppercase tracking-[0.12em] text-muted-foreground mt-0.5">Annual Closed Won Revenue</div>
-          </div>
-          <div className="text-center">
-            <div className="text-sm font-semibold tabular-nums text-primary">
-              {!isCurrent && titanxCost > 0 ? `$${(revenue / titanxCost).toFixed(2)} revenue per $1 spent` : '—'}
-            </div>
-            <div className="text-[9px] uppercase tracking-[0.12em] text-muted-foreground/60 mt-0.5">Per $1 TitanX Spend</div>
-          </div>
-          <div className="text-center">
-            <div className="text-xs tabular-nums text-muted-foreground">
-              {totalAnnualCost > 0 ? `$${(revenue / totalAnnualCost).toFixed(2)} per $1 total` : '—'}
-            </div>
-            <div className="text-[9px] uppercase tracking-[0.12em] text-muted-foreground/60 mt-0.5">Per $1 Total Cost</div>
-          </div>
-        </div>
       )}
     </div>
   );
@@ -667,19 +602,118 @@ export default function Calculator() {
               </div>
 
               {/* ROI Summary */}
-              {showROI && (
-                <div className="space-y-3">
-                  <div className="border-t-2 border-primary pt-4">
-                    <h3 className="text-sm font-bold text-primary uppercase tracking-[0.12em] mb-3 border-l-2 border-primary pl-3">ROI Summary</h3>
+              {showROI && (() => {
+                const currentFunnel = results.currentState.funnel ?? {};
+                const tiers = [
+                  { name: 'Current State', funnel: currentFunnel, cost: results.currentState.annualCostReps ?? 0, titanxCost: 0, isCurrent: true },
+                  { name: 'Grow', funnel: tierData.grow.funnel ?? {}, cost: tierData.grow.totalAnnualCost, titanxCost: tierData.grow.costAnnual, isCurrent: false },
+                  { name: 'Accelerate', funnel: tierData.accelerate.funnel ?? {}, cost: tierData.accelerate.totalAnnualCost, titanxCost: tierData.accelerate.costAnnual, isCurrent: false },
+                  { name: 'Scale', funnel: tierData.scale.funnel ?? {}, cost: tierData.scale.totalAnnualCost, titanxCost: tierData.scale.costAnnual, isCurrent: false },
+                ];
+                const TIER_COLORS = ['#444444', 'rgba(255,0,76,0.6)', 'rgba(255,0,76,0.8)', '#FF004C'];
+
+                const showRevenue = funnelDepth === 'closed_won';
+                const groups = [
+                  ...(depthAtLeast(funnelDepth, 'opps') ? [{ key: 'pipeline', label: 'Annual Pipeline Generated' }] : []),
+                  ...(showRevenue ? [{ key: 'revenue', label: 'Annual Closed Won Revenue' }] : []),
+                ];
+
+                const chartData = groups.map(g => {
+                  const row: Record<string, any> = { group: g.label };
+                  tiers.forEach((t, i) => {
+                    row[t.name] = g.key === 'pipeline' ? (t.funnel.annualPipelineGenerated ?? 0) : (t.funnel.annualClosedWonRevenue ?? 0);
+                  });
+                  return row;
+                });
+
+                const formatYAxis = (v: number) => {
+                  if (v >= 1_000_000) return `$${(v / 1_000_000).toFixed(1)}M`;
+                  if (v >= 1_000) return `$${(v / 1_000).toFixed(0)}K`;
+                  return `$${v}`;
+                };
+
+                // Per-$1-spent metrics
+                const perDollarRows = tiers.map(t => {
+                  const pipeline = t.funnel.annualPipelineGenerated ?? 0;
+                  const revenue = t.funnel.annualClosedWonRevenue ?? 0;
+                  return {
+                    name: t.name,
+                    isCurrent: t.isCurrent,
+                    pipelinePerTitanx: !t.isCurrent && t.titanxCost > 0 ? `$${(pipeline / t.titanxCost).toFixed(2)}` : '—',
+                    pipelinePerTotal: t.cost > 0 ? `$${(pipeline / t.cost).toFixed(2)}` : '—',
+                    revenuePerTitanx: !t.isCurrent && t.titanxCost > 0 ? `$${(revenue / t.titanxCost).toFixed(2)}` : '—',
+                    revenuePerTotal: t.cost > 0 ? `$${(revenue / t.cost).toFixed(2)}` : '—',
+                  };
+                });
+
+                return (
+                  <div className="space-y-3">
+                    <div className="border-t-2 border-primary pt-4">
+                      <h3 className="text-sm font-bold text-primary uppercase tracking-[0.12em] mb-3 border-l-2 border-primary pl-3">ROI Summary</h3>
+                    </div>
+                    <div className="glass rounded-xl p-5">
+                      <ResponsiveContainer width="100%" height={320}>
+                        <BarChart data={chartData} barCategoryGap="20%" barGap={4}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border) / 0.3)" vertical={false} />
+                          <XAxis dataKey="group" tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }} axisLine={false} tickLine={false} />
+                          <YAxis tickFormatter={formatYAxis} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }} axisLine={false} tickLine={false} width={65} />
+                          <RechartsTooltip
+                            content={({ active, payload, label }) => {
+                              if (!active || !payload?.length) return null;
+                              return (
+                                <div style={{
+                                  background: 'hsl(var(--card) / 0.6)',
+                                  backdropFilter: 'blur(16px)',
+                                  WebkitBackdropFilter: 'blur(16px)',
+                                  border: '1px solid hsl(var(--foreground) / 0.08)',
+                                  borderRadius: 10,
+                                  padding: '10px 14px',
+                                  boxShadow: '0 8px 32px hsl(var(--foreground) / 0.08)',
+                                }}>
+                                  <div style={{ fontSize: 11, color: 'hsl(var(--muted-foreground))', marginBottom: 6, fontWeight: 600 }}>{label}</div>
+                                  {payload.map((p: any, i: number) => (
+                                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, marginBottom: 2 }}>
+                                      <div style={{ width: 8, height: 8, borderRadius: 2, background: p.fill || p.color, flexShrink: 0 }} />
+                                      <span style={{ color: 'hsl(var(--muted-foreground))' }}>{p.name}</span>
+                                      <span style={{ fontWeight: 700, color: 'hsl(var(--foreground))', marginLeft: 'auto', fontVariantNumeric: 'tabular-nums' }}>{fCurrency(p.value)}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              );
+                            }}
+                          />
+                          {tiers.map((t, i) => (
+                            <Bar key={t.name} dataKey={t.name} fill={TIER_COLORS[i]} radius={[4, 4, 0, 0]} />
+                          ))}
+                        </BarChart>
+                      </ResponsiveContainer>
+
+                      {/* Per-$1-spent data row */}
+                      <div className="mt-4 border-t border-border/30 pt-3">
+                        <div className="grid grid-cols-4 gap-4 text-center">
+                          {perDollarRows.map((r, i) => (
+                            <div key={r.name} className="space-y-1">
+                              <div className="text-[10px] uppercase tracking-[0.12em] font-semibold" style={{ color: TIER_COLORS[i] }}>{r.name}</div>
+                              {depthAtLeast(funnelDepth, 'opps') && (
+                                <div>
+                                  <div className="text-xs font-bold tabular-nums text-foreground">{r.isCurrent ? r.pipelinePerTotal : r.pipelinePerTitanx}</div>
+                                  <div className="text-[9px] text-muted-foreground/60">{r.isCurrent ? 'pipeline / $1 total' : 'pipeline / $1 TitanX'}</div>
+                                </div>
+                              )}
+                              {showRevenue && (
+                                <div>
+                                  <div className="text-xs font-bold tabular-nums text-foreground">{r.isCurrent ? r.revenuePerTotal : r.revenuePerTitanx}</div>
+                                  <div className="text-[9px] text-muted-foreground/60">{r.isCurrent ? 'revenue / $1 total' : 'revenue / $1 TitanX'}</div>
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <ROICard title="Current State" isCurrent currentState={results.currentState} funnelDepth={funnelDepth} acv={customer.acv!} />
-                    <ROICard title="Grow" results={tierData.grow} funnelDepth={funnelDepth} acv={customer.acv!} recommended={recommendedTier === 'grow'} />
-                    <ROICard title="Accelerate" results={tierData.accelerate} funnelDepth={funnelDepth} acv={customer.acv!} recommended={recommendedTier === 'accelerate'} />
-                    <ROICard title="Scale" results={tierData.scale} funnelDepth={funnelDepth} acv={customer.acv!} recommended={recommendedTier === 'scale'} />
-                  </div>
-                </div>
-              )}
+                );
+              })()}
             </div>
           ) : (
             <div className="glass rounded-xl p-16 text-center text-muted-foreground/60 glow-soft">
