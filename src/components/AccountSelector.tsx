@@ -107,7 +107,7 @@ export default function AccountSelector({ value, onChange }: { value: string; on
 
       {/* Dropdown */}
       {open && (
-        <div className="absolute top-full left-0 right-0 mt-1.5 z-50 glass-strong rounded-lg overflow-hidden border border-border/50 shadow-xl animate-fade-in">
+        <div className="absolute top-full left-0 right-0 mt-1.5 z-[100] glass-strong rounded-lg overflow-hidden border border-border/50 shadow-xl animate-fade-in">
           {/* Search input */}
           <div className="flex items-center gap-2 px-3 py-2 border-b border-border/30">
             <Search className="h-3.5 w-3.5 text-muted-foreground/50 flex-shrink-0" />
