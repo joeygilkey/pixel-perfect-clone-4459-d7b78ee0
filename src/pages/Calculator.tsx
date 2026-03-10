@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
-import { BarChart, Bar, XAxis, YAxis, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, ReferenceLine } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, ReferenceLine, CartesianGrid, Legend } from 'recharts';
 import { format } from 'date-fns';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
