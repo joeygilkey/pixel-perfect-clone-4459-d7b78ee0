@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
+import { BarChart, Bar, XAxis, YAxis, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, ReferenceLine } from 'recharts';
 import { format } from 'date-fns';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -563,6 +564,92 @@ export default function Calculator() {
                   <FinancialColumn title="Accelerate" results={tierData.accelerate} currentState={results.currentState} recommended={recommendedTier === 'accelerate'} funnelDepth={funnelDepth} />
                   <FinancialColumn title="Scale" results={tierData.scale} currentState={results.currentState} recommended={recommendedTier === 'scale'} funnelDepth={funnelDepth} />
                 </div>
+
+                {/* Waterfall Chart */}
+                {(() => {
+                  const depthConfig: Record<FunnelDepth, { key: string; label: string }> = {
+                    meetings_set: { key: 'costPerMeeting', label: 'Cost Per Meeting Set' },
+                    meetings_held: { key: 'costPerMeetingHeld', label: 'Cost Per Meeting Held' },
+                    opps: { key: 'costPerOpp', label: 'Cost Per Qualified Opp' },
+                    closed_won: { key: 'costPerAcquisition', label: 'Cost Per Acquisition' },
+                  };
+                  const cfg = depthConfig[funnelDepth];
+                  const currentVal = (results.currentState as any)[cfg.key] as number | undefined;
+                  const growVal = (tierData.grow as any)[cfg.key] as number | undefined;
+                  const accVal = (tierData.accelerate as any)[cfg.key] as number | undefined;
+                  const scaleVal = (tierData.scale as any)[cfg.key] as number | undefined;
+
+                  if (currentVal == null) return null;
+
+                  const data = [
+                    { name: 'Current', value: currentVal, isBase: true },
+                    ...(growVal != null ? [{ name: 'Grow', value: growVal - currentVal, isBase: false }] : []),
+                    ...(accVal != null ? [{ name: 'Accelerate', value: accVal - currentVal, isBase: false }] : []),
+                    ...(scaleVal != null ? [{ name: 'Scale', value: scaleVal - currentVal, isBase: false }] : []),
+                  ];
+
+                  // Calculate running totals for waterfall positioning
+                  let running = 0;
+                  const waterfallData = data.map((d) => {
+                    if (d.isBase) {
+                      const item = { ...d, start: 0, end: d.value, display: d.value };
+                      running = d.value;
+                      return item;
+                    }
+                    const start = running;
+                    const end = running + d.value;
+                    const item = { ...d, start: Math.min(start, end), end: Math.max(start, end), display: end, delta: d.value };
+                    return item;
+                  });
+
+                  return (
+                    <div className="glass rounded-xl p-5 mt-4">
+                      <h4 className="text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground mb-4">{cfg.label} — Waterfall</h4>
+                      <ResponsiveContainer width="100%" height={220}>
+                        <BarChart data={waterfallData} barCategoryGap="20%">
+                          <XAxis
+                            dataKey="name"
+                            axisLine={false}
+                            tickLine={false}
+                            tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11, fontWeight: 600 }}
+                          />
+                          <YAxis
+                            tickFormatter={(v: number) => `$${Math.round(v).toLocaleString()}`}
+                            axisLine={false}
+                            tickLine={false}
+                            tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10 }}
+                            width={80}
+                          />
+                          <RechartsTooltip
+                            formatter={(value: number, name: string, props: any) => {
+                              const item = props.payload;
+                              if (item.isBase) return [fCurrency(item.value, 2), 'Current'];
+                              return [fCurrency(item.delta, 2), 'Savings'];
+                            }}
+                            contentStyle={{
+                              background: 'hsl(var(--card))',
+                              border: '1px solid hsl(var(--border))',
+                              borderRadius: '8px',
+                              fontSize: '12px',
+                            }}
+                          />
+                          <ReferenceLine y={0} stroke="hsl(var(--border))" />
+                          {/* Invisible bar for the base (start position) */}
+                          <Bar dataKey="start" stackId="waterfall" fill="transparent" />
+                          {/* Visible bar showing the segment */}
+                          <Bar dataKey={(d: any) => d.end - d.start} stackId="waterfall" radius={[4, 4, 0, 0]}>
+                            {waterfallData.map((entry, index) => (
+                              <Cell
+                                key={index}
+                                fill={entry.isBase ? 'hsl(var(--muted-foreground) / 0.4)' : 'hsl(var(--primary))'}
+                              />
+                            ))}
+                          </Bar>
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  );
+                })()}
               </div>
 
               {/* ROI Summary */}
