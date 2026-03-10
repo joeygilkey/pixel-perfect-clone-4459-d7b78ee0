@@ -91,7 +91,7 @@ function getPrimaryMetric(depth: FunnelDepth, funnel: FunnelMetrics, monthlyMeet
 }
 
 function StatCard({ label, value, highlight = false, muted = false }: {
-  label: string; value: string; highlight?: boolean; muted?: boolean;
+  label: React.ReactNode; value: string; highlight?: boolean; muted?: boolean;
 }) {
   return (
     <div className={`transition-all duration-300 ${muted ? 'opacity-40' : ''}`}>
