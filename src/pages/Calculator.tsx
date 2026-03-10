@@ -177,6 +177,7 @@ export default function Calculator() {
     highIntent: 20, highIntentReach: 85, avgPhones: 2,
     titanxConnectRate: 25, creditPriceGrow: 0.50,
     creditPriceAccelerate: 0.50, creditPriceScale: 0.50,
+    multipleGrow: 1.5, multipleAccelerate: 2.0, multipleScale: 2.5,
   });
 
   const results = useMemo(() => calculate(customer, titanx), [customer, titanx]);
@@ -191,7 +192,7 @@ export default function Calculator() {
     if (!confirm('Clear all inputs and start a new session?')) return;
     setCustomerName(''); setCompany(''); setAeName('');
     setCustomer({ reps: null, annualCostPerRep: null, dialsPerDay: null, connectRate: null, conversationRate: null, meetingRate: null });
-    setTitanx({ highIntent: 20, highIntentReach: 85, avgPhones: 2, titanxConnectRate: 25, creditPriceGrow: 0.50, creditPriceAccelerate: 0.50, creditPriceScale: 0.50 });
+    setTitanx({ highIntent: 20, highIntentReach: 85, avgPhones: 2, titanxConnectRate: 25, creditPriceGrow: 0.50, creditPriceAccelerate: 0.50, creditPriceScale: 0.50, multipleGrow: 1.5, multipleAccelerate: 2.0, multipleScale: 2.5 });
   };
 
   const handleSave = () => {
@@ -271,6 +272,9 @@ export default function Calculator() {
               <NumericInput label="Credit Price — Grow" value={titanx.creditPriceGrow} onChange={updateTitanx('creditPriceGrow')} prefix="$" />
               <NumericInput label="Credit Price — Accelerate" value={titanx.creditPriceAccelerate} onChange={updateTitanx('creditPriceAccelerate')} prefix="$" />
               <NumericInput label="Credit Price — Scale" value={titanx.creditPriceScale} onChange={updateTitanx('creditPriceScale')} prefix="$" />
+              <NumericInput label="Multiple — Grow" value={titanx.multipleGrow} onChange={updateTitanx('multipleGrow')} suffix="×" tooltip="Connect multiplier for Grow tier" />
+              <NumericInput label="Multiple — Accelerate" value={titanx.multipleAccelerate} onChange={updateTitanx('multipleAccelerate')} suffix="×" tooltip="Connect multiplier for Accelerate tier" />
+              <NumericInput label="Multiple — Scale" value={titanx.multipleScale} onChange={updateTitanx('multipleScale')} suffix="×" tooltip="Connect multiplier for Scale tier" />
             </div>
           </div>
         </div>
@@ -294,9 +298,9 @@ export default function Calculator() {
               {/* Activity + Efficiency */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <TierColumn title="Current State" isCurrent currentState={results.currentState} />
-                <TierColumn title="Grow" subtitle="1.5× connects" results={tierData.grow} currentState={results.currentState} />
-                <TierColumn title="Accelerate" subtitle="2× connects" results={tierData.accelerate} currentState={results.currentState} />
-                <TierColumn title="Scale" subtitle="2.5× connects" results={tierData.scale} currentState={results.currentState} recommended />
+                <TierColumn title="Grow" subtitle={`${titanx.multipleGrow ?? 1.5}× connects`} results={tierData.grow} currentState={results.currentState} />
+                <TierColumn title="Accelerate" subtitle={`${titanx.multipleAccelerate ?? 2}× connects`} results={tierData.accelerate} currentState={results.currentState} />
+                <TierColumn title="Scale" subtitle={`${titanx.multipleScale ?? 2.5}× connects`} results={tierData.scale} currentState={results.currentState} recommended />
               </div>
 
               {/* Financial Section */}

@@ -15,6 +15,9 @@ export interface TitanXInputs {
   creditPriceGrow: number | null;
   creditPriceAccelerate: number | null;
   creditPriceScale: number | null;
+  multipleGrow: number | null;
+  multipleAccelerate: number | null;
+  multipleScale: number | null;
 }
 
 export interface TierResults {
@@ -52,7 +55,7 @@ export interface CalculationResults {
 }
 
 const WORKING_DAYS = 20;
-const MULTIPLES = { grow: 1.5, accelerate: 2.0, scale: 2.5 };
+
 
 function mround(value: number, multiple: number): number {
   return Math.round(value / multiple) * multiple;
@@ -72,7 +75,10 @@ function allInputsValid(c: CustomerInputs, t: TitanXInputs): boolean {
     t.titanxConnectRate != null && t.titanxConnectRate > 0 &&
     t.creditPriceGrow != null && t.creditPriceGrow > 0 &&
     t.creditPriceAccelerate != null && t.creditPriceAccelerate > 0 &&
-    t.creditPriceScale != null && t.creditPriceScale > 0
+    t.creditPriceScale != null && t.creditPriceScale > 0 &&
+    t.multipleGrow != null && t.multipleGrow > 0 &&
+    t.multipleAccelerate != null && t.multipleAccelerate > 0 &&
+    t.multipleScale != null && t.multipleScale > 0
   );
 }
 
@@ -94,6 +100,11 @@ export function calculate(c: CustomerInputs, t: TitanXInputs): CalculationResult
     accelerate: t.creditPriceAccelerate!,
     scale: t.creditPriceScale!,
   };
+  const multiples = {
+    grow: t.multipleGrow!,
+    accelerate: t.multipleAccelerate!,
+    scale: t.multipleScale!,
+  };
 
   // Current State
   const monthlyDials = reps * dialsPerDay * WORKING_DAYS;
@@ -112,7 +123,7 @@ export function calculate(c: CustomerInputs, t: TitanXInputs): CalculationResult
   };
 
   function calcBlended(tier: 'grow' | 'accelerate' | 'scale'): TierResults {
-    const multiple = MULTIPLES[tier];
+    const multiple = multiples[tier];
     const creditPrice = creditPrices[tier];
     const connectTarget = monthlyConnects * multiple;
 
@@ -154,7 +165,7 @@ export function calculate(c: CustomerInputs, t: TitanXInputs): CalculationResult
   }
 
   function calcHI(tier: 'grow' | 'accelerate' | 'scale'): TierResults {
-    const multiple = MULTIPLES[tier];
+    const multiple = multiples[tier];
     const creditPrice = creditPrices[tier];
     const connectTarget = monthlyConnects * multiple;
     const dialsRequired = connectTarget / titanxCR;
