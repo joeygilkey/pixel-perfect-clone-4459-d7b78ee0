@@ -67,6 +67,9 @@ export interface CurrentState {
   annualCostReps: number;
   costPerConnect: number;
   costPerMeeting: number;
+  costPerMeetingHeld?: number;
+  costPerOpp?: number;
+  costPerAcquisition?: number;
   funnel: FunnelMetrics;
 }
 
