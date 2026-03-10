@@ -9,10 +9,20 @@ import titanxLogo from '@/assets/titanx-logo.svg';
 import { calculate, type CustomerInputs, type TitanXInputs, type TierResults, type CurrentState } from '@/lib/calculations';
 import { fCurrency, fNumber, fPercent, fReps, fMeetings } from '@/lib/formatters';
 
-function NumericInput({ label, value, onChange, prefix, suffix, placeholder = '—', tooltip, step }: {
+function NumericInput({ label, value, onChange, prefix, suffix, placeholder = '—', tooltip, step, commas = false }: {
   label: string; value: number | null; onChange: (v: number | null) => void;
-  prefix?: string; suffix?: string; placeholder?: string; tooltip?: string; step?: string;
+  prefix?: string; suffix?: string; placeholder?: string; tooltip?: string; step?: string; commas?: boolean;
 }) {
+  const [isFocused, setIsFocused] = useState(false);
+
+  const displayValue = useMemo(() => {
+    if (value == null) return '';
+    if (isFocused) return String(value);
+    if (commas) return value.toLocaleString('en-US');
+    if (step === '0.01') return value.toFixed(2);
+    return String(value);
+  }, [value, isFocused, commas, step]);
+
   return (
     <div className="space-y-1.5">
       <div className="flex items-center gap-1.5">
@@ -27,12 +37,17 @@ function NumericInput({ label, value, onChange, prefix, suffix, placeholder = '�
       <div className="relative group">
         {prefix && <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground/70">{prefix}</span>}
         <Input
-          type="number"
+          type={isFocused || !commas ? 'number' : 'text'}
           step={step}
           className={`glass-subtle border-none h-9 text-sm text-foreground placeholder:text-muted-foreground/40 focus:ring-1 focus:ring-primary/40 transition-all duration-300 group-hover:bg-[hsla(220,20%,18%,0.4)] ${prefix ? 'pl-7' : ''} ${suffix ? 'pr-7' : ''}`}
           placeholder={placeholder}
-          value={value != null && step === '0.01' ? value.toFixed(2) : (value ?? '')}
-          onChange={(e) => onChange(e.target.value === '' ? null : parseFloat(e.target.value))}
+          value={displayValue}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          onChange={(e) => {
+            const raw = e.target.value.replace(/,/g, '');
+            onChange(raw === '' ? null : parseFloat(raw));
+          }}
         />
         {suffix && <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground/70">{suffix}</span>}
       </div>
