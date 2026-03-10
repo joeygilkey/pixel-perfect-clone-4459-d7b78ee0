@@ -93,7 +93,7 @@ function TierColumn({ title, subtitle, results, currentState, recommended = fals
         </span>
       )}
       <div className="text-center">
-        <span className={`inline-block font-bold text-base px-4 py-1.5 rounded-full ${isCurrent ? 'bg-muted text-muted-foreground' : recommended ? 'bg-primary/20 text-primary border border-primary/30' : 'bg-secondary text-foreground border border-border'}`}>{title}</span>
+        <span className={`inline-block font-bold text-base px-4 py-1.5 rounded-full ${isCurrent ? 'bg-muted text-muted-foreground' : 'bg-primary/20 text-primary border border-primary/30'}`}>{title}</span>
         {subtitle && <p className="text-[10px] text-muted-foreground/60 mt-1.5">{subtitle}</p>}
         {!isCurrent && results ? (
           <div className="flex gap-4 mt-1.5">
