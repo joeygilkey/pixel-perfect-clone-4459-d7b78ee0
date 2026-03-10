@@ -502,14 +502,15 @@ export default function Calculator() {
                   ];
 
                   type MetricRow = { label: string; csValue: number | undefined; tierValues: (number | undefined)[]; depth: FunnelDepth };
-                  const metrics: MetricRow[] = [
-                    { label: 'Total Annual Cost', csValue: cs.annualCostReps, tierValues: tiers.map(t => t.data.totalAnnualCost), depth: 'meetings_set' },
-                    { label: 'Cost Per Connect', csValue: cs.costPerConnect, tierValues: tiers.map(t => t.data.costPerConnect), depth: 'meetings_set' },
-                    { label: 'Cost Per Meeting Set', csValue: cs.costPerMeeting, tierValues: tiers.map(t => t.data.costPerMeeting), depth: 'meetings_set' },
-                    { label: 'Cost Per Meeting Held', csValue: cs.costPerMeetingHeld, tierValues: tiers.map(t => t.data.costPerMeetingHeld), depth: 'meetings_held' },
-                    { label: 'Cost Per Qualified Opp', csValue: cs.costPerOpp, tierValues: tiers.map(t => t.data.costPerOpp), depth: 'opps' },
-                    { label: 'Cost Per Acquisition', csValue: cs.costPerAcquisition, tierValues: tiers.map(t => t.data.costPerAcquisition), depth: 'closed_won' },
-                  ].filter(m => depthAtLeast(funnelDepth, m.depth));
+                  const allMetrics: MetricRow[] = [
+                    { label: 'Total Annual Cost', csValue: cs.annualCostReps, tierValues: tiers.map(t => t.data.totalAnnualCost), depth: 'meetings_set' as FunnelDepth },
+                    { label: 'Cost Per Connect', csValue: cs.costPerConnect, tierValues: tiers.map(t => t.data.costPerConnect), depth: 'meetings_set' as FunnelDepth },
+                    { label: 'Cost Per Meeting Set', csValue: cs.costPerMeeting, tierValues: tiers.map(t => t.data.costPerMeeting), depth: 'meetings_set' as FunnelDepth },
+                    { label: 'Cost Per Meeting Held', csValue: cs.costPerMeetingHeld, tierValues: tiers.map(t => t.data.costPerMeetingHeld), depth: 'meetings_held' as FunnelDepth },
+                    { label: 'Cost Per Qualified Opp', csValue: cs.costPerOpp, tierValues: tiers.map(t => t.data.costPerOpp), depth: 'opps' as FunnelDepth },
+                    { label: 'Cost Per Acquisition', csValue: cs.costPerAcquisition, tierValues: tiers.map(t => t.data.costPerAcquisition), depth: 'closed_won' as FunnelDepth },
+                  ];
+                  const metrics = allMetrics.filter(m => depthAtLeast(funnelDepth, m.depth));
 
                   const pctDelta = (csVal: number | undefined, tierVal: number | undefined) => {
                     if (csVal == null || tierVal == null || csVal === 0) return null;
