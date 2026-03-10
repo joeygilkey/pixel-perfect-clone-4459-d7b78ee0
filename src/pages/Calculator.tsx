@@ -242,9 +242,14 @@ export default function Calculator() {
       <header className="glass-strong sticky top-0 z-50 p-2.5 flex items-center justify-between">
         <img src={titanxLogo} alt="TitanX" className="h-[26px]" />
         <h1 className="text-base font-semibold text-foreground/80 hidden sm:block tracking-wide">Dream Outcome Calculator</h1>
-        <Button variant="outline" size="sm" onClick={handleNewSession} className="glass-subtle border-none text-foreground/80 hover:text-foreground hover:bg-white/10 transition-all duration-300">
-          <Plus className="h-4 w-4 mr-1" /> New Session
-        </Button>
+        <div className="flex items-center gap-2">
+          <button onClick={toggleTheme} className="p-2 rounded-lg glass-subtle border-none text-foreground/60 hover:text-foreground transition-all duration-300" aria-label="Toggle theme">
+            {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          </button>
+          <Button variant="outline" size="sm" onClick={handleNewSession} className="glass-subtle border-none text-foreground/80 hover:text-foreground transition-all duration-300">
+            <Plus className="h-4 w-4 mr-1" /> New Session
+          </Button>
+        </div>
       </header>
 
       <div className="max-w-[1440px] mx-auto p-6 space-y-6 relative z-10">
