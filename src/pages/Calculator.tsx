@@ -70,23 +70,39 @@ function StatCard({ label, value, highlight = false, muted = false }: {
   );
 }
 
-function TierColumn({ title, subtitle, results, currentState, recommended = false, isCurrent = false }: {
+function TierColumn({ title, subtitle, results, currentState, recommended = false, isCurrent = false, onRecommend }: {
   title: string; subtitle?: string; results?: TierResults; currentState?: CurrentState;
-  recommended?: boolean; isCurrent?: boolean;
+  recommended?: boolean; isCurrent?: boolean; onRecommend?: () => void;
 }) {
-  const glassClass = isCurrent
+  const glassClass = recommended
+    ? 'glass-accent glow-primary'
+    : isCurrent
       ? 'glass-subtle'
       : 'glass';
 
   return (
-    <div className={`${glassClass} rounded-xl p-5 space-y-5 relative overflow-hidden transition-all duration-500 hover:scale-[1.01] hover:shadow-lg`}>
+    <div className={`${glassClass} rounded-xl p-5 space-y-5 relative overflow-hidden transition-all duration-500 hover:scale-[1.01] hover:shadow-lg ${recommended ? 'ring-1 ring-primary/40' : ''}`}>
       {/* Liquid highlight at top */}
-      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+      <div className={`absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r ${recommended ? 'from-transparent via-primary/60 to-transparent' : 'from-transparent via-white/10 to-transparent'}`} />
 
       <div className="text-center min-h-[48px] flex flex-col items-center justify-center">
         <span className={`inline-block font-bold text-base px-4 py-1.5 rounded-full border ${isCurrent ? 'bg-muted text-muted-foreground border-border' : 'bg-primary/20 text-primary border-primary/30'}`}>{title}</span>
         {subtitle ? <p className="text-[10px] text-muted-foreground/60 mt-1.5">{subtitle}</p> : <p className="text-[10px] mt-1.5">&nbsp;</p>}
       </div>
+
+      {/* Recommend toggle */}
+      {!isCurrent && onRecommend && (
+        <button
+          onClick={onRecommend}
+          className={`w-full text-[10px] font-semibold uppercase tracking-[0.12em] py-1.5 rounded-full border transition-all duration-300 ${
+            recommended
+              ? 'bg-primary text-primary-foreground border-primary'
+              : 'bg-transparent text-muted-foreground border-border hover:border-primary/50 hover:text-primary'
+          }`}
+        >
+          {recommended ? '★ Recommended' : '☆ Recommend'}
+        </button>
+      )}
 
       {/* Activity Metrics */}
       <div className="space-y-3">
@@ -144,13 +160,15 @@ function FinancialColumn({ title, results, currentState, recommended = false, is
   title: string; results?: TierResults; currentState?: CurrentState;
   recommended?: boolean; isCurrent?: boolean;
 }) {
-  const glassClass = isCurrent
+  const glassClass = recommended
+    ? 'glass-accent glow-primary'
+    : isCurrent
       ? 'glass-subtle'
       : 'glass';
 
   return (
-    <div className={`${glassClass} rounded-xl p-5 space-y-3 relative overflow-hidden transition-all duration-500 hover:scale-[1.01] hover:shadow-lg`}>
-      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+    <div className={`${glassClass} rounded-xl p-5 space-y-3 relative overflow-hidden transition-all duration-500 hover:scale-[1.01] hover:shadow-lg ${recommended ? 'ring-1 ring-primary/40' : ''}`}>
+      <div className={`absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r ${recommended ? 'from-transparent via-primary/60 to-transparent' : 'from-transparent via-white/10 to-transparent'}`} />
       <div className="text-center">
         <span className={`inline-block font-bold text-base px-4 py-1.5 rounded-full border ${isCurrent ? 'bg-muted text-muted-foreground border-border' : 'bg-primary/20 text-primary border-primary/30'}`}>{title}</span>
       </div>
@@ -176,6 +194,7 @@ export default function Calculator() {
   const [aeName, setAeName] = useState('');
   const [sessionDate, setSessionDate] = useState<Date>(new Date());
   const [model, setModel] = useState<string>('blended');
+  const [recommendedTier, setRecommendedTier] = useState<string | null>(null);
 
   const [customer, setCustomer] = useState<CustomerInputs>({
     reps: null, annualCostPerRep: null, dialsPerDay: null,
@@ -325,9 +344,9 @@ export default function Calculator() {
               {/* Activity + Efficiency */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <TierColumn title="Current State" isCurrent currentState={results.currentState} />
-                <TierColumn title="Grow" subtitle={`${titanx.multipleGrow ?? 1.5}× connects`} results={tierData.grow} currentState={results.currentState} />
-                <TierColumn title="Accelerate" subtitle={`${titanx.multipleAccelerate ?? 2}× connects`} results={tierData.accelerate} currentState={results.currentState} />
-                <TierColumn title="Scale" subtitle={`${titanx.multipleScale ?? 2.5}× connects`} results={tierData.scale} currentState={results.currentState} />
+                <TierColumn title="Grow" subtitle={`${titanx.multipleGrow ?? 1.5}× connects`} results={tierData.grow} currentState={results.currentState} recommended={recommendedTier === 'grow'} onRecommend={() => setRecommendedTier(prev => prev === 'grow' ? null : 'grow')} />
+                <TierColumn title="Accelerate" subtitle={`${titanx.multipleAccelerate ?? 2}× connects`} results={tierData.accelerate} currentState={results.currentState} recommended={recommendedTier === 'accelerate'} onRecommend={() => setRecommendedTier(prev => prev === 'accelerate' ? null : 'accelerate')} />
+                <TierColumn title="Scale" subtitle={`${titanx.multipleScale ?? 2.5}× connects`} results={tierData.scale} currentState={results.currentState} recommended={recommendedTier === 'scale'} onRecommend={() => setRecommendedTier(prev => prev === 'scale' ? null : 'scale')} />
               </div>
 
               {/* Financial Section */}
@@ -335,9 +354,9 @@ export default function Calculator() {
                 <h3 className="text-sm font-bold text-foreground uppercase tracking-[0.12em] mb-3 border-l-2 border-primary pl-3">Financial Metrics</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                   <FinancialColumn title="Current State" isCurrent currentState={results.currentState} />
-                  <FinancialColumn title="Grow" results={tierData.grow} currentState={results.currentState} />
-                  <FinancialColumn title="Accelerate" results={tierData.accelerate} currentState={results.currentState} />
-                  <FinancialColumn title="Scale" results={tierData.scale} currentState={results.currentState} />
+                  <FinancialColumn title="Grow" results={tierData.grow} currentState={results.currentState} recommended={recommendedTier === 'grow'} />
+                  <FinancialColumn title="Accelerate" results={tierData.accelerate} currentState={results.currentState} recommended={recommendedTier === 'accelerate'} />
+                  <FinancialColumn title="Scale" results={tierData.scale} currentState={results.currentState} recommended={recommendedTier === 'scale'} />
                 </div>
               </div>
             </div>
