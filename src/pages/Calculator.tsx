@@ -156,7 +156,7 @@ function FinancialColumn({ title, results, currentState, recommended = false, is
         <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
       )}
       <div className="text-center">
-        <span className={`inline-block font-bold text-base px-4 py-1.5 rounded-full ${isCurrent ? 'bg-muted text-muted-foreground' : 'bg-primary/20 text-primary border border-primary/30'}`}>{title}</span>
+        <span className={`inline-block font-bold text-base px-4 py-1.5 rounded-full border ${isCurrent ? 'bg-muted text-muted-foreground border-border' : 'bg-primary/20 text-primary border-primary/30'}`}>{title}</span>
       </div>
       {isCurrent && currentState ? (
         <>
