@@ -49,6 +49,9 @@ export interface TierResults {
   totalAnnualCost: number;
   costPerConnect: number;
   costPerMeeting: number;
+  costPerMeetingHeld?: number;
+  costPerOpp?: number;
+  costPerAcquisition?: number;
   repProductionEquivalent: number;
   costOfEquivReps: number;
   pctOfCurrentDials: number;
