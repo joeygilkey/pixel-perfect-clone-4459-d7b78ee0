@@ -270,7 +270,7 @@ export default function Calculator() {
           </div>
           <div className="space-y-1.5">
             <label className="text-[11px] font-medium uppercase tracking-[0.1em] text-muted-foreground">TitanX User</label>
-            <Input className="glass-subtle border-none h-9 text-sm focus:ring-1 focus:ring-primary/40" value={aeName} onChange={e => setAeName(e.target.value)} placeholder="—" />
+            <UserSelector value={aeName} onChange={setAeName} />
           </div>
           <div className="space-y-1.5">
             <label className="text-[11px] font-medium uppercase tracking-[0.1em] text-muted-foreground">Date</label>
