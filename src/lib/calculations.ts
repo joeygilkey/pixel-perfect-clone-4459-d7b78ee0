@@ -49,6 +49,9 @@ export interface TierResults {
   totalAnnualCost: number;
   costPerConnect: number;
   costPerMeeting: number;
+  costPerMeetingHeld?: number;
+  costPerOpp?: number;
+  costPerAcquisition?: number;
   repProductionEquivalent: number;
   costOfEquivReps: number;
   pctOfCurrentDials: number;
@@ -64,6 +67,9 @@ export interface CurrentState {
   annualCostReps: number;
   costPerConnect: number;
   costPerMeeting: number;
+  costPerMeetingHeld?: number;
+  costPerOpp?: number;
+  costPerAcquisition?: number;
   funnel: FunnelMetrics;
 }
 
@@ -163,11 +169,15 @@ export function calculate(c: CustomerInputs, t: TitanXInputs): CalculationResult
   const costPerConnect = annualCostReps / (monthlyConnects * 12);
   const costPerMeeting = annualCostReps / (monthlyMeetings * 12);
 
+  const currentFunnel = calcFunnel(monthlyMeetings, c);
   const currentState: CurrentState = {
     monthlyDials, monthlyConnects, monthlyConversations,
     monthlyMeetings, annualMeetings, annualCostReps,
     costPerConnect, costPerMeeting,
-    funnel: calcFunnel(monthlyMeetings, c),
+    ...(currentFunnel.annualMeetingsHeld ? { costPerMeetingHeld: annualCostReps / currentFunnel.annualMeetingsHeld } : {}),
+    ...(currentFunnel.annualOpps ? { costPerOpp: annualCostReps / currentFunnel.annualOpps } : {}),
+    ...(currentFunnel.annualClosedWon ? { costPerAcquisition: annualCostReps / currentFunnel.annualClosedWon } : {}),
+    funnel: currentFunnel,
   };
 
   function calcBlended(tier: 'grow' | 'accelerate' | 'scale'): TierResults {
@@ -192,6 +202,7 @@ export function calculate(c: CustomerInputs, t: TitanXInputs): CalculationResult
     const costAnn = creditsPerMonth * 12 * creditPrice;
     const totalAnnual = annualCostReps + costAnn;
 
+    const funnel = calcFunnel(meetings, c);
     return {
       monthlyDials: totalDials,
       monthlyConnects: connectTarget,
@@ -204,10 +215,13 @@ export function calculate(c: CustomerInputs, t: TitanXInputs): CalculationResult
       totalAnnualCost: totalAnnual,
       costPerConnect: totalAnnual / (connectTarget * 12),
       costPerMeeting: totalAnnual / (meetings * 12),
+      ...(funnel.annualMeetingsHeld ? { costPerMeetingHeld: totalAnnual / funnel.annualMeetingsHeld } : {}),
+      ...(funnel.annualOpps ? { costPerOpp: totalAnnual / funnel.annualOpps } : {}),
+      ...(funnel.annualClosedWon ? { costPerAcquisition: totalAnnual / funnel.annualClosedWon } : {}),
       repProductionEquivalent: reps * multiple,
       costOfEquivReps: costAnn / annualCostPerRep,
       pctOfCurrentDials: totalDials / monthlyDials,
-      funnel: calcFunnel(meetings, c),
+      funnel,
     };
   }
 
@@ -227,6 +241,7 @@ export function calculate(c: CustomerInputs, t: TitanXInputs): CalculationResult
     const costAnn = creditsPerMonth * 12 * creditPrice;
     const totalAnnual = annualCostReps + costAnn;
 
+    const funnel = calcFunnel(meetings, c);
     return {
       monthlyDials: dialsRequired,
       monthlyConnects: connectTarget,
@@ -239,10 +254,13 @@ export function calculate(c: CustomerInputs, t: TitanXInputs): CalculationResult
       totalAnnualCost: totalAnnual,
       costPerConnect: totalAnnual / (connectTarget * 12),
       costPerMeeting: totalAnnual / (meetings * 12),
+      ...(funnel.annualMeetingsHeld ? { costPerMeetingHeld: totalAnnual / funnel.annualMeetingsHeld } : {}),
+      ...(funnel.annualOpps ? { costPerOpp: totalAnnual / funnel.annualOpps } : {}),
+      ...(funnel.annualClosedWon ? { costPerAcquisition: totalAnnual / funnel.annualClosedWon } : {}),
       repProductionEquivalent: reps * multiple,
       costOfEquivReps: costAnn / annualCostPerRep,
       pctOfCurrentDials: dialsRequired / monthlyDials,
-      funnel: calcFunnel(meetings, c),
+      funnel,
     };
   }
 

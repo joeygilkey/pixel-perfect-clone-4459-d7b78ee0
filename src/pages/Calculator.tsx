@@ -231,9 +231,9 @@ function TierColumn({ title, subtitle, results, currentState, recommended = fals
   );
 }
 
-function FinancialColumn({ title, results, currentState, recommended = false, isCurrent = false }: {
+function FinancialColumn({ title, results, currentState, recommended = false, isCurrent = false, funnelDepth = 'meetings_set' }: {
   title: string; results?: TierResults; currentState?: CurrentState;
-  recommended?: boolean; isCurrent?: boolean;
+  recommended?: boolean; isCurrent?: boolean; funnelDepth?: FunnelDepth;
 }) {
   const glassClass = recommended
     ? 'glass-accent glow-primary'
@@ -241,25 +241,31 @@ function FinancialColumn({ title, results, currentState, recommended = false, is
       ? 'glass-subtle'
       : 'glass';
 
+  const data = isCurrent ? currentState : results;
+  const muted = isCurrent;
+
   return (
     <div className={`${glassClass} rounded-xl p-5 space-y-3 relative overflow-hidden transition-all duration-500 hover:scale-[1.01] hover:shadow-lg ${recommended ? 'ring-1 ring-primary/40' : ''}`}>
       <div className={`absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r ${recommended ? 'from-transparent via-primary/60 to-transparent' : 'from-transparent via-foreground/10 to-transparent'}`} />
       <div className="text-center">
         <span className={`inline-block font-bold text-base px-4 py-1.5 rounded-full border ${isCurrent ? 'bg-muted text-muted-foreground border-border' : 'bg-primary/20 text-primary border-primary/30'}`}>{title}</span>
       </div>
-      {isCurrent && currentState ? (
+      {data && (
         <>
-          <StatCard label="Total Annual Cost" value={fCurrency(currentState.annualCostReps)} muted />
-          <StatCard label="Cost Per Connect" value={fCurrency(currentState.costPerConnect, 2)} muted />
-          <StatCard label="Cost Per Meeting" value={fCurrency(currentState.costPerMeeting, 2)} muted />
+          <StatCard label="Total Annual Cost" value={fCurrency('totalAnnualCost' in data ? data.totalAnnualCost : data.annualCostReps)} muted={muted} />
+          <StatCard label="Cost Per Connect" value={fCurrency(data.costPerConnect, 2)} muted={muted} />
+          <StatCard label="Cost Per Meeting Set" value={fCurrency(data.costPerMeeting, 2)} muted={muted} />
+          {depthAtLeast(funnelDepth, 'meetings_held') && data.costPerMeetingHeld != null && (
+            <StatCard label="Cost Per Meeting Held" value={fCurrency(data.costPerMeetingHeld, 2)} muted={muted} />
+          )}
+          {depthAtLeast(funnelDepth, 'opps') && data.costPerOpp != null && (
+            <StatCard label="Cost Per Qualified Opp" value={fCurrency(data.costPerOpp, 2)} muted={muted} />
+          )}
+          {depthAtLeast(funnelDepth, 'closed_won') && data.costPerAcquisition != null && (
+            <StatCard label="Cost Per Acquisition" value={fCurrency(data.costPerAcquisition, 2)} muted={muted} />
+          )}
         </>
-      ) : results ? (
-        <>
-          <StatCard label="Total Annual Cost" value={fCurrency(results.totalAnnualCost)} />
-          <StatCard label="Cost Per Connect" value={fCurrency(results.costPerConnect, 2)} />
-          <StatCard label="Cost Per Meeting" value={fCurrency(results.costPerMeeting, 2)} />
-        </>
-      ) : null}
+      )}
     </div>
   );
 }
@@ -552,10 +558,10 @@ export default function Calculator() {
               <div>
                 <h3 className="text-sm font-bold text-foreground uppercase tracking-[0.12em] mb-3 border-l-2 border-primary pl-3">Financial Metrics</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <FinancialColumn title="Current State" isCurrent currentState={results.currentState} />
-                  <FinancialColumn title="Grow" results={tierData.grow} currentState={results.currentState} recommended={recommendedTier === 'grow'} />
-                  <FinancialColumn title="Accelerate" results={tierData.accelerate} currentState={results.currentState} recommended={recommendedTier === 'accelerate'} />
-                  <FinancialColumn title="Scale" results={tierData.scale} currentState={results.currentState} recommended={recommendedTier === 'scale'} />
+                  <FinancialColumn title="Current State" isCurrent currentState={results.currentState} funnelDepth={funnelDepth} />
+                  <FinancialColumn title="Grow" results={tierData.grow} currentState={results.currentState} recommended={recommendedTier === 'grow'} funnelDepth={funnelDepth} />
+                  <FinancialColumn title="Accelerate" results={tierData.accelerate} currentState={results.currentState} recommended={recommendedTier === 'accelerate'} funnelDepth={funnelDepth} />
+                  <FinancialColumn title="Scale" results={tierData.scale} currentState={results.currentState} recommended={recommendedTier === 'scale'} funnelDepth={funnelDepth} />
                 </div>
               </div>
 
