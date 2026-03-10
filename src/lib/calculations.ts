@@ -75,7 +75,10 @@ function allInputsValid(c: CustomerInputs, t: TitanXInputs): boolean {
     t.titanxConnectRate != null && t.titanxConnectRate > 0 &&
     t.creditPriceGrow != null && t.creditPriceGrow > 0 &&
     t.creditPriceAccelerate != null && t.creditPriceAccelerate > 0 &&
-    t.creditPriceScale != null && t.creditPriceScale > 0
+    t.creditPriceScale != null && t.creditPriceScale > 0 &&
+    t.multipleGrow != null && t.multipleGrow > 0 &&
+    t.multipleAccelerate != null && t.multipleAccelerate > 0 &&
+    t.multipleScale != null && t.multipleScale > 0
   );
 }
 
