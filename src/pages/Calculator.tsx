@@ -209,7 +209,7 @@ export default function Calculator() {
 
       {/* Header */}
       <header className="glass-strong sticky top-0 z-50 p-2.5 flex items-center justify-between">
-        <img src={titanxLogo} alt="TitanX" className="h-8" />
+        <img src={titanxLogo} alt="TitanX" className="h-16" />
         <h1 className="text-base font-semibold text-foreground/80 hidden sm:block tracking-wide">Dream Outcome Calculator</h1>
         <Button variant="outline" size="sm" onClick={handleNewSession} className="glass-subtle border-none text-foreground/80 hover:text-foreground hover:bg-white/10 transition-all duration-300">
           <Plus className="h-4 w-4 mr-1" /> New Session
