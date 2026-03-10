@@ -222,7 +222,7 @@ function TierColumn({ title, subtitle, results, currentState, recommended = fals
             <div className="text-xl font-bold tabular-nums tracking-tight text-foreground">{fNumber(results.creditsPerMonth * 12)}</div>
             <div className="text-[10px] uppercase tracking-[0.12em] text-muted-foreground mt-0.5">Credits / Year</div>
           </div>
-          <div>
+          <div className="border border-primary rounded-lg p-2">
             <div className="text-xl font-bold tabular-nums tracking-tight text-foreground">{fCurrency(results.costAnnual)}</div>
             <div className="text-[10px] uppercase tracking-[0.12em] text-muted-foreground mt-0.5">Annual Cost</div>
           </div>
