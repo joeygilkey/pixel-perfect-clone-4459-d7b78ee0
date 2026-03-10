@@ -558,10 +558,10 @@ export default function Calculator() {
               <div>
                 <h3 className="text-sm font-bold text-foreground uppercase tracking-[0.12em] mb-3 border-l-2 border-primary pl-3">Financial Metrics</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <FinancialColumn title="Current State" isCurrent currentState={results.currentState} />
-                  <FinancialColumn title="Grow" results={tierData.grow} currentState={results.currentState} recommended={recommendedTier === 'grow'} />
-                  <FinancialColumn title="Accelerate" results={tierData.accelerate} currentState={results.currentState} recommended={recommendedTier === 'accelerate'} />
-                  <FinancialColumn title="Scale" results={tierData.scale} currentState={results.currentState} recommended={recommendedTier === 'scale'} />
+                  <FinancialColumn title="Current State" isCurrent currentState={results.currentState} funnelDepth={funnelDepth} />
+                  <FinancialColumn title="Grow" results={tierData.grow} currentState={results.currentState} recommended={recommendedTier === 'grow'} funnelDepth={funnelDepth} />
+                  <FinancialColumn title="Accelerate" results={tierData.accelerate} currentState={results.currentState} recommended={recommendedTier === 'accelerate'} funnelDepth={funnelDepth} />
+                  <FinancialColumn title="Scale" results={tierData.scale} currentState={results.currentState} recommended={recommendedTier === 'scale'} funnelDepth={funnelDepth} />
                 </div>
               </div>
 
