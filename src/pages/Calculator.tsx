@@ -257,7 +257,7 @@ export default function Calculator() {
         {/* Session Info */}
         <div className="glass rounded-xl grid grid-cols-1 md:grid-cols-3 gap-4 p-5">
           <div className="space-y-1.5">
-            <label className="text-[11px] font-medium uppercase tracking-[0.1em] text-muted-foreground">Company</label>
+            <label className="text-[11px] font-medium uppercase tracking-[0.1em] text-muted-foreground">Account</label>
             <Input className="glass-subtle border-none h-9 text-sm focus:ring-1 focus:ring-primary/40" value={company} onChange={e => setCompany(e.target.value)} placeholder="—" />
           </div>
           <div className="space-y-1.5">
