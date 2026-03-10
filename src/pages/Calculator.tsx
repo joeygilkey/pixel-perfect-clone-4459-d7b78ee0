@@ -298,9 +298,9 @@ export default function Calculator() {
               {/* Activity + Efficiency */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <TierColumn title="Current State" isCurrent currentState={results.currentState} />
-                <TierColumn title="Grow" subtitle="1.5× connects" results={tierData.grow} currentState={results.currentState} />
-                <TierColumn title="Accelerate" subtitle="2× connects" results={tierData.accelerate} currentState={results.currentState} />
-                <TierColumn title="Scale" subtitle="2.5× connects" results={tierData.scale} currentState={results.currentState} recommended />
+                <TierColumn title="Grow" subtitle={`${titanx.multipleGrow ?? 1.5}× connects`} results={tierData.grow} currentState={results.currentState} />
+                <TierColumn title="Accelerate" subtitle={`${titanx.multipleAccelerate ?? 2}× connects`} results={tierData.accelerate} currentState={results.currentState} />
+                <TierColumn title="Scale" subtitle={`${titanx.multipleScale ?? 2.5}× connects`} results={tierData.scale} currentState={results.currentState} recommended />
               </div>
 
               {/* Financial Section */}
