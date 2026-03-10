@@ -110,30 +110,52 @@ function TierColumn({ title, subtitle, results, currentState, recommended = fals
           <StatCard label="Cost of Equivalent Reps" value={`${fReps(results.costOfEquivReps)} reps`} highlight />
         </div>
       )}
+    </div>
+  );
+}
 
-      {/* Financial Metrics */}
-      <div className="space-y-3">
-        <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/80 font-medium">Financial</p>
-        {isCurrent && currentState ? (
-          <>
-            <StatCard label="Credits / Month" value="—" muted />
-            <StatCard label="TitanX Cost / Month" value="—" muted />
-            <StatCard label="TitanX Cost / Year" value="—" muted />
-            <StatCard label="Total Annual Cost" value={fCurrency(currentState.annualCostReps)} muted />
-            <StatCard label="Cost Per Connect" value={fCurrency(currentState.costPerConnect, 2)} muted />
-            <StatCard label="Cost Per Meeting" value={fCurrency(currentState.costPerMeeting, 2)} muted />
-          </>
-        ) : results ? (
-          <>
-            <StatCard label="Credits / Month" value={fNumber(results.creditsPerMonth)} />
-            <StatCard label="TitanX Cost / Month" value={fCurrency(results.costMonthly)} />
-            <StatCard label="TitanX Cost / Year" value={fCurrency(results.costAnnual)} />
-            <StatCard label="Total Annual Cost" value={fCurrency(results.totalAnnualCost)} />
-            <StatCard label="Cost Per Connect" value={fCurrency(results.costPerConnect, 2)} />
-            <StatCard label="Cost Per Meeting" value={fCurrency(results.costPerMeeting, 2)} />
-          </>
-        ) : null}
+function FinancialColumn({ title, results, currentState, recommended = false, isCurrent = false }: {
+  title: string; results?: TierResults; currentState?: CurrentState;
+  recommended?: boolean; isCurrent?: boolean;
+}) {
+  const glassClass = recommended
+    ? 'glass-accent glow-primary'
+    : isCurrent
+      ? 'glass-subtle'
+      : 'glass';
+
+  return (
+    <div className={`${glassClass} rounded-xl p-5 space-y-3 relative overflow-hidden transition-all duration-500 hover:scale-[1.01] hover:shadow-lg`}>
+      {!isCurrent && (
+        <div className={`absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r ${recommended ? 'from-transparent via-primary/60 to-transparent' : 'from-transparent via-white/10 to-transparent'}`} />
+      )}
+      <div className="flex items-center justify-between">
+        <h4 className={`font-bold text-sm ${isCurrent ? 'text-muted-foreground' : 'text-foreground'}`}>{title}</h4>
+        {recommended && (
+          <span className="bg-primary/20 text-primary text-[9px] font-bold uppercase tracking-[0.15em] px-2 py-0.5 rounded-full border border-primary/30">
+            <Sparkles className="inline h-2.5 w-2.5 mr-0.5 -mt-0.5" /> Best Value
+          </span>
+        )}
       </div>
+      {isCurrent && currentState ? (
+        <>
+          <StatCard label="Credits / Month" value="—" muted />
+          <StatCard label="TitanX Cost / Month" value="—" muted />
+          <StatCard label="TitanX Cost / Year" value="—" muted />
+          <StatCard label="Total Annual Cost" value={fCurrency(currentState.annualCostReps)} muted />
+          <StatCard label="Cost Per Connect" value={fCurrency(currentState.costPerConnect, 2)} muted />
+          <StatCard label="Cost Per Meeting" value={fCurrency(currentState.costPerMeeting, 2)} muted />
+        </>
+      ) : results ? (
+        <>
+          <StatCard label="Credits / Month" value={fNumber(results.creditsPerMonth)} />
+          <StatCard label="TitanX Cost / Month" value={fCurrency(results.costMonthly)} />
+          <StatCard label="TitanX Cost / Year" value={fCurrency(results.costAnnual)} />
+          <StatCard label="Total Annual Cost" value={fCurrency(results.totalAnnualCost)} />
+          <StatCard label="Cost Per Connect" value={fCurrency(results.costPerConnect, 2)} />
+          <StatCard label="Cost Per Meeting" value={fCurrency(results.costPerMeeting, 2)} />
+        </>
+      ) : null}
     </div>
   );
 }
@@ -269,11 +291,25 @@ export default function Calculator() {
           </div>
 
           {results && tierData ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <TierColumn title="Current State" isCurrent currentState={results.currentState} />
-              <TierColumn title="Grow" subtitle="1.5× connects" results={tierData.grow} currentState={results.currentState} />
-              <TierColumn title="Accelerate" subtitle="2× connects" results={tierData.accelerate} currentState={results.currentState} />
-              <TierColumn title="Scale" subtitle="2.5× connects" results={tierData.scale} currentState={results.currentState} recommended />
+            <div className="space-y-6">
+              {/* Activity + Efficiency */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <TierColumn title="Current State" isCurrent currentState={results.currentState} />
+                <TierColumn title="Grow" subtitle="1.5× connects" results={tierData.grow} currentState={results.currentState} />
+                <TierColumn title="Accelerate" subtitle="2× connects" results={tierData.accelerate} currentState={results.currentState} />
+                <TierColumn title="Scale" subtitle="2.5× connects" results={tierData.scale} currentState={results.currentState} recommended />
+              </div>
+
+              {/* Financial Section */}
+              <div>
+                <h3 className="text-sm font-bold text-foreground/70 uppercase tracking-[0.12em] mb-3">Financial Metrics</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <FinancialColumn title="Current State" isCurrent currentState={results.currentState} />
+                  <FinancialColumn title="Grow" results={tierData.grow} currentState={results.currentState} />
+                  <FinancialColumn title="Accelerate" results={tierData.accelerate} currentState={results.currentState} />
+                  <FinancialColumn title="Scale" results={tierData.scale} currentState={results.currentState} recommended />
+                </div>
+              </div>
             </div>
           ) : (
             <div className="glass rounded-xl p-16 text-center text-muted-foreground/60 glow-soft">
