@@ -262,7 +262,7 @@ export default function Calculator() {
 
       <div className="max-w-[1440px] mx-auto p-6 space-y-6 relative z-10">
         {/* Session Info */}
-        <div className="glass rounded-xl grid grid-cols-1 md:grid-cols-3 gap-4 p-5">
+        <div className="glass rounded-xl grid grid-cols-1 md:grid-cols-3 gap-4 p-5 relative z-20">
           <div className="space-y-1.5">
             <label className="text-[11px] font-medium uppercase tracking-[0.1em] text-muted-foreground">Account</label>
             <AccountSelector value={company} onChange={setCompany} />
