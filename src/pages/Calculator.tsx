@@ -11,6 +11,7 @@ import { HelpCircle, Copy, Plus, Save, CalendarIcon, Star, Sun, Moon } from 'luc
 import { cn } from '@/lib/utils';
 import titanxLogo from '@/assets/titanx-logo.svg';
 import titanxLogoLight from '@/assets/titanx-logo-light.svg';
+import bgDark from '@/assets/bg-dark.png';
 import { calculate, type CustomerInputs, type TitanXInputs, type TierResults, type CurrentState } from '@/lib/calculations';
 import { fCurrency, fNumber, fPercent, fReps, fMeetings } from '@/lib/formatters';
 
@@ -232,11 +233,17 @@ export default function Calculator() {
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
+      {/* Background image (dark mode) */}
+      {theme === 'dark' && (
+        <div className="fixed inset-0 pointer-events-none">
+          <img src={bgDark} alt="" className="w-full h-full object-cover" />
+        </div>
+      )}
       {/* Ambient background glows */}
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute top-[-20%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-primary/[0.03] blur-[120px]" />
         <div className="absolute bottom-[-20%] right-[-10%] w-[40vw] h-[40vw] rounded-full bg-primary/[0.02] blur-[100px]" />
-        <div className="absolute top-[40%] left-[60%] w-[30vw] h-[30vw] rounded-full bg-blue-500/[0.02] blur-[100px]" />
+        <div className="absolute top-[40%] left-[60%] w-[30vw] h-[30vw] rounded-full bg-primary/[0.02] blur-[100px]" />
       </div>
 
       {/* Header */}
