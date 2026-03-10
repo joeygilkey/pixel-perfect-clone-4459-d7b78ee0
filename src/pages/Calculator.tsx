@@ -92,9 +92,9 @@ function TierColumn({ title, subtitle, results, currentState, recommended = fals
           <Sparkles className="inline h-3 w-3 mr-0.5 -mt-0.5" /> Recommended
         </span>
       )}
-      <div>
-        <h4 className={`font-bold text-sm ${isCurrent ? 'text-muted-foreground' : 'text-foreground'}`}>{title}</h4>
-        {subtitle && <p className="text-[10px] text-muted-foreground/60 mt-0.5">{subtitle}</p>}
+      <div className="text-center">
+        <span className={`inline-block font-bold text-base px-4 py-1.5 rounded-full ${isCurrent ? 'bg-muted text-muted-foreground' : recommended ? 'bg-primary/20 text-primary border border-primary/30' : 'bg-secondary text-foreground border border-border'}`}>{title}</span>
+        {subtitle && <p className="text-[10px] text-muted-foreground/60 mt-1.5">{subtitle}</p>}
         {!isCurrent && results ? (
           <div className="flex gap-4 mt-1.5">
             <p className="text-[10px] text-muted-foreground"><span className="text-foreground/80 font-medium">{fNumber(results.creditsPerMonth)}</span> credits/mo</p>
