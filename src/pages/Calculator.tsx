@@ -621,16 +621,30 @@ export default function Calculator() {
                             width={80}
                           />
                           <RechartsTooltip
-                            formatter={(value: number, name: string, props: any) => {
-                              const item = props.payload;
-                              if (item.isBase) return [fCurrency(item.value, 2), 'Current'];
-                              return [fCurrency(item.delta, 2), 'Savings'];
-                            }}
-                            contentStyle={{
-                              background: 'hsl(var(--card))',
-                              border: '1px solid hsl(var(--border))',
-                              borderRadius: '8px',
-                              fontSize: '12px',
+                            content={({ active, payload }) => {
+                              if (!active || !payload?.length) return null;
+                              const item = payload[0]?.payload;
+                              if (!item) return null;
+                              const isBase = item.isBase;
+                              return (
+                                <div style={{
+                                  background: 'hsl(var(--card) / 0.6)',
+                                  backdropFilter: 'blur(16px)',
+                                  WebkitBackdropFilter: 'blur(16px)',
+                                  border: '1px solid hsl(var(--foreground) / 0.08)',
+                                  borderRadius: '10px',
+                                  padding: '8px 12px',
+                                  fontSize: '12px',
+                                  boxShadow: '0 8px 32px hsl(var(--background) / 0.4)',
+                                }}>
+                                  <div style={{ color: 'hsl(var(--muted-foreground))', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '2px' }}>
+                                    {isBase ? 'Current' : 'Savings'}
+                                  </div>
+                                  <div style={{ fontWeight: 700, color: isBase ? 'hsl(var(--foreground))' : '#22c55e' }}>
+                                    {fCurrency(isBase ? item.value : item.delta, 2)}
+                                  </div>
+                                </div>
+                              );
                             }}
                           />
                           <ReferenceLine y={0} stroke="hsl(var(--border))" />
