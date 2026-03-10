@@ -238,11 +238,7 @@ export default function Calculator() {
 
       <div className="max-w-[1440px] mx-auto p-6 space-y-6 relative z-10">
         {/* Session Info */}
-        <div className="glass rounded-xl grid grid-cols-2 md:grid-cols-4 gap-4 p-5">
-          <div className="space-y-1.5">
-            <label className="text-[11px] font-medium uppercase tracking-[0.1em] text-muted-foreground">Customer Name</label>
-            <Input className="glass-subtle border-none h-9 text-sm focus:ring-1 focus:ring-primary/40" value={customerName} onChange={e => setCustomerName(e.target.value)} placeholder="—" />
-          </div>
+        <div className="glass rounded-xl grid grid-cols-1 md:grid-cols-3 gap-4 p-5">
           <div className="space-y-1.5">
             <label className="text-[11px] font-medium uppercase tracking-[0.1em] text-muted-foreground">Company</label>
             <Input className="glass-subtle border-none h-9 text-sm focus:ring-1 focus:ring-primary/40" value={company} onChange={e => setCompany(e.target.value)} placeholder="—" />
@@ -253,7 +249,17 @@ export default function Calculator() {
           </div>
           <div className="space-y-1.5">
             <label className="text-[11px] font-medium uppercase tracking-[0.1em] text-muted-foreground">Date</label>
-            <Input className="glass-subtle border-none h-9 text-sm text-muted-foreground" value={sessionDate} readOnly />
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className={cn("glass-subtle border-none h-9 w-full justify-start text-sm font-normal focus:ring-1 focus:ring-primary/40", !sessionDate && "text-muted-foreground")}>
+                  <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground/70" />
+                  {sessionDate ? format(sessionDate, 'PPP') : <span>Pick a date</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0 glass-strong border-none" align="start">
+                <Calendar mode="single" selected={sessionDate} onSelect={(d) => d && setSessionDate(d)} initialFocus className={cn("p-3 pointer-events-auto")} />
+              </PopoverContent>
+            </Popover>
           </div>
         </div>
 
