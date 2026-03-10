@@ -95,12 +95,6 @@ function TierColumn({ title, subtitle, results, currentState, recommended = fals
       <div className="text-center">
         <span className={`inline-block font-bold text-base px-4 py-1.5 rounded-full ${isCurrent ? 'bg-muted text-muted-foreground' : 'bg-primary/20 text-primary border border-primary/30'}`}>{title}</span>
         {subtitle && <p className="text-[10px] text-muted-foreground/60 mt-1.5">{subtitle}</p>}
-        {!isCurrent && results ? (
-          <div className="flex gap-4 mt-1.5">
-            <p className="text-[10px] text-muted-foreground"><span className="text-foreground/80 font-medium">{fNumber(results.creditsPerMonth * 12)}</span> credits/yr</p>
-            <p className="text-[10px] text-muted-foreground"><span className="text-foreground/80 font-medium">{fCurrency(results.costAnnual)}</span>/yr</p>
-          </div>
-        ) : null}
       </div>
 
       {/* Activity Metrics */}
@@ -135,6 +129,14 @@ function TierColumn({ title, subtitle, results, currentState, recommended = fals
           <StatCard label="Rep Production Equivalent" value={`${fReps(results.repProductionEquivalent)} reps`} highlight />
           <StatCard label="% of Current Dials Required" value={fPercent(results.pctOfCurrentDials)} highlight />
           <StatCard label="Cost of Equivalent Reps" value={`${fReps(results.costOfEquivReps)} reps`} highlight />
+        </div>
+      )}
+
+      {/* Credits & Cost */}
+      {!isCurrent && results && (
+        <div className="bg-muted/40 rounded-lg p-3 text-center space-y-1">
+          <p className="text-[11px] text-muted-foreground"><span className="text-foreground font-semibold">{fNumber(results.creditsPerMonth * 12)}</span> credits/yr</p>
+          <p className="text-[11px] text-muted-foreground"><span className="text-foreground font-semibold">{fCurrency(results.costAnnual)}</span>/yr</p>
         </div>
       )}
     </div>
