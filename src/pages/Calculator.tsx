@@ -209,7 +209,7 @@ export default function Calculator() {
 
   const handleNewSession = () => {
     if (!confirm('Clear all inputs and start a new session?')) return;
-    setCustomerName(''); setCompany(''); setAeName('');
+    setCompany(''); setAeName(''); setSessionDate(new Date());
     setCustomer({ reps: null, annualCostPerRep: null, dialsPerDay: null, connectRate: null, conversationRate: null, meetingRate: null });
     setTitanx({ highIntent: 20, highIntentReach: 85, avgPhones: 2, titanxConnectRate: 25, creditPriceGrow: 0.50, creditPriceAccelerate: 0.50, creditPriceScale: 0.50, multipleGrow: 1.5, multipleAccelerate: 2.0, multipleScale: 2.5 });
   };
