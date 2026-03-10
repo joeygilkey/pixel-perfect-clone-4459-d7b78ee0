@@ -100,6 +100,11 @@ export function calculate(c: CustomerInputs, t: TitanXInputs): CalculationResult
     accelerate: t.creditPriceAccelerate!,
     scale: t.creditPriceScale!,
   };
+  const multiples = {
+    grow: t.multipleGrow!,
+    accelerate: t.multipleAccelerate!,
+    scale: t.multipleScale!,
+  };
 
   // Current State
   const monthlyDials = reps * dialsPerDay * WORKING_DAYS;
