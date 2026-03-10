@@ -9,9 +9,9 @@ import titanxLogo from '@/assets/titanx-logo.svg';
 import { calculate, type CustomerInputs, type TitanXInputs, type TierResults, type CurrentState } from '@/lib/calculations';
 import { fCurrency, fNumber, fPercent, fReps, fMeetings } from '@/lib/formatters';
 
-function NumericInput({ label, value, onChange, prefix, suffix, placeholder = '—', tooltip }: {
+function NumericInput({ label, value, onChange, prefix, suffix, placeholder = '—', tooltip, step }: {
   label: string; value: number | null; onChange: (v: number | null) => void;
-  prefix?: string; suffix?: string; placeholder?: string; tooltip?: string;
+  prefix?: string; suffix?: string; placeholder?: string; tooltip?: string; step?: string;
 }) {
   return (
     <div className="space-y-1.5">
