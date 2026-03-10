@@ -123,7 +123,7 @@ export function calculate(c: CustomerInputs, t: TitanXInputs): CalculationResult
   };
 
   function calcBlended(tier: 'grow' | 'accelerate' | 'scale'): TierResults {
-    const multiple = MULTIPLES[tier];
+    const multiple = multiples[tier];
     const creditPrice = creditPrices[tier];
     const connectTarget = monthlyConnects * multiple;
 
