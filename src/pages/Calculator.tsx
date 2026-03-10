@@ -85,10 +85,12 @@ function TierColumn({ title, subtitle, results, currentState, recommended = fals
         <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
       )}
 
-      <div className="text-center min-h-[48px] flex flex-col items-center justify-center">
-        <span className={`inline-block font-bold text-base px-4 py-1.5 rounded-full border ${isCurrent ? 'bg-muted text-muted-foreground border-border' : 'bg-primary/20 text-primary border-primary/30'}`}>{title}</span>
-        {subtitle ? <p className="text-[10px] text-muted-foreground/60 mt-1.5">{subtitle}</p> : <p className="text-[10px] mt-1.5">&nbsp;</p>}
-      </div>
+      {!isCurrent && (
+        <div className="text-center min-h-[48px] flex flex-col items-center justify-center">
+          <span className="inline-block font-bold text-base px-4 py-1.5 rounded-full border bg-primary/20 text-primary border-primary/30">{title}</span>
+          {subtitle ? <p className="text-[10px] text-muted-foreground/60 mt-1.5">{subtitle}</p> : <p className="text-[10px] mt-1.5">&nbsp;</p>}
+        </div>
+      )}
 
       {/* Activity Metrics */}
       <div className="space-y-3">
