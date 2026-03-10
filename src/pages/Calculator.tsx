@@ -7,6 +7,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import AccountSelector from '@/components/AccountSelector';
+import UserSelector from '@/components/UserSelector';
 import { toast } from 'sonner';
 import { HelpCircle, Copy, Plus, Save, CalendarIcon, Star, Sun, Moon } from 'lucide-react';
 import { cn } from '@/lib/utils';
