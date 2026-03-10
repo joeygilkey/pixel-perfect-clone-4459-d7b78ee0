@@ -15,7 +15,7 @@
     --popover: 0 0% 10%;
     --popover-foreground: 0 0% 100%;
 
-    --primary: 0 85% 50%;
+    --primary: 342 100% 50%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 0 0% 14%;
@@ -24,7 +24,7 @@
     --muted: 0 0% 16%;
     --muted-foreground: 0 0% 50%;
 
-    --accent: 0 85% 50%;
+    --accent: 342 100% 50%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
@@ -32,7 +32,7 @@
 
     --border: 0 0% 16%;
     --input: 0 0% 20%;
-    --ring: 0 85% 50%;
+    --ring: 342 100% 50%;
 
     --radius: 0.75rem;
 
@@ -43,12 +43,12 @@
 
     --sidebar-background: 0 0% 5%;
     --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 0 85% 50%;
+    --sidebar-primary: 342 100% 50%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 0 0% 10%;
     --sidebar-accent-foreground: 0 0% 100%;
     --sidebar-border: 0 0% 16%;
-    --sidebar-ring: 0 85% 50%;
+    --sidebar-ring: 342 100% 50%;
   }
 }
 
@@ -94,17 +94,17 @@
   }
 
   .glass-accent {
-    background: hsla(0, 85%, 50%, 0.08);
+    background: hsla(342, 100%, 50%, 0.08);
     backdrop-filter: blur(24px) saturate(1.4);
     -webkit-backdrop-filter: blur(24px) saturate(1.4);
-    border: 1px solid hsla(0, 85%, 50%, 0.2);
+    border: 1px solid hsla(342, 100%, 50%, 0.2);
     box-shadow:
-      0 8px 32px hsla(0, 85%, 30%, 0.15),
-      inset 0 1px 0 hsla(0, 85%, 70%, 0.1);
+      0 8px 32px hsla(342, 100%, 30%, 0.15),
+      inset 0 1px 0 hsla(342, 100%, 70%, 0.1);
   }
 
   .glow-primary {
-    box-shadow: 0 0 20px hsla(0, 85%, 50%, 0.3), 0 0 60px hsla(0, 85%, 50%, 0.1);
+    box-shadow: 0 0 20px hsla(342, 100%, 50%, 0.3), 0 0 60px hsla(342, 100%, 50%, 0.1);
   }
 
   .glow-soft {
