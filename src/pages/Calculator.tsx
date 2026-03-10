@@ -161,7 +161,7 @@ function FinancialColumn({ title, results, currentState, recommended = false, is
 
   return (
     <div className={`${glassClass} rounded-xl p-5 space-y-3 relative overflow-hidden transition-all duration-500 hover:scale-[1.01] hover:shadow-lg ${recommended ? 'ring-1 ring-primary/40' : ''}`}>
-      <div className={`absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r ${recommended ? 'from-transparent via-primary/60 to-transparent' : 'from-transparent via-white/10 to-transparent'}`} />
+      <div className={`absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r ${recommended ? 'from-transparent via-primary/60 to-transparent' : 'from-transparent via-foreground/10 to-transparent'}`} />
       <div className="text-center">
         <span className={`inline-block font-bold text-base px-4 py-1.5 rounded-full border ${isCurrent ? 'bg-muted text-muted-foreground border-border' : 'bg-primary/20 text-primary border-primary/30'}`}>{title}</span>
       </div>
