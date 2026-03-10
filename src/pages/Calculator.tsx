@@ -375,8 +375,12 @@ export default function Calculator() {
         </div>
 
         {/* Footer */}
-        <footer className="text-center py-8 text-sm text-muted-foreground/50">
-          Welcome to the <span className="text-primary font-semibold drop-shadow-[0_0_8px_hsla(348,100%,50%,0.4)]">Phone Intent™</span> Era.
+        <footer className="text-center py-8 space-y-1">
+          <p className="text-sm text-muted-foreground/50">
+            Welcome to the <span className="text-primary font-semibold drop-shadow-[0_0_8px_hsla(348,100%,50%,0.4)]">Phone Intent™</span> Era.
+          </p>
+          <p className="text-xs text-muted-foreground/40">© 2026 TitanX. All rights reserved.</p>
+          <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/30">Confidential & Proprietary</p>
         </footer>
       </div>
     </div>
