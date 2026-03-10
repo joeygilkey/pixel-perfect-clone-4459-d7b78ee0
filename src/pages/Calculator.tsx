@@ -341,7 +341,7 @@ export default function Calculator() {
                   <FinancialColumn title="Current State" isCurrent currentState={results.currentState} />
                   <FinancialColumn title="Grow" results={tierData.grow} currentState={results.currentState} />
                   <FinancialColumn title="Accelerate" results={tierData.accelerate} currentState={results.currentState} />
-                  <FinancialColumn title="Scale" results={tierData.scale} currentState={results.currentState} recommended />
+                  <FinancialColumn title="Scale" results={tierData.scale} currentState={results.currentState} />
                 </div>
               </div>
             </div>
