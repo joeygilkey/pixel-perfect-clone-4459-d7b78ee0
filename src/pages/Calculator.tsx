@@ -43,7 +43,7 @@ function NumericInput({ label, value, onChange, prefix, suffix, placeholder = 'â
         <Input
           type={isFocused || !commas ? 'number' : 'text'}
           step={step}
-          className={`glass-subtle border-none h-9 text-sm text-foreground placeholder:text-muted-foreground/40 focus:ring-1 focus:ring-primary/40 transition-all duration-300 group-hover:bg-[hsla(220,20%,18%,0.4)] ${prefix ? 'pl-7' : ''} ${suffix ? 'pr-7' : ''}`}
+          className={`glass-subtle border-none h-9 text-sm text-foreground placeholder:text-muted-foreground/40 focus:ring-1 focus:ring-primary/40 transition-all duration-300 group-hover:bg-muted/60 ${prefix ? 'pl-7' : ''} ${suffix ? 'pr-7' : ''}`}
           placeholder={placeholder}
           value={displayValue}
           onFocus={() => setIsFocused(true)}
