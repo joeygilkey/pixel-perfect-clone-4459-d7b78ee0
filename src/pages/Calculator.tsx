@@ -28,9 +28,10 @@ function NumericInput({ label, value, onChange, prefix, suffix, placeholder = 'â
         {prefix && <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground/70">{prefix}</span>}
         <Input
           type="number"
+          step={step}
           className={`glass-subtle border-none h-9 text-sm text-foreground placeholder:text-muted-foreground/40 focus:ring-1 focus:ring-primary/40 transition-all duration-300 group-hover:bg-[hsla(220,20%,18%,0.4)] ${prefix ? 'pl-7' : ''} ${suffix ? 'pr-7' : ''}`}
           placeholder={placeholder}
-          value={value ?? ''}
+          value={value != null && step === '0.01' ? value.toFixed(2) : (value ?? '')}
           onChange={(e) => onChange(e.target.value === '' ? null : parseFloat(e.target.value))}
         />
         {suffix && <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground/70">{suffix}</span>}
