@@ -252,7 +252,7 @@ function FinancialColumn({ title, results, currentState, recommended = false, is
       </div>
       {data && (
         <>
-          <StatCard label="Total Annual Cost" value={fCurrency('totalAnnualCost' in data ? data.totalAnnualCost : data.annualCostReps)} muted={muted} />
+          <StatCard label={isCurrent ? "Total Annual Cost" : <>Total Annual Cost <span className="text-primary">w/ TitanX</span></>} value={fCurrency('totalAnnualCost' in data ? data.totalAnnualCost : data.annualCostReps)} muted={muted} />
           <StatCard label="Cost Per Connect" value={fCurrency(data.costPerConnect, 2)} muted={muted} />
           <StatCard label="Cost Per Meeting Set" value={fCurrency(data.costPerMeeting, 2)} muted={muted} />
           {depthAtLeast(funnelDepth, 'meetings_held') && data.costPerMeetingHeld != null && (
