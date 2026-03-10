@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { HelpCircle, Copy, Plus, Save, CalendarIcon, Star, Sun, Moon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import titanxLogo from '@/assets/titanx-logo.svg';
+import titanxLogoLight from '@/assets/titanx-logo-light.svg';
 import { calculate, type CustomerInputs, type TitanXInputs, type TierResults, type CurrentState } from '@/lib/calculations';
 import { fCurrency, fNumber, fPercent, fReps, fMeetings } from '@/lib/formatters';
 
