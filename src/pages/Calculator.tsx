@@ -177,6 +177,7 @@ export default function Calculator() {
     highIntent: 20, highIntentReach: 85, avgPhones: 2,
     titanxConnectRate: 25, creditPriceGrow: 0.50,
     creditPriceAccelerate: 0.50, creditPriceScale: 0.50,
+    multipleGrow: 1.5, multipleAccelerate: 2.0, multipleScale: 2.5,
   });
 
   const results = useMemo(() => calculate(customer, titanx), [customer, titanx]);
