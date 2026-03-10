@@ -619,11 +619,10 @@ export default function Calculator() {
                   ...(showRevenue ? [{ key: 'revenue', label: 'Annual Closed Won Revenue' }] : []),
                 ];
 
-                const chartData = groups.map(g => {
-                  const row: Record<string, any> = { group: g.label };
-                  tiers.forEach((t, i) => {
-                    row[t.name] = g.key === 'pipeline' ? (t.funnel.annualPipelineGenerated ?? 0) : (t.funnel.annualClosedWonRevenue ?? 0);
-                  });
+                const chartData = tiers.map((t, i) => {
+                  const row: Record<string, any> = { tier: t.name, color: TIER_COLORS[i] };
+                  if (depthAtLeast(funnelDepth, 'opps')) row['Annual Pipeline Generated'] = t.funnel.annualPipelineGenerated ?? 0;
+                  if (showRevenue) row['Annual Closed Won Revenue'] = t.funnel.annualClosedWonRevenue ?? 0;
                   return row;
                 });
 
