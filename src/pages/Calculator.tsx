@@ -261,7 +261,7 @@ export default function Calculator() {
             <Input className="glass-subtle border-none h-9 text-sm focus:ring-1 focus:ring-primary/40" value={company} onChange={e => setCompany(e.target.value)} placeholder="—" />
           </div>
           <div className="space-y-1.5">
-            <label className="text-[11px] font-medium uppercase tracking-[0.1em] text-muted-foreground">Main TitanX POC</label>
+            <label className="text-[11px] font-medium uppercase tracking-[0.1em] text-muted-foreground">TitanX User</label>
             <Input className="glass-subtle border-none h-9 text-sm focus:ring-1 focus:ring-primary/40" value={aeName} onChange={e => setAeName(e.target.value)} placeholder="—" />
           </div>
           <div className="space-y-1.5">
