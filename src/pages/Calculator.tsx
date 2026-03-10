@@ -7,7 +7,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { toast } from 'sonner';
-import { HelpCircle, Copy, Plus, Save, CalendarIcon, Star } from 'lucide-react';
+import { HelpCircle, Copy, Plus, Save, CalendarIcon, Star, Sun, Moon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import titanxLogo from '@/assets/titanx-logo.svg';
 import { calculate, type CustomerInputs, type TitanXInputs, type TierResults, type CurrentState } from '@/lib/calculations';
@@ -43,7 +43,7 @@ function NumericInput({ label, value, onChange, prefix, suffix, placeholder = 'â
         <Input
           type={isFocused || !commas ? 'number' : 'text'}
           step={step}
-          className={`glass-subtle border-none h-9 text-sm text-foreground placeholder:text-muted-foreground/40 focus:ring-1 focus:ring-primary/40 transition-all duration-300 group-hover:bg-[hsla(220,20%,18%,0.4)] ${prefix ? 'pl-7' : ''} ${suffix ? 'pr-7' : ''}`}
+          className={`glass-subtle border-none h-9 text-sm text-foreground placeholder:text-muted-foreground/40 focus:ring-1 focus:ring-primary/40 transition-all duration-300 group-hover:bg-muted/60 ${prefix ? 'pl-7' : ''} ${suffix ? 'pr-7' : ''}`}
           placeholder={placeholder}
           value={displayValue}
           onFocus={() => setIsFocused(true)}
@@ -83,7 +83,7 @@ function TierColumn({ title, subtitle, results, currentState, recommended = fals
   return (
     <div className={`${glassClass} rounded-xl p-5 space-y-5 relative overflow-hidden transition-all duration-500 hover:scale-[1.01] hover:shadow-lg ${recommended ? 'ring-1 ring-primary/40' : ''}`}>
       {/* Liquid highlight at top */}
-      <div className={`absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r ${recommended ? 'from-transparent via-primary/60 to-transparent' : 'from-transparent via-white/10 to-transparent'}`} />
+      <div className={`absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r ${recommended ? 'from-transparent via-primary/60 to-transparent' : 'from-transparent via-foreground/10 to-transparent'}`} />
 
       {/* Star recommend toggle */}
       {!isCurrent && onRecommend && (
@@ -161,7 +161,7 @@ function FinancialColumn({ title, results, currentState, recommended = false, is
 
   return (
     <div className={`${glassClass} rounded-xl p-5 space-y-3 relative overflow-hidden transition-all duration-500 hover:scale-[1.01] hover:shadow-lg ${recommended ? 'ring-1 ring-primary/40' : ''}`}>
-      <div className={`absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r ${recommended ? 'from-transparent via-primary/60 to-transparent' : 'from-transparent via-white/10 to-transparent'}`} />
+      <div className={`absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r ${recommended ? 'from-transparent via-primary/60 to-transparent' : 'from-transparent via-foreground/10 to-transparent'}`} />
       <div className="text-center">
         <span className={`inline-block font-bold text-base px-4 py-1.5 rounded-full border ${isCurrent ? 'bg-muted text-muted-foreground border-border' : 'bg-primary/20 text-primary border-primary/30'}`}>{title}</span>
       </div>
@@ -188,6 +188,15 @@ export default function Calculator() {
   const [sessionDate, setSessionDate] = useState<Date>(new Date());
   const [model, setModel] = useState<string>('blended');
   const [recommendedTier, setRecommendedTier] = useState<string | null>(null);
+  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+
+  const toggleTheme = useCallback(() => {
+    setTheme(prev => {
+      const next = prev === 'dark' ? 'light' : 'dark';
+      document.documentElement.classList.toggle('light', next === 'light');
+      return next;
+    });
+  }, []);
 
   const [customer, setCustomer] = useState<CustomerInputs>({
     reps: null, annualCostPerRep: null, dialsPerDay: null,
@@ -233,9 +242,14 @@ export default function Calculator() {
       <header className="glass-strong sticky top-0 z-50 p-2.5 flex items-center justify-between">
         <img src={titanxLogo} alt="TitanX" className="h-[26px]" />
         <h1 className="text-base font-semibold text-foreground/80 hidden sm:block tracking-wide">Dream Outcome Calculator</h1>
-        <Button variant="outline" size="sm" onClick={handleNewSession} className="glass-subtle border-none text-foreground/80 hover:text-foreground hover:bg-white/10 transition-all duration-300">
-          <Plus className="h-4 w-4 mr-1" /> New Session
-        </Button>
+        <div className="flex items-center gap-2">
+          <button onClick={toggleTheme} className="p-2 rounded-lg glass-subtle border-none text-foreground/60 hover:text-foreground transition-all duration-300" aria-label="Toggle theme">
+            {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          </button>
+          <Button variant="outline" size="sm" onClick={handleNewSession} className="glass-subtle border-none text-foreground/80 hover:text-foreground transition-all duration-300">
+            <Plus className="h-4 w-4 mr-1" /> New Session
+          </Button>
+        </div>
       </header>
 
       <div className="max-w-[1440px] mx-auto p-6 space-y-6 relative z-10">
@@ -366,10 +380,10 @@ export default function Calculator() {
           <Button onClick={handleSave} className="bg-primary/90 text-primary-foreground hover:bg-primary glow-primary transition-all duration-300 border-none">
             <Save className="h-4 w-4 mr-1.5" /> Save Session
           </Button>
-          <Button variant="outline" onClick={() => { navigator.clipboard.writeText(window.location.href); toast.info('Link copied!'); }} className="glass-subtle border-none text-foreground/80 hover:text-foreground hover:bg-white/10 transition-all duration-300">
+          <Button variant="outline" onClick={() => { navigator.clipboard.writeText(window.location.href); toast.info('Link copied!'); }} className="glass-subtle border-none text-foreground/80 hover:text-foreground transition-all duration-300">
             <Copy className="h-4 w-4 mr-1.5" /> Copy Link
           </Button>
-          <Button variant="outline" onClick={handleNewSession} className="glass-subtle border-none text-foreground/80 hover:text-foreground hover:bg-white/10 transition-all duration-300">
+          <Button variant="outline" onClick={handleNewSession} className="glass-subtle border-none text-foreground/80 hover:text-foreground transition-all duration-300">
             <Plus className="h-4 w-4 mr-1.5" /> New Session
           </Button>
         </div>

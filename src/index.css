@@ -50,6 +50,50 @@
     --sidebar-border: 0 0% 16%;
     --sidebar-ring: 342 100% 50%;
   }
+
+  .light {
+    --background: 0 0% 97%;
+    --foreground: 0 0% 8%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 8%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 8%;
+
+    --primary: 342 100% 45%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 0 0% 92%;
+    --secondary-foreground: 0 0% 20%;
+
+    --muted: 0 0% 94%;
+    --muted-foreground: 0 0% 40%;
+
+    --accent: 342 100% 45%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 55%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 0 0% 88%;
+    --input: 0 0% 90%;
+    --ring: 342 100% 45%;
+
+    --glass-bg: 0 0% 100% / 0.6;
+    --glass-border: 0 0% 0% / 0.06;
+    --glass-highlight: 0 0% 100% / 0.8;
+    --glass-shadow: 0 0% 0% / 0.08;
+
+    --sidebar-background: 0 0% 97%;
+    --sidebar-foreground: 0 0% 8%;
+    --sidebar-primary: 342 100% 45%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 94%;
+    --sidebar-accent-foreground: 0 0% 8%;
+    --sidebar-border: 0 0% 88%;
+    --sidebar-ring: 342 100% 45%;
+  }
 }
 
 @layer base {
@@ -75,7 +119,7 @@
   }
 
   .glass-subtle {
-    background: hsla(0, 0%, 12%, 0.3);
+    background: hsla(var(--glass-bg));
     backdrop-filter: blur(16px) saturate(1.2);
     -webkit-backdrop-filter: blur(16px) saturate(1.2);
     border: 1px solid hsla(var(--glass-border));
@@ -83,14 +127,14 @@
   }
 
   .glass-strong {
-    background: hsla(0, 0%, 10%, 0.6);
+    background: hsla(var(--glass-bg));
     backdrop-filter: blur(40px) saturate(1.6);
     -webkit-backdrop-filter: blur(40px) saturate(1.6);
-    border: 1px solid hsla(0, 0%, 100%, 0.12);
+    border: 1px solid hsla(var(--glass-border));
     box-shadow:
       0 12px 48px hsla(var(--glass-shadow)),
-      inset 0 1px 0 hsla(0, 0%, 100%, 0.08),
-      inset 0 -1px 0 hsla(0, 0%, 0%, 0.1);
+      inset 0 1px 0 hsla(var(--glass-highlight)),
+      inset 0 -1px 0 hsla(0, 0%, 0%, 0.05);
   }
 
   .glass-accent {
