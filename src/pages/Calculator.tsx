@@ -182,10 +182,9 @@ function FinancialColumn({ title, results, currentState, recommended = false, is
 }
 
 export default function Calculator() {
-  const [customerName, setCustomerName] = useState('');
   const [company, setCompany] = useState('');
   const [aeName, setAeName] = useState('');
-  const [sessionDate] = useState(new Date().toISOString().split('T')[0]);
+  const [sessionDate, setSessionDate] = useState<Date>(new Date());
   const [model, setModel] = useState<string>('blended');
 
   const [customer, setCustomer] = useState<CustomerInputs>({
