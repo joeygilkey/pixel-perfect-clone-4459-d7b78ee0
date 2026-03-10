@@ -272,9 +272,15 @@ export default function Calculator() {
               <NumericInput label="Credit Price — Grow" value={titanx.creditPriceGrow} onChange={updateTitanx('creditPriceGrow')} prefix="$" />
               <NumericInput label="Credit Price — Accelerate" value={titanx.creditPriceAccelerate} onChange={updateTitanx('creditPriceAccelerate')} prefix="$" />
               <NumericInput label="Credit Price — Scale" value={titanx.creditPriceScale} onChange={updateTitanx('creditPriceScale')} prefix="$" />
-              <NumericInput label="Multiple — Grow" value={titanx.multipleGrow} onChange={updateTitanx('multipleGrow')} suffix="×" tooltip="Connect multiplier for Grow tier" />
-              <NumericInput label="Multiple — Accelerate" value={titanx.multipleAccelerate} onChange={updateTitanx('multipleAccelerate')} suffix="×" tooltip="Connect multiplier for Accelerate tier" />
-              <NumericInput label="Multiple — Scale" value={titanx.multipleScale} onChange={updateTitanx('multipleScale')} suffix="×" tooltip="Connect multiplier for Scale tier" />
+            </div>
+
+            <div className="border-t border-border/50 pt-4 mt-4">
+              <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-primary/70 mb-3 block">Plan Multipliers</span>
+              <div className="grid grid-cols-3 gap-4">
+                <NumericInput label="Grow" value={titanx.multipleGrow} onChange={updateTitanx('multipleGrow')} suffix="×" tooltip="Connect multiplier for Grow tier" />
+                <NumericInput label="Accelerate" value={titanx.multipleAccelerate} onChange={updateTitanx('multipleAccelerate')} suffix="×" tooltip="Connect multiplier for Accelerate tier" />
+                <NumericInput label="Scale" value={titanx.multipleScale} onChange={updateTitanx('multipleScale')} suffix="×" tooltip="Connect multiplier for Scale tier" />
+              </div>
             </div>
           </div>
         </div>
