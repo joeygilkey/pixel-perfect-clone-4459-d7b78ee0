@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { HelpCircle, Copy, Plus, Save, CalendarIcon, Star, Sun, Moon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import titanxLogo from '@/assets/titanx-logo.svg';
+import titanxLogoLight from '@/assets/titanx-logo-light.svg';
 import { calculate, type CustomerInputs, type TitanXInputs, type TierResults, type CurrentState } from '@/lib/calculations';
 import { fCurrency, fNumber, fPercent, fReps, fMeetings } from '@/lib/formatters';
 
@@ -240,7 +241,7 @@ export default function Calculator() {
 
       {/* Header */}
       <header className="glass-strong sticky top-0 z-50 p-2.5 flex items-center justify-between">
-        <img src={titanxLogo} alt="TitanX" className="h-[26px]" />
+        <img src={theme === 'light' ? titanxLogoLight : titanxLogo} alt="TitanX" className="h-[26px]" />
         <h1 className="text-base font-semibold text-foreground/80 hidden sm:block tracking-wide">Dream Outcome Calculator</h1>
         <div className="flex items-center gap-2">
           <button onClick={toggleTheme} className="p-2 rounded-lg glass-subtle border-none text-foreground/60 hover:text-foreground transition-all duration-300" aria-label="Toggle theme">
