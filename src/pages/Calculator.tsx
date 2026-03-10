@@ -291,11 +291,25 @@ export default function Calculator() {
           </div>
 
           {results && tierData ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <TierColumn title="Current State" isCurrent currentState={results.currentState} />
-              <TierColumn title="Grow" subtitle="1.5× connects" results={tierData.grow} currentState={results.currentState} />
-              <TierColumn title="Accelerate" subtitle="2× connects" results={tierData.accelerate} currentState={results.currentState} />
-              <TierColumn title="Scale" subtitle="2.5× connects" results={tierData.scale} currentState={results.currentState} recommended />
+            <div className="space-y-6">
+              {/* Activity + Efficiency */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <TierColumn title="Current State" isCurrent currentState={results.currentState} />
+                <TierColumn title="Grow" subtitle="1.5× connects" results={tierData.grow} currentState={results.currentState} />
+                <TierColumn title="Accelerate" subtitle="2× connects" results={tierData.accelerate} currentState={results.currentState} />
+                <TierColumn title="Scale" subtitle="2.5× connects" results={tierData.scale} currentState={results.currentState} recommended />
+              </div>
+
+              {/* Financial Section */}
+              <div>
+                <h3 className="text-sm font-bold text-foreground/70 uppercase tracking-[0.12em] mb-3">Financial Metrics</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <FinancialColumn title="Current State" isCurrent currentState={results.currentState} />
+                  <FinancialColumn title="Grow" results={tierData.grow} currentState={results.currentState} />
+                  <FinancialColumn title="Accelerate" results={tierData.accelerate} currentState={results.currentState} />
+                  <FinancialColumn title="Scale" results={tierData.scale} currentState={results.currentState} recommended />
+                </div>
+              </div>
             </div>
           ) : (
             <div className="glass rounded-xl p-16 text-center text-muted-foreground/60 glow-soft">
