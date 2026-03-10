@@ -493,12 +493,86 @@ export default function Calculator() {
               {/* Financial Section */}
               <div>
                 <h3 className="text-sm font-bold text-foreground uppercase tracking-[0.12em] mb-3 border-l-2 border-primary pl-3">Financial Metrics</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <FinancialColumn title="Current State" isCurrent currentState={results.currentState} funnelDepth={funnelDepth} />
-                  <FinancialColumn title="Grow" results={tierData.grow} currentState={results.currentState} recommended={recommendedTier === 'grow'} funnelDepth={funnelDepth} />
-                  <FinancialColumn title="Accelerate" results={tierData.accelerate} currentState={results.currentState} recommended={recommendedTier === 'accelerate'} funnelDepth={funnelDepth} />
-                  <FinancialColumn title="Scale" results={tierData.scale} currentState={results.currentState} recommended={recommendedTier === 'scale'} funnelDepth={funnelDepth} />
-                </div>
+                {(() => {
+                  const cs = results.currentState;
+                  const tiers = [
+                    { name: 'Grow', data: tierData.grow },
+                    { name: 'Accelerate', data: tierData.accelerate },
+                    { name: 'Scale', data: tierData.scale },
+                  ];
+
+                  type MetricRow = { label: string; csValue: number | undefined; tierValues: (number | undefined)[]; depth: FunnelDepth };
+                  const metrics: MetricRow[] = [
+                    { label: 'Total Annual Cost', csValue: cs.annualCostReps, tierValues: tiers.map(t => t.data.totalAnnualCost), depth: 'meetings_set' },
+                    { label: 'Cost Per Connect', csValue: cs.costPerConnect, tierValues: tiers.map(t => t.data.costPerConnect), depth: 'meetings_set' },
+                    { label: 'Cost Per Meeting Set', csValue: cs.costPerMeeting, tierValues: tiers.map(t => t.data.costPerMeeting), depth: 'meetings_set' },
+                    { label: 'Cost Per Meeting Held', csValue: cs.costPerMeetingHeld, tierValues: tiers.map(t => t.data.costPerMeetingHeld), depth: 'meetings_held' },
+                    { label: 'Cost Per Qualified Opp', csValue: cs.costPerOpp, tierValues: tiers.map(t => t.data.costPerOpp), depth: 'opps' },
+                    { label: 'Cost Per Acquisition', csValue: cs.costPerAcquisition, tierValues: tiers.map(t => t.data.costPerAcquisition), depth: 'closed_won' },
+                  ].filter(m => depthAtLeast(funnelDepth, m.depth));
+
+                  const pctDelta = (csVal: number | undefined, tierVal: number | undefined) => {
+                    if (csVal == null || tierVal == null || csVal === 0) return null;
+                    return ((tierVal - csVal) / csVal) * 100;
+                  };
+
+                  return (
+                    <div className="rounded-xl overflow-hidden border border-border/30">
+                      {/* Header row */}
+                      <div className="grid" style={{ gridTemplateColumns: '1.5fr 1fr 1fr 0.6fr 1fr 0.6fr 1fr 0.6fr' }}>
+                        <div style={{ background: '#1A1A1A' }} className="px-4 py-3 text-[10px] uppercase tracking-[0.12em] font-bold" />
+                        <div style={{ background: '#1A1A1A' }} className="px-3 py-3 text-[10px] uppercase tracking-[0.12em] font-bold text-center" >
+                          <span style={{ color: '#666666' }}>Current State</span>
+                        </div>
+                        {tiers.map((t, i) => (
+                          <div key={t.name} className="contents">
+                            <div style={{ background: '#1A1A1A' }} className="px-3 py-3 text-[10px] uppercase tracking-[0.12em] font-bold text-center">
+                              <span style={{ color: '#FF004C' }}>{t.name}</span>
+                            </div>
+                            <div style={{ background: '#1A1A1A' }} className="px-2 py-3 text-[10px] uppercase tracking-[0.12em] font-bold text-center">
+                              <span style={{ color: '#FF004C', opacity: 0.6 }}>Δ%</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Data rows */}
+                      {metrics.map((m, rowIdx) => {
+                        const rowBg = rowIdx % 2 === 0 ? '#1A1A1A' : '#2A2A2A';
+                        return (
+                          <div key={m.label} className="grid" style={{ gridTemplateColumns: '1.5fr 1fr 1fr 0.6fr 1fr 0.6fr 1fr 0.6fr' }}>
+                            <div style={{ background: rowBg }} className="px-4 py-2.5 flex items-center">
+                              <span style={{ color: '#999999' }} className="text-[11px] uppercase tracking-[0.08em] font-bold">{m.label}</span>
+                            </div>
+                            <div style={{ background: rowBg }} className="px-3 py-2.5 text-center flex items-center justify-center">
+                              <span style={{ color: '#666666' }} className="text-sm font-semibold tabular-nums">{m.csValue != null ? fCurrency(m.csValue, m.label === 'Total Annual Cost' ? 0 : 2) : '—'}</span>
+                            </div>
+                            {tiers.map((t, ti) => {
+                              const tierVal = m.tierValues[ti];
+                              const delta = pctDelta(m.csValue, tierVal);
+                              return (
+                                <div key={t.name} className="contents">
+                                  <div style={{ background: rowBg }} className="px-3 py-2.5 text-center flex items-center justify-center">
+                                    <span className="text-sm font-semibold tabular-nums text-foreground">{tierVal != null ? fCurrency(tierVal, m.label === 'Total Annual Cost' ? 0 : 2) : '—'}</span>
+                                  </div>
+                                  <div style={{ background: rowBg }} className="px-2 py-2.5 text-center flex items-center justify-center">
+                                    {delta != null ? (
+                                      <span style={{ color: '#FF004C' }} className="text-xs font-bold tabular-nums">
+                                        {delta > 0 ? '+' : ''}{delta.toFixed(1)}%
+                                      </span>
+                                    ) : (
+                                      <span className="text-xs text-muted-foreground">—</span>
+                                    )}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  );
+                })()}
 
                 {/* Waterfall Chart */}
                 {(() => {
