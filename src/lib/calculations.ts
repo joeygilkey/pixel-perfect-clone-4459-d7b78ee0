@@ -15,6 +15,9 @@ export interface TitanXInputs {
   creditPriceGrow: number | null;
   creditPriceAccelerate: number | null;
   creditPriceScale: number | null;
+  multipleGrow: number | null;
+  multipleAccelerate: number | null;
+  multipleScale: number | null;
 }
 
 export interface TierResults {
