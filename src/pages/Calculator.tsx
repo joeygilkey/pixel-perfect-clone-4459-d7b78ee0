@@ -7,7 +7,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { toast } from 'sonner';
-import { HelpCircle, Copy, Plus, Save, Sparkles, CalendarIcon } from 'lucide-react';
+import { HelpCircle, Copy, Plus, Save, CalendarIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import titanxLogo from '@/assets/titanx-logo.svg';
 import { calculate, type CustomerInputs, type TitanXInputs, type TierResults, type CurrentState } from '@/lib/calculations';
@@ -74,9 +74,7 @@ function TierColumn({ title, subtitle, results, currentState, recommended = fals
   title: string; subtitle?: string; results?: TierResults; currentState?: CurrentState;
   recommended?: boolean; isCurrent?: boolean;
 }) {
-  const glassClass = recommended
-    ? 'glass-accent glow-primary'
-    : isCurrent
+  const glassClass = isCurrent
       ? 'glass-subtle'
       : 'glass';
 
@@ -84,14 +82,9 @@ function TierColumn({ title, subtitle, results, currentState, recommended = fals
     <div className={`${glassClass} rounded-xl p-5 space-y-5 relative overflow-hidden transition-all duration-500 hover:scale-[1.01] hover:shadow-lg`}>
       {/* Liquid highlight at top */}
       {!isCurrent && (
-        <div className={`absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r ${recommended ? 'from-transparent via-primary/60 to-transparent' : 'from-transparent via-white/10 to-transparent'}`} />
+        <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
       )}
 
-      {recommended && (
-        <span className="absolute top-3 right-3 bg-primary/20 text-primary text-[9px] font-bold uppercase tracking-[0.15em] px-2.5 py-1 rounded-full border border-primary/30 backdrop-blur-sm">
-          <Sparkles className="inline h-3 w-3 mr-0.5 -mt-0.5" /> Recommended
-        </span>
-      )}
       <div className="text-center">
         <span className={`inline-block font-bold text-base px-4 py-1.5 rounded-full ${isCurrent ? 'bg-muted text-muted-foreground' : 'bg-primary/20 text-primary border border-primary/30'}`}>{title}</span>
         {subtitle && <p className="text-[10px] text-muted-foreground/60 mt-1.5">{subtitle}</p>}
@@ -153,24 +146,17 @@ function FinancialColumn({ title, results, currentState, recommended = false, is
   title: string; results?: TierResults; currentState?: CurrentState;
   recommended?: boolean; isCurrent?: boolean;
 }) {
-  const glassClass = recommended
-    ? 'glass-accent glow-primary'
-    : isCurrent
+  const glassClass = isCurrent
       ? 'glass-subtle'
       : 'glass';
 
   return (
     <div className={`${glassClass} rounded-xl p-5 space-y-3 relative overflow-hidden transition-all duration-500 hover:scale-[1.01] hover:shadow-lg`}>
       {!isCurrent && (
-        <div className={`absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r ${recommended ? 'from-transparent via-primary/60 to-transparent' : 'from-transparent via-white/10 to-transparent'}`} />
+        <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
       )}
-      <div className="flex items-center justify-center">
+      <div className="text-center">
         <span className={`inline-block font-bold text-base px-4 py-1.5 rounded-full ${isCurrent ? 'bg-muted text-muted-foreground' : 'bg-primary/20 text-primary border border-primary/30'}`}>{title}</span>
-        {recommended && (
-          <span className="bg-primary/20 text-primary text-[9px] font-bold uppercase tracking-[0.15em] px-2 py-0.5 rounded-full border border-primary/30">
-            <Sparkles className="inline h-2.5 w-2.5 mr-0.5 -mt-0.5" /> Best Value
-          </span>
-        )}
       </div>
       {isCurrent && currentState ? (
         <>
@@ -345,7 +331,7 @@ export default function Calculator() {
                 <TierColumn title="Current State" isCurrent currentState={results.currentState} />
                 <TierColumn title="Grow" subtitle={`${titanx.multipleGrow ?? 1.5}× connects`} results={tierData.grow} currentState={results.currentState} />
                 <TierColumn title="Accelerate" subtitle={`${titanx.multipleAccelerate ?? 2}× connects`} results={tierData.accelerate} currentState={results.currentState} />
-                <TierColumn title="Scale" subtitle={`${titanx.multipleScale ?? 2.5}× connects`} results={tierData.scale} currentState={results.currentState} recommended />
+                <TierColumn title="Scale" subtitle={`${titanx.multipleScale ?? 2.5}× connects`} results={tierData.scale} currentState={results.currentState} />
               </div>
 
               {/* Financial Section */}
@@ -355,7 +341,7 @@ export default function Calculator() {
                   <FinancialColumn title="Current State" isCurrent currentState={results.currentState} />
                   <FinancialColumn title="Grow" results={tierData.grow} currentState={results.currentState} />
                   <FinancialColumn title="Accelerate" results={tierData.accelerate} currentState={results.currentState} />
-                  <FinancialColumn title="Scale" results={tierData.scale} currentState={results.currentState} recommended />
+                  <FinancialColumn title="Scale" results={tierData.scale} currentState={results.currentState} />
                 </div>
               </div>
             </div>
