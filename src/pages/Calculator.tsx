@@ -134,9 +134,15 @@ function TierColumn({ title, subtitle, results, currentState, recommended = fals
 
       {/* Credits & Cost */}
       {!isCurrent && results && (
-        <div className="bg-muted/40 rounded-lg p-3 text-center space-y-1">
-          <p className="text-[11px] text-muted-foreground"><span className="text-foreground font-semibold">{fNumber(results.creditsPerMonth * 12)}</span> credits/yr</p>
-          <p className="text-[11px] text-muted-foreground"><span className="text-foreground font-semibold">{fCurrency(results.costAnnual)}</span>/yr</p>
+        <div className="bg-muted/40 rounded-lg p-3 text-center space-y-3">
+          <div>
+            <div className="text-xl font-bold tabular-nums tracking-tight text-foreground">{fNumber(results.creditsPerMonth * 12)}</div>
+            <div className="text-[10px] uppercase tracking-[0.12em] text-muted-foreground mt-0.5">Credits / Year</div>
+          </div>
+          <div>
+            <div className="text-xl font-bold tabular-nums tracking-tight text-foreground">{fCurrency(results.costAnnual)}</div>
+            <div className="text-[10px] uppercase tracking-[0.12em] text-muted-foreground mt-0.5">Annual Cost</div>
+          </div>
         </div>
       )}
     </div>
