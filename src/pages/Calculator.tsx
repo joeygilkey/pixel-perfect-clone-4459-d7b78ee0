@@ -157,7 +157,7 @@ function FinancialColumn({ title, results, currentState, recommended = false, is
         <div className={`absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r ${recommended ? 'from-transparent via-primary/60 to-transparent' : 'from-transparent via-white/10 to-transparent'}`} />
       )}
       <div className="flex items-center justify-center">
-        <span className={`inline-block font-bold text-base px-4 py-1.5 rounded-full ${isCurrent ? 'bg-muted text-muted-foreground' : recommended ? 'bg-primary/20 text-primary border border-primary/30' : 'bg-secondary text-foreground border border-border'}`}>{title}</span>
+        <span className={`inline-block font-bold text-base px-4 py-1.5 rounded-full ${isCurrent ? 'bg-muted text-muted-foreground' : 'bg-primary/20 text-primary border border-primary/30'}`}>{title}</span>
         {recommended && (
           <span className="bg-primary/20 text-primary text-[9px] font-bold uppercase tracking-[0.15em] px-2 py-0.5 rounded-full border border-primary/30">
             <Sparkles className="inline h-2.5 w-2.5 mr-0.5 -mt-0.5" /> Best Value
