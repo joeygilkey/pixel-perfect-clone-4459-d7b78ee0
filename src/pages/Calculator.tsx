@@ -1,10 +1,14 @@
 import { useState, useMemo, useCallback } from 'react';
+import { format } from 'date-fns';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { toast } from 'sonner';
-import { HelpCircle, Copy, Plus, Save, Sparkles } from 'lucide-react';
+import { HelpCircle, Copy, Plus, Save, Sparkles, CalendarIcon } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import titanxLogo from '@/assets/titanx-logo.svg';
 import { calculate, type CustomerInputs, type TitanXInputs, type TierResults, type CurrentState } from '@/lib/calculations';
 import { fCurrency, fNumber, fPercent, fReps, fMeetings } from '@/lib/formatters';
