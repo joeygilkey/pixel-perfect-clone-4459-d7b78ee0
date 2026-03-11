@@ -726,7 +726,7 @@ export default function Calculator() {
                   const addlRevenue = totalRevenue - csRevenue;
                   const roiValue = funnelDepth === 'closed_won' ? addlRevenue : addlPipeline;
                   const roi = t.data.costAnnual > 0 ? roiValue / t.data.costAnnual : 0;
-                  const roiLabel = funnelDepth === 'closed_won' ? 'revenue return' : 'pipeline return';
+                  const roiLabel = funnelDepth === 'closed_won' ? 'incremental revenue return' : 'incremental pipeline return';
                   const pipelinePctIncrease = csPipeline > 0 ? addlPipeline / csPipeline : 0;
                   const revenuePctIncrease = csRevenue > 0 ? addlRevenue / csRevenue : 0;
                   return { ...t, investment: t.data.costAnnual, totalPipeline, totalRevenue, addlPipeline, addlRevenue, roi, roiLabel, pipelinePctIncrease, revenuePctIncrease };
