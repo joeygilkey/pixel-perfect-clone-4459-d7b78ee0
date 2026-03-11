@@ -857,7 +857,7 @@ export default function Calculator() {
                               {depthAtLeast(funnelDepth, 'opps') && (
                                 <div>
                                   <div className="text-xs font-bold tabular-nums text-foreground">{r.isCurrent ? r.pipelinePerTotal : r.pipelinePerTitanx}</div>
-                                  <div className="text-[9px] text-muted-foreground/60">{r.isCurrent ? 'pipeline / $1 total' : 'pipeline / $1 TitanX'}</div>
+                                  <div className="text-[9px] text-muted-foreground/60">{r.isCurrent ? 'pipeline / $1 total' : 'incremental pipeline / $1 TitanX'}</div>
                                 </div>
                               )}
                               {showRevenue && (
