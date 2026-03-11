@@ -210,9 +210,9 @@ function TierColumn({ title, subtitle, results, currentState, recommended = fals
             <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
             Efficiency Story
           </p>
-          <StatCard label="Rep Production Equivalent" value={`${fReps(results.repProductionEquivalent)} reps`} highlight index={0} />
-          <StatCard label="% of Current Dials Required" value={fPercent(results.pctOfCurrentDials)} highlight index={1} />
-          <StatCard label="Cost of Equivalent Reps" value={`${fReps(results.costOfEquivReps)} reps`} highlight index={2} />
+          <StatCard label="Rep Production Equivalent" value={`${fReps(results.repProductionEquivalent)} reps`} highlight index={-1} />
+          <StatCard label="% of Current Dials Required" value={fPercent(results.pctOfCurrentDials)} highlight index={-1} />
+          <StatCard label="Cost of Equivalent Reps" value={`${fReps(results.costOfEquivReps)} reps`} highlight index={-1} />
         </div>
       )}
 
