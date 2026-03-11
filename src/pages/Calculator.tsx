@@ -710,19 +710,20 @@ export default function Calculator() {
                   };
                 });
 
-                // Use the recommended tier, or default to Scale for the callout
-                const recTierName = recommendedTier ? recommendedTier.charAt(0).toUpperCase() + recommendedTier.slice(1) : 'Scale';
-                const recTier = recommendedTier === 'grow' ? tierData.grow : recommendedTier === 'accelerate' ? tierData.accelerate : tierData.scale;
-                const recFunnel = recTier.funnel ?? {};
-                const csFunnel = currentFunnel;
-                const csPipeline = csFunnel.annualPipelineGenerated ?? 0;
-                const recPipeline = recFunnel.annualPipelineGenerated ?? 0;
-                const pipelineLift = recPipeline - csPipeline;
-                const csRevenue = csFunnel.annualClosedWonRevenue ?? 0;
-                const recRevenue = recFunnel.annualClosedWonRevenue ?? 0;
-                const revenueLift = recRevenue - csRevenue;
-                const titanxInvestment = recTier.costAnnual;
-                const pipelineROI = titanxInvestment > 0 ? (pipelineLift / titanxInvestment) : 0;
+                // Per-tier ROI data
+                const roiTiers = [
+                  { name: 'Grow', data: tierData.grow, color: 'rgba(255,0,76,0.6)' },
+                  { name: 'Accelerate', data: tierData.accelerate, color: 'rgba(255,0,76,0.8)' },
+                  { name: 'Scale', data: tierData.scale, color: '#FF004C' },
+                ].map(t => {
+                  const f = t.data.funnel ?? {};
+                  const addlPipeline = (f.annualPipelineGenerated ?? 0) - csPipeline;
+                  const addlRevenue = (f.annualClosedWonRevenue ?? 0) - csRevenue;
+                  const roi = t.data.costAnnual > 0 ? ((f.annualPipelineGenerated ?? 0) - csPipeline) / t.data.costAnnual : 0;
+                  return { ...t, investment: t.data.costAnnual, addlPipeline, addlRevenue, roi };
+                });
+                const csPipeline = currentFunnel.annualPipelineGenerated ?? 0;
+                const csRevenue = currentFunnel.annualClosedWonRevenue ?? 0;
 
                 return (
                   <div className="space-y-3">
