@@ -710,6 +710,9 @@ export default function Calculator() {
                   };
                 });
 
+                const csPipeline = currentFunnel.annualPipelineGenerated ?? 0;
+                const csRevenue = currentFunnel.annualClosedWonRevenue ?? 0;
+
                 // Per-tier ROI data
                 const roiTiers = [
                   { name: 'Grow', data: tierData.grow, color: 'rgba(255,0,76,0.6)' },
@@ -719,11 +722,9 @@ export default function Calculator() {
                   const f = t.data.funnel ?? {};
                   const addlPipeline = (f.annualPipelineGenerated ?? 0) - csPipeline;
                   const addlRevenue = (f.annualClosedWonRevenue ?? 0) - csRevenue;
-                  const roi = t.data.costAnnual > 0 ? ((f.annualPipelineGenerated ?? 0) - csPipeline) / t.data.costAnnual : 0;
+                  const roi = t.data.costAnnual > 0 ? addlPipeline / t.data.costAnnual : 0;
                   return { ...t, investment: t.data.costAnnual, addlPipeline, addlRevenue, roi };
                 });
-                const csPipeline = currentFunnel.annualPipelineGenerated ?? 0;
-                const csRevenue = currentFunnel.annualClosedWonRevenue ?? 0;
 
                 return (
                   <div className="space-y-3">
