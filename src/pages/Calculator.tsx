@@ -168,36 +168,36 @@ function TierColumn({ title, subtitle, results, currentState, recommended = fals
         <p className="text-xs uppercase tracking-[0.15em] text-muted-foreground font-semibold pb-1 border-b-2 border-primary">Activity</p>
         {isCurrent && currentState ? (
           <>
-            <StatCard label="Monthly Dials" value={fNumber(currentState.monthlyDials)} muted />
-            <StatCard label="Monthly Connects" value={fNumber(currentState.monthlyConnects)} muted />
-            <StatCard label="Monthly Conversations" value={fNumber(currentState.monthlyConversations, 1)} muted />
-            <StatCard label="Monthly Meetings" value={fMeetings(currentState.monthlyMeetings)} muted />
-            <StatCard label="Annual Meetings" value={fMeetings(currentState.annualMeetings)} muted />
+            <StatCard label="Monthly Dials" value={fNumber(currentState.monthlyDials)} muted index={0} />
+            <StatCard label="Monthly Connects" value={fNumber(currentState.monthlyConnects)} muted index={1} />
+            <StatCard label="Monthly Conversations" value={fNumber(currentState.monthlyConversations, 1)} muted index={2} />
+            <StatCard label="Monthly Meetings" value={fMeetings(currentState.monthlyMeetings)} muted index={3} />
+            <StatCard label="Annual Meetings" value={fMeetings(currentState.annualMeetings)} muted index={4} />
             {funnelDepth !== 'meetings_set' && currentState.funnel.monthlyMeetingsHeld != null && (
-              <StatCard label="Monthly Meetings Held" value={fMeetings(currentState.funnel.monthlyMeetingsHeld)} muted />
+              <StatCard label="Monthly Meetings Held" value={fMeetings(currentState.funnel.monthlyMeetingsHeld)} muted index={5} />
             )}
             {depthAtLeast(funnelDepth, 'opps') && currentState.funnel.monthlyOpps != null && (
-              <StatCard label="Monthly Qualified Opps" value={fMeetings(currentState.funnel.monthlyOpps)} muted />
+              <StatCard label="Monthly Qualified Opps" value={fMeetings(currentState.funnel.monthlyOpps)} muted index={6} />
             )}
             {funnelDepth === 'closed_won' && currentState.funnel.monthlyClosedWon != null && (
-              <StatCard label="Monthly Closed Won" value={fMeetings(currentState.funnel.monthlyClosedWon)} muted />
+              <StatCard label="Monthly Closed Won" value={fMeetings(currentState.funnel.monthlyClosedWon)} muted index={7} />
             )}
           </>
         ) : results ? (
           <>
-            <StatCard label="Monthly Dials" value={fNumber(results.monthlyDials)} />
-            <StatCard label="Monthly Connects" value={fNumber(results.monthlyConnects)} />
-            <StatCard label="Monthly Conversations" value={fNumber(results.monthlyConversations, 1)} />
-            <StatCard label="Monthly Meetings" value={fMeetings(results.monthlyMeetings)} />
-            <StatCard label="Annual Meetings" value={fMeetings(results.annualMeetings)} />
+            <StatCard label="Monthly Dials" value={fNumber(results.monthlyDials)} index={0} />
+            <StatCard label="Monthly Connects" value={fNumber(results.monthlyConnects)} index={1} />
+            <StatCard label="Monthly Conversations" value={fNumber(results.monthlyConversations, 1)} index={2} />
+            <StatCard label="Monthly Meetings" value={fMeetings(results.monthlyMeetings)} index={3} />
+            <StatCard label="Annual Meetings" value={fMeetings(results.annualMeetings)} index={4} />
             {funnelDepth !== 'meetings_set' && results.funnel.monthlyMeetingsHeld != null && (
-              <StatCard label="Monthly Meetings Held" value={fMeetings(results.funnel.monthlyMeetingsHeld)} />
+              <StatCard label="Monthly Meetings Held" value={fMeetings(results.funnel.monthlyMeetingsHeld)} index={5} />
             )}
             {depthAtLeast(funnelDepth, 'opps') && results.funnel.monthlyOpps != null && (
-              <StatCard label="Monthly Qualified Opps" value={fMeetings(results.funnel.monthlyOpps)} />
+              <StatCard label="Monthly Qualified Opps" value={fMeetings(results.funnel.monthlyOpps)} index={6} />
             )}
             {funnelDepth === 'closed_won' && results.funnel.monthlyClosedWon != null && (
-              <StatCard label="Monthly Closed Won" value={fMeetings(results.funnel.monthlyClosedWon)} />
+              <StatCard label="Monthly Closed Won" value={fMeetings(results.funnel.monthlyClosedWon)} index={7} />
             )}
           </>
         ) : null}
