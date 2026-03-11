@@ -728,8 +728,8 @@ export default function Calculator() {
                   <div className="space-y-3">
                     <div className="border-t-2 border-primary pt-4">
                       <button onClick={() => setRoiOpen(prev => !prev)} className="w-full flex items-center gap-2 mb-3 group cursor-pointer">
-                        <h3 className="text-sm font-bold text-primary uppercase tracking-[0.12em] border-l-2 border-primary pl-3">ROI Summary</h3>
-                        <ChevronDown className={`h-4 w-4 text-primary transition-transform duration-300 ${roiOpen ? 'rotate-180' : ''}`} />
+                        <h3 className="text-sm font-bold text-foreground uppercase tracking-[0.12em] border-l-2 border-primary pl-3">ROI Summary</h3>
+                        <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform duration-300 ${roiOpen ? 'rotate-180' : ''}`} />
                       </button>
                     </div>
                     <div className={`transition-all duration-500 overflow-hidden ${roiOpen ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'}`}>
