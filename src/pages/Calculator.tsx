@@ -466,9 +466,9 @@ export default function Calculator() {
               {/* Activity + Efficiency */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <TierColumn title="Current State" isCurrent currentState={results.currentState} funnelDepth={funnelDepth} />
-                <TierColumn title="Grow" subtitle={`${titanx.multipleGrow ?? 1.5}× connects`} results={tierData.grow} currentState={results.currentState} recommended={recommendedTier === 'grow'} onRecommend={() => setRecommendedTier(prev => prev === 'grow' ? null : 'grow')} funnelDepth={funnelDepth} />
-                <TierColumn title="Accelerate" subtitle={`${titanx.multipleAccelerate ?? 2}× connects`} results={tierData.accelerate} currentState={results.currentState} recommended={recommendedTier === 'accelerate'} onRecommend={() => setRecommendedTier(prev => prev === 'accelerate' ? null : 'accelerate')} funnelDepth={funnelDepth} />
-                <TierColumn title="Scale" subtitle={`${titanx.multipleScale ?? 2.5}× connects`} results={tierData.scale} currentState={results.currentState} recommended={recommendedTier === 'scale'} onRecommend={() => setRecommendedTier(prev => prev === 'scale' ? null : 'scale')} funnelDepth={funnelDepth} />
+                <TierColumn title="Grow" subtitle={`${titanx.multipleGrow ?? 1.5}× connects`} results={tierData.grow} currentState={results.currentState} recommended={recommendedTier === 'grow'} onRecommend={() => setRecommendedTier(prev => prev === 'grow' ? null : 'grow')} funnelDepth={funnelDepth} reps={customer.reps} annualCostPerRep={customer.annualCostPerRep} />
+                <TierColumn title="Accelerate" subtitle={`${titanx.multipleAccelerate ?? 2}× connects`} results={tierData.accelerate} currentState={results.currentState} recommended={recommendedTier === 'accelerate'} onRecommend={() => setRecommendedTier(prev => prev === 'accelerate' ? null : 'accelerate')} funnelDepth={funnelDepth} reps={customer.reps} annualCostPerRep={customer.annualCostPerRep} />
+                <TierColumn title="Scale" subtitle={`${titanx.multipleScale ?? 2.5}× connects`} results={tierData.scale} currentState={results.currentState} recommended={recommendedTier === 'scale'} onRecommend={() => setRecommendedTier(prev => prev === 'scale' ? null : 'scale')} funnelDepth={funnelDepth} reps={customer.reps} annualCostPerRep={customer.annualCostPerRep} />
               </div>
 
               {/* Financial Section */}
