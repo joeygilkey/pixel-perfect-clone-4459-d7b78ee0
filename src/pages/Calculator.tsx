@@ -124,9 +124,10 @@ function FunnelContextSection({ funnel, monthlyMeetings, annualMeetings, depth }
   );
 }
 
-function TierColumn({ title, subtitle, results, currentState, recommended = false, isCurrent = false, onRecommend, funnelDepth }: {
+function TierColumn({ title, subtitle, results, currentState, recommended = false, isCurrent = false, onRecommend, funnelDepth, reps, annualCostPerRep }: {
   title: string; subtitle?: string; results?: TierResults; currentState?: CurrentState;
   recommended?: boolean; isCurrent?: boolean; onRecommend?: () => void; funnelDepth: FunnelDepth;
+  reps?: number | null; annualCostPerRep?: number | null;
 }) {
   const glassClass = recommended
     ? 'glass-accent glow-primary'
