@@ -345,7 +345,7 @@ export default function Calculator() {
             <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
             <div>
               <span className="text-xs font-bold uppercase tracking-[0.15em] text-primary">Team & Baseline</span>
-              <p className="text-[11px] text-muted-foreground/60 mt-1">Fill in with the prospect during the session.</p>
+              <p className="text-[11px] text-muted-foreground/60 mt-1">Fill in your team size, costs, and baseline metrics.</p>
             </div>
 
             {/* Funnel Depth Selector */}
