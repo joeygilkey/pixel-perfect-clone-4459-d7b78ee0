@@ -710,28 +710,30 @@ export default function Calculator() {
                   };
                 });
 
+                // Use the recommended tier, or default to Scale for the callout
+                const recTierName = recommendedTier ? recommendedTier.charAt(0).toUpperCase() + recommendedTier.slice(1) : 'Scale';
+                const recTier = recommendedTier === 'grow' ? tierData.grow : recommendedTier === 'accelerate' ? tierData.accelerate : tierData.scale;
+                const recFunnel = recTier.funnel ?? {};
+                const csFunnel = currentFunnel;
+                const csPipeline = csFunnel.annualPipelineGenerated ?? 0;
+                const recPipeline = recFunnel.annualPipelineGenerated ?? 0;
+                const pipelineLift = recPipeline - csPipeline;
+                const csRevenue = csFunnel.annualClosedWonRevenue ?? 0;
+                const recRevenue = recFunnel.annualClosedWonRevenue ?? 0;
+                const revenueLift = recRevenue - csRevenue;
+                const titanxInvestment = recTier.costAnnual;
+                const pipelineROI = titanxInvestment > 0 ? (pipelineLift / titanxInvestment) : 0;
+
                 return (
                   <div className="space-y-3">
                     <div className="border-t-2 border-primary pt-4">
-                      <h3 className="text-sm font-bold text-primary uppercase tracking-[0.12em] mb-3 border-l-2 border-primary pl-3">ROI Summary</h3>
+                      <button onClick={() => setRoiOpen(prev => !prev)} className="w-full flex items-center gap-2 mb-3 group cursor-pointer">
+                        <h3 className="text-sm font-bold text-primary uppercase tracking-[0.12em] border-l-2 border-primary pl-3">ROI Summary</h3>
+                        <ChevronDown className={`h-4 w-4 text-primary transition-transform duration-300 ${roiOpen ? 'rotate-180' : ''}`} />
+                      </button>
                     </div>
+                    <div className={`transition-all duration-500 overflow-hidden ${roiOpen ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'}`}>
                     {/* ROI Callout */}
-                    {(() => {
-                      // Use the recommended tier, or default to Scale for the callout
-                      const recTierName = recommendedTier ? recommendedTier.charAt(0).toUpperCase() + recommendedTier.slice(1) : 'Scale';
-                      const recTier = recommendedTier === 'grow' ? tierData.grow : recommendedTier === 'accelerate' ? tierData.accelerate : tierData.scale;
-                      const recFunnel = recTier.funnel ?? {};
-                      const csFunnel = currentFunnel;
-                      const csPipeline = csFunnel.annualPipelineGenerated ?? 0;
-                      const recPipeline = recFunnel.annualPipelineGenerated ?? 0;
-                      const pipelineLift = recPipeline - csPipeline;
-                      const csRevenue = csFunnel.annualClosedWonRevenue ?? 0;
-                      const recRevenue = recFunnel.annualClosedWonRevenue ?? 0;
-                      const revenueLift = recRevenue - csRevenue;
-                      const titanxInvestment = recTier.costAnnual;
-                      const pipelineROI = titanxInvestment > 0 ? (pipelineLift / titanxInvestment) : 0;
-
-                      return (
                         <div className="glass-accent rounded-xl p-5 mb-4">
                           <p className="text-sm leading-relaxed text-foreground/90">
                             By investing <span className="font-bold text-primary">{fCurrency(titanxInvestment)}</span> annually in the <span className="font-bold text-primary">{recTierName}</span> plan, your team is projected to generate an additional <span className="font-bold text-primary">{fCurrency(pipelineLift)}</span> in pipeline
