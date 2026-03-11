@@ -700,12 +700,14 @@ export default function Calculator() {
                 const perDollarRows = tiers.map(t => {
                   const pipeline = t.funnel.annualPipelineGenerated ?? 0;
                   const revenue = t.funnel.annualClosedWonRevenue ?? 0;
+                  const addlPipe = t.isCurrent ? 0 : pipeline - (currentFunnel.annualPipelineGenerated ?? 0);
+                  const addlRev = t.isCurrent ? 0 : revenue - (currentFunnel.annualClosedWonRevenue ?? 0);
                   return {
                     name: t.name,
                     isCurrent: t.isCurrent,
-                    pipelinePerTitanx: !t.isCurrent && t.titanxCost > 0 ? `$${(pipeline / t.titanxCost).toFixed(2)}` : '—',
+                    pipelinePerTitanx: !t.isCurrent && t.titanxCost > 0 ? `$${(addlPipe / t.titanxCost).toFixed(2)}` : '—',
                     pipelinePerTotal: t.cost > 0 ? `$${(pipeline / t.cost).toFixed(2)}` : '—',
-                    revenuePerTitanx: !t.isCurrent && t.titanxCost > 0 ? `$${(revenue / t.titanxCost).toFixed(2)}` : '—',
+                    revenuePerTitanx: !t.isCurrent && t.titanxCost > 0 ? `$${(addlRev / t.titanxCost).toFixed(2)}` : '—',
                     revenuePerTotal: t.cost > 0 ? `$${(revenue / t.cost).toFixed(2)}` : '—',
                   };
                 });
