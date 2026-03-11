@@ -733,17 +733,60 @@ export default function Calculator() {
                         <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform duration-300 ${roiOpen ? 'rotate-180' : ''}`} />
                       </button>
                     </div>
-                    <div className={`transition-all duration-500 overflow-hidden ${roiOpen ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                    <div className={`transition-all duration-500 overflow-hidden space-y-4 ${roiOpen ? 'max-h-[3000px] opacity-100' : 'max-h-0 opacity-0'}`}>
                     {/* ROI Callout */}
-                        <div className="glass-accent rounded-xl p-5 mb-4">
-                          <p className="text-sm leading-relaxed text-foreground/90">
-                            By investing <span className="font-bold text-primary">{fCurrency(titanxInvestment)}</span> annually in the <span className="font-bold text-primary">{recTierName}</span> plan, your team is projected to generate an additional <span className="font-bold text-primary">{fCurrency(pipelineLift)}</span> in pipeline
-                            {showRevenue && revenueLift > 0 && (
-                              <> and <span className="font-bold text-primary">{fCurrency(revenueLift)}</span> in closed-won revenue</>
+                    <div className="glass-accent rounded-xl p-5">
+                      <p className="text-sm font-semibold text-foreground/90 mb-3">By investing in a TitanX plan, you are projected to:</p>
+                      <div className="space-y-2">
+                        {roiTiers.map(t => (
+                          <div key={t.name} className="flex items-start gap-2 text-[13px] leading-relaxed text-foreground/80">
+                            <span className="mt-1.5 h-1.5 w-1.5 rounded-full shrink-0" style={{ backgroundColor: t.color }} />
+                            <p>
+                              Invest <span className="font-bold text-primary">{fCurrency(t.investment)}</span> in <span className="font-bold" style={{ color: t.color }}>{t.name}</span> to generate <span className="font-bold text-primary">{fCurrency(t.addlPipeline)}</span> in additional pipeline
+                              {showRevenue && t.addlRevenue > 0 && (
+                                <> and <span className="font-bold text-primary">{fCurrency(t.addlRevenue)}</span> in additional revenue</>
+                              )}
+                              {' '}— a <span className="font-bold text-primary">{t.roi.toFixed(1)}x</span> return.
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* ROI Impact Table */}
+                    <div className="rounded-xl overflow-hidden border border-border/30">
+                      <div className="grid" style={{ gridTemplateColumns: `1.5fr ${showRevenue ? '1fr 1fr 1fr 1fr' : '1fr 1fr 1fr'}` }}>
+                        <div style={{ background: '#1A1A1A' }} className="px-4 py-3 text-[10px] uppercase tracking-[0.12em] font-bold" />
+                        <div style={{ background: '#1A1A1A' }} className="px-3 py-3 text-[10px] uppercase tracking-[0.12em] font-bold text-center text-muted-foreground">TitanX Investment</div>
+                        <div style={{ background: '#1A1A1A' }} className="px-3 py-3 text-[10px] uppercase tracking-[0.12em] font-bold text-center text-muted-foreground">Addl. Pipeline</div>
+                        {showRevenue && <div style={{ background: '#1A1A1A' }} className="px-3 py-3 text-[10px] uppercase tracking-[0.12em] font-bold text-center text-muted-foreground">Addl. Revenue</div>}
+                        <div style={{ background: '#1A1A1A' }} className="px-3 py-3 text-[10px] uppercase tracking-[0.12em] font-bold text-center text-muted-foreground">ROI</div>
+                      </div>
+                      {roiTiers.map((t, rowIdx) => {
+                        const rowBg = rowIdx % 2 === 0 ? '#1A1A1A' : '#2A2A2A';
+                        return (
+                          <div key={t.name} className="grid" style={{ gridTemplateColumns: `1.5fr ${showRevenue ? '1fr 1fr 1fr 1fr' : '1fr 1fr 1fr'}` }}>
+                            <div style={{ background: rowBg }} className="px-4 py-2.5 flex items-center">
+                              <span className="text-[11px] uppercase tracking-[0.08em] font-bold" style={{ color: t.color }}>{t.name}</span>
+                            </div>
+                            <div style={{ background: rowBg }} className="px-3 py-2.5 text-center flex items-center justify-center">
+                              <span className="text-sm font-semibold tabular-nums text-foreground">{fCurrency(t.investment)}</span>
+                            </div>
+                            <div style={{ background: rowBg }} className="px-3 py-2.5 text-center flex items-center justify-center">
+                              <span className="text-sm font-semibold tabular-nums text-foreground">{fCurrency(t.addlPipeline)}</span>
+                            </div>
+                            {showRevenue && (
+                              <div style={{ background: rowBg }} className="px-3 py-2.5 text-center flex items-center justify-center">
+                                <span className="text-sm font-semibold tabular-nums text-foreground">{fCurrency(t.addlRevenue)}</span>
+                              </div>
                             )}
-                            {' '}— a <span className="font-bold text-primary">{pipelineROI.toFixed(1)}x</span> return on every dollar spent with TitanX.
-                          </p>
-                        </div>
+                            <div style={{ background: rowBg }} className="px-3 py-2.5 text-center flex items-center justify-center">
+                              <span className="text-sm font-bold tabular-nums text-primary">{t.roi.toFixed(1)}x</span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
                     <div className="glass rounded-xl p-5">
                       <ResponsiveContainer width="100%" height={320}>
                         <BarChart data={chartData} barCategoryGap="20%" barGap={4}>
