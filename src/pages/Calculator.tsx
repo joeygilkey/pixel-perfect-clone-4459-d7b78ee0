@@ -663,6 +663,7 @@ export default function Calculator() {
                   );
                 })()}
               </div>
+              </div>
 
               {/* ROI Summary */}
               {showROI && (() => {
