@@ -769,7 +769,7 @@ export default function Calculator() {
                         <div style={{ background: '#1A1A1A' }} className="px-3 py-3 text-[10px] uppercase tracking-[0.12em] font-bold text-center text-muted-foreground">TitanX Investment</div>
                         <div style={{ background: '#1A1A1A' }} className="px-3 py-3 text-[10px] uppercase tracking-[0.12em] font-bold text-center text-muted-foreground">Total Pipeline</div>
                         {showRevenue && <div style={{ background: '#1A1A1A' }} className="px-3 py-3 text-[10px] uppercase tracking-[0.12em] font-bold text-center text-muted-foreground">Total Revenue</div>}
-                        <div style={{ background: '#1A1A1A' }} className="px-3 py-3 text-[10px] uppercase tracking-[0.12em] font-bold text-center text-muted-foreground">{funnelDepth === 'closed_won' ? 'Revenue ROI' : 'Pipeline ROI'}</div>
+                        <div style={{ background: '#1A1A1A' }} className="px-3 py-3 text-[10px] uppercase tracking-[0.12em] font-bold text-center text-muted-foreground">{funnelDepth === 'closed_won' ? 'Incremental Revenue ROI' : 'Incremental Pipeline ROI'}</div>
                       </div>
                       {roiTiers.map((t, rowIdx) => {
                         const rowBg = rowIdx % 2 === 0 ? '#1A1A1A' : '#2A2A2A';
