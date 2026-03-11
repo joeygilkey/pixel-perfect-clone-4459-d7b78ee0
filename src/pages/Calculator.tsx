@@ -394,20 +394,7 @@ export default function Calculator() {
 
           </div>
 
-          {/* Desired Production Lift */}
-          <div className="glass rounded-xl p-5 space-y-4 relative overflow-hidden md:col-span-2">
-            <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
-            <div>
-              <span className="text-xs font-bold uppercase tracking-[0.15em] text-primary">Desired Production Lift</span>
-            </div>
-            <div className="grid grid-cols-3 gap-4">
-              <NumericInput label="Grow" value={titanx.multipleGrow} onChange={updateTitanx('multipleGrow')} suffix="×" tooltip="Connect multiplier for Grow tier" step="0.5" />
-              <NumericInput label="Accelerate" value={titanx.multipleAccelerate} onChange={updateTitanx('multipleAccelerate')} suffix="×" tooltip="Connect multiplier for Accelerate tier" step="0.5" />
-              <NumericInput label="Scale" value={titanx.multipleScale} onChange={updateTitanx('multipleScale')} suffix="×" tooltip="Connect multiplier for Scale tier" step="0.5" />
-            </div>
-          </div>
-
-          {/* TitanX Data */}
+          {/* Your Scoring Profile */}
           <div className="glass rounded-xl p-5 space-y-4 relative overflow-hidden">
             <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
             <div>
@@ -428,6 +415,19 @@ export default function Calculator() {
                 <NumericInput label="Credit Price — Accelerate" value={titanx.creditPriceAccelerate} onChange={updateTitanx('creditPriceAccelerate')} prefix="$" step="0.01" />
                 <NumericInput label="Credit Price — Scale" value={titanx.creditPriceScale} onChange={updateTitanx('creditPriceScale')} prefix="$" step="0.01" />
               </div>
+            </div>
+          </div>
+
+          {/* Desired Production Lift */}
+          <div className="glass rounded-xl p-5 space-y-4 relative overflow-hidden md:col-span-2">
+            <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+            <div>
+              <span className="text-xs font-bold uppercase tracking-[0.15em] text-primary">Desired Production Lift</span>
+            </div>
+            <div className="grid grid-cols-3 gap-4">
+              <NumericInput label="Grow" value={titanx.multipleGrow} onChange={updateTitanx('multipleGrow')} suffix="×" tooltip="Connect multiplier for Grow tier" step="0.5" />
+              <NumericInput label="Accelerate" value={titanx.multipleAccelerate} onChange={updateTitanx('multipleAccelerate')} suffix="×" tooltip="Connect multiplier for Accelerate tier" step="0.5" />
+              <NumericInput label="Scale" value={titanx.multipleScale} onChange={updateTitanx('multipleScale')} suffix="×" tooltip="Connect multiplier for Scale tier" step="0.5" />
             </div>
           </div>
         </div>
