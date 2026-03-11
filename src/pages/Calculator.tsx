@@ -10,7 +10,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import AccountSelector from '@/components/AccountSelector';
 import UserSelector from '@/components/UserSelector';
 import { toast } from 'sonner';
-import { HelpCircle, Copy, Plus, Save, CalendarIcon, Star, Sun, Moon } from 'lucide-react';
+import { HelpCircle, Copy, Plus, Save, CalendarIcon, Star, Sun, Moon, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import titanxLogo from '@/assets/titanx-logo.svg';
 import titanxLogoLight from '@/assets/titanx-logo-light.svg';
