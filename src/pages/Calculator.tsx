@@ -94,7 +94,7 @@ function getPrimaryMetric(depth: FunnelDepth, funnel: FunnelMetrics, monthlyMeet
 function StatCard({ label, value, highlight = false, muted = false, index = 0 }: {
   label: React.ReactNode; value: string; highlight?: boolean; muted?: boolean; index?: number;
 }) {
-  const bgColor = index % 2 === 0 ? 'rgba(26,26,26,0.6)' : 'rgba(42,42,42,0.4)';
+  const bgColor = index >= 0 ? (index % 2 === 0 ? 'rgba(26,26,26,0.6)' : 'rgba(42,42,42,0.4)') : 'transparent';
   return (
     <div className={`transition-all duration-300 rounded-md px-3 py-2 ${muted ? 'opacity-40' : ''}`} style={{ backgroundColor: bgColor }}>
       <div className={`text-xl font-bold tabular-nums tracking-tight ${highlight ? 'text-primary drop-shadow-[0_0_8px_hsla(348,100%,50%,0.4)]' : 'text-foreground'}`}>{value}</div>
