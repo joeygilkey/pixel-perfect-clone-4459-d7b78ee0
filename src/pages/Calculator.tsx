@@ -743,8 +743,6 @@ export default function Calculator() {
                             {' '}— a <span className="font-bold text-primary">{pipelineROI.toFixed(1)}x</span> return on every dollar spent with TitanX.
                           </p>
                         </div>
-                      );
-                    })()}
                     <div className="glass rounded-xl p-5">
                       <ResponsiveContainer width="100%" height={320}>
                         <BarChart data={chartData} barCategoryGap="20%" barGap={4}>
