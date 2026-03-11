@@ -124,9 +124,10 @@ function FunnelContextSection({ funnel, monthlyMeetings, annualMeetings, depth }
   );
 }
 
-function TierColumn({ title, subtitle, results, currentState, recommended = false, isCurrent = false, onRecommend, funnelDepth }: {
+function TierColumn({ title, subtitle, results, currentState, recommended = false, isCurrent = false, onRecommend, funnelDepth, reps, annualCostPerRep }: {
   title: string; subtitle?: string; results?: TierResults; currentState?: CurrentState;
   recommended?: boolean; isCurrent?: boolean; onRecommend?: () => void; funnelDepth: FunnelDepth;
+  reps?: number | null; annualCostPerRep?: number | null;
 }) {
   const glassClass = recommended
     ? 'glass-accent glow-primary'
@@ -229,6 +230,19 @@ function TierColumn({ title, subtitle, results, currentState, recommended = fals
           </div>
         </div>
       )}
+
+      {/* Headcount Cost Summary */}
+      {!isCurrent && results && reps != null && reps > 0 && annualCostPerRep != null && annualCostPerRep > 0 && (() => {
+        const additionalReps = results.repProductionEquivalent - reps;
+        const additionalCost = additionalReps * annualCostPerRep;
+        return additionalReps > 0 ? (
+          <div className="glass-accent rounded-lg p-3 text-center">
+            <p className="text-[11px] text-muted-foreground leading-relaxed">
+              It would cost you <span className="font-bold text-primary">{fCurrency(additionalCost)}</span> in additional headcount to achieve the {title.toLowerCase()} plan outcome.
+            </p>
+          </div>
+        ) : null;
+      })()}
     </div>
   );
 }
@@ -452,9 +466,9 @@ export default function Calculator() {
               {/* Activity + Efficiency */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <TierColumn title="Current State" isCurrent currentState={results.currentState} funnelDepth={funnelDepth} />
-                <TierColumn title="Grow" subtitle={`${titanx.multipleGrow ?? 1.5}× connects`} results={tierData.grow} currentState={results.currentState} recommended={recommendedTier === 'grow'} onRecommend={() => setRecommendedTier(prev => prev === 'grow' ? null : 'grow')} funnelDepth={funnelDepth} />
-                <TierColumn title="Accelerate" subtitle={`${titanx.multipleAccelerate ?? 2}× connects`} results={tierData.accelerate} currentState={results.currentState} recommended={recommendedTier === 'accelerate'} onRecommend={() => setRecommendedTier(prev => prev === 'accelerate' ? null : 'accelerate')} funnelDepth={funnelDepth} />
-                <TierColumn title="Scale" subtitle={`${titanx.multipleScale ?? 2.5}× connects`} results={tierData.scale} currentState={results.currentState} recommended={recommendedTier === 'scale'} onRecommend={() => setRecommendedTier(prev => prev === 'scale' ? null : 'scale')} funnelDepth={funnelDepth} />
+                <TierColumn title="Grow" subtitle={`${titanx.multipleGrow ?? 1.5}× connects`} results={tierData.grow} currentState={results.currentState} recommended={recommendedTier === 'grow'} onRecommend={() => setRecommendedTier(prev => prev === 'grow' ? null : 'grow')} funnelDepth={funnelDepth} reps={customer.reps} annualCostPerRep={customer.annualCostPerRep} />
+                <TierColumn title="Accelerate" subtitle={`${titanx.multipleAccelerate ?? 2}× connects`} results={tierData.accelerate} currentState={results.currentState} recommended={recommendedTier === 'accelerate'} onRecommend={() => setRecommendedTier(prev => prev === 'accelerate' ? null : 'accelerate')} funnelDepth={funnelDepth} reps={customer.reps} annualCostPerRep={customer.annualCostPerRep} />
+                <TierColumn title="Scale" subtitle={`${titanx.multipleScale ?? 2.5}× connects`} results={tierData.scale} currentState={results.currentState} recommended={recommendedTier === 'scale'} onRecommend={() => setRecommendedTier(prev => prev === 'scale' ? null : 'scale')} funnelDepth={funnelDepth} reps={customer.reps} annualCostPerRep={customer.annualCostPerRep} />
               </div>
 
               {/* Financial Section */}
