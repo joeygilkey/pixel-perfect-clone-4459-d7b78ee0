@@ -700,12 +700,14 @@ export default function Calculator() {
                 const perDollarRows = tiers.map(t => {
                   const pipeline = t.funnel.annualPipelineGenerated ?? 0;
                   const revenue = t.funnel.annualClosedWonRevenue ?? 0;
+                  const addlPipe = t.isCurrent ? 0 : pipeline - (currentFunnel.annualPipelineGenerated ?? 0);
+                  const addlRev = t.isCurrent ? 0 : revenue - (currentFunnel.annualClosedWonRevenue ?? 0);
                   return {
                     name: t.name,
                     isCurrent: t.isCurrent,
-                    pipelinePerTitanx: !t.isCurrent && t.titanxCost > 0 ? `$${(pipeline / t.titanxCost).toFixed(2)}` : '—',
+                    pipelinePerTitanx: !t.isCurrent && t.titanxCost > 0 ? `$${(addlPipe / t.titanxCost).toFixed(2)}` : '—',
                     pipelinePerTotal: t.cost > 0 ? `$${(pipeline / t.cost).toFixed(2)}` : '—',
-                    revenuePerTitanx: !t.isCurrent && t.titanxCost > 0 ? `$${(revenue / t.titanxCost).toFixed(2)}` : '—',
+                    revenuePerTitanx: !t.isCurrent && t.titanxCost > 0 ? `$${(addlRev / t.titanxCost).toFixed(2)}` : '—',
                     revenuePerTotal: t.cost > 0 ? `$${(revenue / t.cost).toFixed(2)}` : '—',
                   };
                 });
@@ -726,7 +728,7 @@ export default function Calculator() {
                   const addlRevenue = totalRevenue - csRevenue;
                   const roiValue = funnelDepth === 'closed_won' ? addlRevenue : addlPipeline;
                   const roi = t.data.costAnnual > 0 ? roiValue / t.data.costAnnual : 0;
-                  const roiLabel = funnelDepth === 'closed_won' ? 'revenue return' : 'pipeline return';
+                  const roiLabel = funnelDepth === 'closed_won' ? 'incremental revenue return' : 'incremental pipeline return';
                   const pipelinePctIncrease = csPipeline > 0 ? addlPipeline / csPipeline : 0;
                   const revenuePctIncrease = csRevenue > 0 ? addlRevenue / csRevenue : 0;
                   return { ...t, investment: t.data.costAnnual, totalPipeline, totalRevenue, addlPipeline, addlRevenue, roi, roiLabel, pipelinePctIncrease, revenuePctIncrease };
@@ -855,13 +857,13 @@ export default function Calculator() {
                               {depthAtLeast(funnelDepth, 'opps') && (
                                 <div>
                                   <div className="text-xs font-bold tabular-nums text-foreground">{r.isCurrent ? r.pipelinePerTotal : r.pipelinePerTitanx}</div>
-                                  <div className="text-[9px] text-muted-foreground/60">{r.isCurrent ? 'pipeline / $1 total' : 'pipeline / $1 TitanX'}</div>
+                                  <div className="text-[9px] text-muted-foreground/60">{r.isCurrent ? 'pipeline / $1 total' : 'incremental pipeline / $1 TitanX'}</div>
                                 </div>
                               )}
                               {showRevenue && (
                                 <div>
                                   <div className="text-xs font-bold tabular-nums text-foreground">{r.isCurrent ? r.revenuePerTotal : r.revenuePerTitanx}</div>
-                                  <div className="text-[9px] text-muted-foreground/60">{r.isCurrent ? 'revenue / $1 total' : 'revenue / $1 TitanX'}</div>
+                                  <div className="text-[9px] text-muted-foreground/60">{r.isCurrent ? 'revenue / $1 total' : 'incremental revenue / $1 TitanX'}</div>
                                 </div>
                               )}
                             </div>
