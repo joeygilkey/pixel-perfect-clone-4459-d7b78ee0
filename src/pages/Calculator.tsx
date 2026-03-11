@@ -230,6 +230,19 @@ function TierColumn({ title, subtitle, results, currentState, recommended = fals
           </div>
         </div>
       )}
+
+      {/* Headcount Cost Summary */}
+      {!isCurrent && results && reps != null && reps > 0 && annualCostPerRep != null && annualCostPerRep > 0 && (() => {
+        const additionalReps = results.repProductionEquivalent - reps;
+        const additionalCost = additionalReps * annualCostPerRep;
+        return additionalReps > 0 ? (
+          <div className="glass-accent rounded-lg p-3 text-center">
+            <p className="text-[11px] text-muted-foreground leading-relaxed">
+              It would cost you <span className="font-bold text-primary">{fCurrency(additionalCost)}</span> in additional headcount to achieve the {title.toLowerCase()} plan outcome.
+            </p>
+          </div>
+        ) : null;
+      })()}
     </div>
   );
 }
