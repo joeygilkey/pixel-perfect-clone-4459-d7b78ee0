@@ -238,7 +238,7 @@ function TierColumn({ title, subtitle, results, currentState, recommended = fals
         return additionalReps > 0 ? (
           <div className="glass-accent rounded-lg p-3 text-center">
             <p className="text-[13px] text-muted-foreground leading-relaxed">
-              It would cost you <span className="font-bold text-primary">{fCurrency(additionalCost)}</span> in additional headcount to achieve the {title.toLowerCase()} plan outcome.
+              It would cost you <span className="font-bold text-primary">{fCurrency(additionalCost)}</span> in additional headcount to achieve the {title.toLowerCase()} plan outcome, but instead you will do it with the same team size only making <span className="font-bold text-primary">{fPercent(results.pctOfCurrentDials)}</span> of your current dials.
             </p>
           </div>
         ) : null;
