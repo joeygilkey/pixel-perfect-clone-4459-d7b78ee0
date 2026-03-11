@@ -406,7 +406,7 @@ export default function Calculator() {
           <div className="glass rounded-xl p-5 space-y-4 relative overflow-hidden">
             <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
             <div>
-              <span className="text-xs font-bold uppercase tracking-[0.15em] text-primary">TitanX Data</span>
+              <span className="text-xs font-bold uppercase tracking-[0.15em] text-primary">Your Scoring Profile</span>
               <p className="text-[11px] text-muted-foreground/60 mt-1">Pulled from your TitanX account data for this prospect.</p>
             </div>
             <div className="grid grid-cols-2 gap-4">
