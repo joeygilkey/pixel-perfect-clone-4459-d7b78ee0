@@ -393,7 +393,7 @@ export default function Calculator() {
             </div>
 
             <div className="border-t border-border/50 pt-4 mt-4">
-              <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-primary/70 mb-3 block">Plan Multipliers</span>
+              <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-primary/70 mb-3 block">Desired Production Lift</span>
               <div className="grid grid-cols-3 gap-4">
                 <NumericInput label="Grow" value={titanx.multipleGrow} onChange={updateTitanx('multipleGrow')} suffix="×" tooltip="Connect multiplier for Grow tier" step="0.5" />
                 <NumericInput label="Accelerate" value={titanx.multipleAccelerate} onChange={updateTitanx('multipleAccelerate')} suffix="×" tooltip="Connect multiplier for Accelerate tier" step="0.5" />
