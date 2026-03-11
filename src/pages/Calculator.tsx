@@ -457,6 +457,93 @@ export default function Calculator() {
                 <TierColumn title="Scale" subtitle={`${titanx.multipleScale ?? 2.5}× connects`} results={tierData.scale} currentState={results.currentState} recommended={recommendedTier === 'scale'} onRecommend={() => setRecommendedTier(prev => prev === 'scale' ? null : 'scale')} funnelDepth={funnelDepth} />
               </div>
 
+              {/* AI Plan Summary */}
+              <div className="glass rounded-xl p-5 relative overflow-hidden">
+                <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+                <h3 className="text-sm font-bold text-foreground uppercase tracking-[0.12em] mb-4 border-l-2 border-primary pl-3 flex items-center gap-2">
+                  <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+                  AI Plan Summary
+                </h3>
+                {(() => {
+                  const cs = results.currentState;
+                  const grow = tierData.grow;
+                  const accel = tierData.accelerate;
+                  const scale = tierData.scale;
+
+                  const growConnectLift = cs.monthlyConnects > 0 ? ((grow.monthlyConnects - cs.monthlyConnects) / cs.monthlyConnects * 100).toFixed(0) : '0';
+                  const accelConnectLift = cs.monthlyConnects > 0 ? ((accel.monthlyConnects - cs.monthlyConnects) / cs.monthlyConnects * 100).toFixed(0) : '0';
+                  const scaleConnectLift = cs.monthlyConnects > 0 ? ((scale.monthlyConnects - cs.monthlyConnects) / cs.monthlyConnects * 100).toFixed(0) : '0';
+
+                  const growMeetingLift = cs.monthlyMeetings > 0 ? ((grow.monthlyMeetings - cs.monthlyMeetings) / cs.monthlyMeetings * 100).toFixed(0) : '0';
+                  const accelMeetingLift = cs.monthlyMeetings > 0 ? ((accel.monthlyMeetings - cs.monthlyMeetings) / cs.monthlyMeetings * 100).toFixed(0) : '0';
+                  const scaleMeetingLift = cs.monthlyMeetings > 0 ? ((scale.monthlyMeetings - cs.monthlyMeetings) / cs.monthlyMeetings * 100).toFixed(0) : '0';
+
+                  const showOpps = depthAtLeast(funnelDepth, 'opps');
+                  const showRevenue = funnelDepth === 'closed_won';
+
+                  return (
+                    <div className="space-y-3 text-sm leading-relaxed text-muted-foreground">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {/* Grow */}
+                        <div className="rounded-lg p-4 space-y-2" style={{ background: 'rgba(26,26,26,0.8)' }}>
+                          <span className="text-xs font-bold uppercase tracking-[0.12em] text-primary">Grow</span>
+                          <p className="text-[13px]">
+                            <span className="text-primary font-bold">+{growConnectLift}%</span> connects · <span className="text-primary font-bold">+{growMeetingLift}%</span> meetings
+                          </p>
+                          <p className="text-[12px] text-muted-foreground/70">
+                            {fNumber(grow.monthlyConnects)} connects/mo → {fMeetings(grow.monthlyMeetings)} meetings/mo at {fCurrency(grow.totalAnnualCost, 0)}/yr
+                          </p>
+                          {showOpps && grow.funnel.monthlyOpps != null && (
+                            <p className="text-[12px] text-muted-foreground/70">{fMeetings(grow.funnel.monthlyOpps)} qualified opps/mo</p>
+                          )}
+                          {showRevenue && grow.funnel.monthlyClosedWon != null && (
+                            <p className="text-[12px] text-muted-foreground/70">{fMeetings(grow.funnel.monthlyClosedWon)} closed won/mo</p>
+                          )}
+                        </div>
+
+                        {/* Accelerate */}
+                        <div className="rounded-lg p-4 space-y-2" style={{ background: 'rgba(26,26,26,0.8)' }}>
+                          <span className="text-xs font-bold uppercase tracking-[0.12em] text-primary">Accelerate</span>
+                          <p className="text-[13px]">
+                            <span className="text-primary font-bold">+{accelConnectLift}%</span> connects · <span className="text-primary font-bold">+{accelMeetingLift}%</span> meetings
+                          </p>
+                          <p className="text-[12px] text-muted-foreground/70">
+                            {fNumber(accel.monthlyConnects)} connects/mo → {fMeetings(accel.monthlyMeetings)} meetings/mo at {fCurrency(accel.totalAnnualCost, 0)}/yr
+                          </p>
+                          {showOpps && accel.funnel.monthlyOpps != null && (
+                            <p className="text-[12px] text-muted-foreground/70">{fMeetings(accel.funnel.monthlyOpps)} qualified opps/mo</p>
+                          )}
+                          {showRevenue && accel.funnel.monthlyClosedWon != null && (
+                            <p className="text-[12px] text-muted-foreground/70">{fMeetings(accel.funnel.monthlyClosedWon)} closed won/mo</p>
+                          )}
+                        </div>
+
+                        {/* Scale */}
+                        <div className="rounded-lg p-4 space-y-2" style={{ background: 'rgba(26,26,26,0.8)' }}>
+                          <span className="text-xs font-bold uppercase tracking-[0.12em] text-primary">Scale</span>
+                          <p className="text-[13px]">
+                            <span className="text-primary font-bold">+{scaleConnectLift}%</span> connects · <span className="text-primary font-bold">+{scaleMeetingLift}%</span> meetings
+                          </p>
+                          <p className="text-[12px] text-muted-foreground/70">
+                            {fNumber(scale.monthlyConnects)} connects/mo → {fMeetings(scale.monthlyMeetings)} meetings/mo at {fCurrency(scale.totalAnnualCost, 0)}/yr
+                          </p>
+                          {showOpps && scale.funnel.monthlyOpps != null && (
+                            <p className="text-[12px] text-muted-foreground/70">{fMeetings(scale.funnel.monthlyOpps)} qualified opps/mo</p>
+                          )}
+                          {showRevenue && scale.funnel.monthlyClosedWon != null && (
+                            <p className="text-[12px] text-muted-foreground/70">{fMeetings(scale.funnel.monthlyClosedWon)} closed won/mo</p>
+                          )}
+                        </div>
+                      </div>
+
+                      <p className="text-[12px] text-muted-foreground/50 pt-1">
+                        Baseline: {fNumber(cs.monthlyConnects)} connects/mo · {fMeetings(cs.monthlyMeetings)} meetings/mo · {fCurrency(cs.annualCostReps, 0)}/yr with {customer.reps} rep{customer.reps !== 1 ? 's' : ''}
+                      </p>
+                    </div>
+                  );
+                })()}
+              </div>
+
               {/* Financial Section */}
               <div>
                 <h3 className="text-sm font-bold text-foreground uppercase tracking-[0.12em] mb-3 border-l-2 border-primary pl-3">Financial Metrics</h3>
