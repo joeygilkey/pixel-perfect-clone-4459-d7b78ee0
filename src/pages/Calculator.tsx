@@ -475,7 +475,11 @@ export default function Calculator() {
 
               {/* Financial Section */}
               <div>
-                <h3 className="text-sm font-bold text-foreground uppercase tracking-[0.12em] mb-3 border-l-2 border-primary pl-3">Financial Metrics</h3>
+                <button onClick={() => setFinancialOpen(prev => !prev)} className="w-full flex items-center gap-2 mb-3 group cursor-pointer">
+                  <h3 className="text-sm font-bold text-foreground uppercase tracking-[0.12em] border-l-2 border-primary pl-3">Financial Metrics</h3>
+                  <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform duration-300 ${financialOpen ? 'rotate-180' : ''}`} />
+                </button>
+                <div className={`transition-all duration-500 overflow-hidden ${financialOpen ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'}`}>
                 {(() => {
                   const cs = results.currentState;
                   const tiers = [
