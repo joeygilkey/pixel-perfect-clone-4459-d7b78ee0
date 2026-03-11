@@ -94,7 +94,7 @@ function getPrimaryMetric(depth: FunnelDepth, funnel: FunnelMetrics, monthlyMeet
 function StatCard({ label, value, highlight = false, muted = false, index = 0 }: {
   label: React.ReactNode; value: string; highlight?: boolean; muted?: boolean; index?: number;
 }) {
-  const bgColor = index % 2 === 0 ? 'rgba(26,26,26,0.6)' : 'rgba(42,42,42,0.4)';
+  const bgColor = index >= 0 ? (index % 2 === 0 ? 'rgba(26,26,26,0.6)' : 'rgba(42,42,42,0.4)') : 'transparent';
   return (
     <div className={`transition-all duration-300 rounded-md px-3 py-2 ${muted ? 'opacity-40' : ''}`} style={{ backgroundColor: bgColor }}>
       <div className={`text-xl font-bold tabular-nums tracking-tight ${highlight ? 'text-primary drop-shadow-[0_0_8px_hsla(348,100%,50%,0.4)]' : 'text-foreground'}`}>{value}</div>
@@ -210,9 +210,9 @@ function TierColumn({ title, subtitle, results, currentState, recommended = fals
             <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
             Efficiency Story
           </p>
-          <StatCard label="Rep Production Equivalent" value={`${fReps(results.repProductionEquivalent)} reps`} highlight index={0} />
-          <StatCard label="% of Current Dials Required" value={fPercent(results.pctOfCurrentDials)} highlight index={1} />
-          <StatCard label="Cost of Equivalent Reps" value={`${fReps(results.costOfEquivReps)} reps`} highlight index={2} />
+          <StatCard label="Rep Production Equivalent" value={`${fReps(results.repProductionEquivalent)} reps`} highlight index={-1} />
+          <StatCard label="% of Current Dials Required" value={fPercent(results.pctOfCurrentDials)} highlight index={-1} />
+          <StatCard label="Cost of Equivalent Reps" value={`${fReps(results.costOfEquivReps)} reps`} highlight index={-1} />
         </div>
       )}
 
