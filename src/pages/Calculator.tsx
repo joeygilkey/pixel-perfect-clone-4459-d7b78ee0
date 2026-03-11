@@ -753,7 +753,7 @@ export default function Calculator() {
                               {showRevenue && t.addlRevenue > 0 && (
                                 <> and <span className="font-bold text-primary">{fCurrency(t.addlRevenue)}</span> in additional revenue</>
                               )}
-                              {' '}— a <span className="font-bold text-primary">{t.roi.toFixed(1)}x</span> return.
+                              {' '}— a <span className="font-bold text-primary">{t.roi.toFixed(1)}x</span> {t.roiLabel}.
                             </p>
                           </div>
                         ))}
