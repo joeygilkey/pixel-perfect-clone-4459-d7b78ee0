@@ -720,10 +720,16 @@ export default function Calculator() {
                   { name: 'Scale', data: tierData.scale, color: '#FF004C' },
                 ].map(t => {
                   const f = t.data.funnel ?? {};
-                  const addlPipeline = (f.annualPipelineGenerated ?? 0) - csPipeline;
-                  const addlRevenue = (f.annualClosedWonRevenue ?? 0) - csRevenue;
-                  const roi = t.data.costAnnual > 0 ? addlPipeline / t.data.costAnnual : 0;
-                  return { ...t, investment: t.data.costAnnual, addlPipeline, addlRevenue, roi };
+                  const totalPipeline = f.annualPipelineGenerated ?? 0;
+                  const totalRevenue = f.annualClosedWonRevenue ?? 0;
+                  const addlPipeline = totalPipeline - csPipeline;
+                  const addlRevenue = totalRevenue - csRevenue;
+                  const roiValue = funnelDepth === 'closed_won' ? totalRevenue : totalPipeline;
+                  const roi = t.data.costAnnual > 0 ? roiValue / t.data.costAnnual : 0;
+                  const roiLabel = funnelDepth === 'closed_won' ? 'revenue return' : 'pipeline return';
+                  const pipelinePctIncrease = csPipeline > 0 ? addlPipeline / csPipeline : 0;
+                  const revenuePctIncrease = csRevenue > 0 ? addlRevenue / csRevenue : 0;
+                  return { ...t, investment: t.data.costAnnual, totalPipeline, totalRevenue, addlPipeline, addlRevenue, roi, roiLabel, pipelinePctIncrease, revenuePctIncrease };
                 });
 
                 return (
@@ -747,7 +753,7 @@ export default function Calculator() {
                               {showRevenue && t.addlRevenue > 0 && (
                                 <> and <span className="font-bold text-primary">{fCurrency(t.addlRevenue)}</span> in additional revenue</>
                               )}
-                              {' '}— a <span className="font-bold text-primary">{t.roi.toFixed(1)}x</span> return.
+                              {' '}— a <span className="font-bold text-primary">{t.roi.toFixed(1)}x</span> {t.roiLabel}.
                             </p>
                           </div>
                         ))}
@@ -759,9 +765,9 @@ export default function Calculator() {
                       <div className="grid" style={{ gridTemplateColumns: `1.5fr ${showRevenue ? '1fr 1fr 1fr 1fr' : '1fr 1fr 1fr'}` }}>
                         <div style={{ background: '#1A1A1A' }} className="px-4 py-3 text-[10px] uppercase tracking-[0.12em] font-bold" />
                         <div style={{ background: '#1A1A1A' }} className="px-3 py-3 text-[10px] uppercase tracking-[0.12em] font-bold text-center text-muted-foreground">TitanX Investment</div>
-                        <div style={{ background: '#1A1A1A' }} className="px-3 py-3 text-[10px] uppercase tracking-[0.12em] font-bold text-center text-muted-foreground">Addl. Pipeline</div>
-                        {showRevenue && <div style={{ background: '#1A1A1A' }} className="px-3 py-3 text-[10px] uppercase tracking-[0.12em] font-bold text-center text-muted-foreground">Addl. Revenue</div>}
-                        <div style={{ background: '#1A1A1A' }} className="px-3 py-3 text-[10px] uppercase tracking-[0.12em] font-bold text-center text-muted-foreground">ROI</div>
+                        <div style={{ background: '#1A1A1A' }} className="px-3 py-3 text-[10px] uppercase tracking-[0.12em] font-bold text-center text-muted-foreground">Total Pipeline</div>
+                        {showRevenue && <div style={{ background: '#1A1A1A' }} className="px-3 py-3 text-[10px] uppercase tracking-[0.12em] font-bold text-center text-muted-foreground">Total Revenue</div>}
+                        <div style={{ background: '#1A1A1A' }} className="px-3 py-3 text-[10px] uppercase tracking-[0.12em] font-bold text-center text-muted-foreground">{funnelDepth === 'closed_won' ? 'Revenue ROI' : 'Pipeline ROI'}</div>
                       </div>
                       {roiTiers.map((t, rowIdx) => {
                         const rowBg = rowIdx % 2 === 0 ? '#1A1A1A' : '#2A2A2A';
@@ -773,12 +779,22 @@ export default function Calculator() {
                             <div style={{ background: rowBg }} className="px-3 py-2.5 text-center flex items-center justify-center">
                               <span className="text-sm font-semibold tabular-nums text-foreground">{fCurrency(t.investment)}</span>
                             </div>
-                            <div style={{ background: rowBg }} className="px-3 py-2.5 text-center flex items-center justify-center">
-                              <span className="text-sm font-semibold tabular-nums text-foreground">{fCurrency(t.addlPipeline)}</span>
+                            <div style={{ background: rowBg }} className="px-3 py-2.5 text-center flex flex-col items-center justify-center">
+                              <span className="text-sm font-semibold tabular-nums text-foreground">{fCurrency(t.totalPipeline)}</span>
+                              {t.addlPipeline > 0 && (
+                                <span className="text-[10px] font-semibold tabular-nums" style={{ color: '#22c55e' }}>
+                                  +{fCurrency(t.addlPipeline)} ({fPercent(t.pipelinePctIncrease)})
+                                </span>
+                              )}
                             </div>
                             {showRevenue && (
-                              <div style={{ background: rowBg }} className="px-3 py-2.5 text-center flex items-center justify-center">
-                                <span className="text-sm font-semibold tabular-nums text-foreground">{fCurrency(t.addlRevenue)}</span>
+                              <div style={{ background: rowBg }} className="px-3 py-2.5 text-center flex flex-col items-center justify-center">
+                                <span className="text-sm font-semibold tabular-nums text-foreground">{fCurrency(t.totalRevenue)}</span>
+                                {t.addlRevenue > 0 && (
+                                  <span className="text-[10px] font-semibold tabular-nums" style={{ color: '#22c55e' }}>
+                                    +{fCurrency(t.addlRevenue)} ({fPercent(t.revenuePctIncrease)})
+                                  </span>
+                                )}
                               </div>
                             )}
                             <div style={{ background: rowBg }} className="px-3 py-2.5 text-center flex items-center justify-center">
