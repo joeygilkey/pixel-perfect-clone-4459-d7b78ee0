@@ -237,7 +237,7 @@ function TierColumn({ title, subtitle, results, currentState, recommended = fals
         const additionalCost = additionalReps * annualCostPerRep;
         return additionalReps > 0 ? (
           <div className="glass-accent rounded-lg p-3 text-center">
-            <p className="text-[11px] text-muted-foreground leading-relaxed">
+            <p className="text-[13px] text-muted-foreground leading-relaxed">
               It would cost you <span className="font-bold text-primary">{fCurrency(additionalCost)}</span> in additional headcount to achieve the {title.toLowerCase()} plan outcome.
             </p>
           </div>
