@@ -863,7 +863,7 @@ export default function Calculator() {
                               {showRevenue && (
                                 <div>
                                   <div className="text-xs font-bold tabular-nums text-foreground">{r.isCurrent ? r.revenuePerTotal : r.revenuePerTitanx}</div>
-                                  <div className="text-[9px] text-muted-foreground/60">{r.isCurrent ? 'revenue / $1 total' : 'revenue / $1 TitanX'}</div>
+                                  <div className="text-[9px] text-muted-foreground/60">{r.isCurrent ? 'revenue / $1 total' : 'incremental revenue / $1 TitanX'}</div>
                                 </div>
                               )}
                             </div>
