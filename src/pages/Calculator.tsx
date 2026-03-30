@@ -290,7 +290,7 @@ export default function Calculator() {
 
   const handleNewSession = () => {
     if (!confirm('Clear all inputs and start a new session?')) return;
-    setCompany(''); setAeName(''); setSessionDate(new Date());
+    setSelectedAccountId(''); setSelectedSfUserId(''); setSessionDate(new Date());
     setFunnelDepth('meetings_set');
     setCustomer({ reps: null, annualCostPerRep: null, dialsPerDay: null, connectRate: null, conversationRate: null, meetingRate: null, meetingShowRate: null, oppQualificationRate: null, winRate: null, acv: null });
     setTitanx({ highIntent: 20, highIntentReach: 85, avgPhones: 2, titanxConnectRate: 25, creditPriceGrow: 0.50, creditPriceAccelerate: 0.50, creditPriceScale: 0.50, multipleGrow: 1.5, multipleAccelerate: 2.0, multipleScale: 2.5 });
