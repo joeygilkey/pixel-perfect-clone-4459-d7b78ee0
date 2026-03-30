@@ -18,6 +18,7 @@ import bgDark from '@/assets/bg-dark.png';
 import bgLight from '@/assets/bg-light.png';
 import { calculate, type CustomerInputs, type TitanXInputs, type TierResults, type CurrentState, type FunnelDepth, type FunnelMetrics } from '@/lib/calculations';
 import { fCurrency, fNumber, fPercent, fReps, fMeetings } from '@/lib/formatters';
+import { supabase } from '@/lib/supabase';
 
 const FUNNEL_DEPTHS: { value: FunnelDepth; label: string }[] = [
   { value: 'meetings_set', label: 'Meetings Set' },
