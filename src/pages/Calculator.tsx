@@ -454,7 +454,7 @@ export default function Calculator() {
           </div>
           <div className="space-y-1.5">
             <label className="text-[11px] font-medium uppercase tracking-[0.1em] text-muted-foreground">TitanX User</label>
-            <UserSelector value={aeName} onChange={setAeName} />
+            <UserSelector value={selectedSfUserId} onChange={setSelectedSfUserId} />
           </div>
           <div className="space-y-1.5">
             <label className="text-[11px] font-medium uppercase tracking-[0.1em] text-muted-foreground">Date</label>
