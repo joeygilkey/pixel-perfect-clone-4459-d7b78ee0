@@ -18,6 +18,7 @@ import bgDark from '@/assets/bg-dark.png';
 import bgLight from '@/assets/bg-light.png';
 import { calculate, type CustomerInputs, type TitanXInputs, type TierResults, type CurrentState, type FunnelDepth, type FunnelMetrics } from '@/lib/calculations';
 import { fCurrency, fNumber, fPercent, fReps, fMeetings } from '@/lib/formatters';
+import { supabase } from '@/lib/supabase';
 
 const FUNNEL_DEPTHS: { value: FunnelDepth; label: string }[] = [
   { value: 'meetings_set', label: 'Meetings Set' },
@@ -248,8 +249,8 @@ function TierColumn({ title, subtitle, results, currentState, recommended = fals
 }
 
 export default function Calculator() {
-  const [company, setCompany] = useState('');
-  const [aeName, setAeName] = useState('');
+  const [selectedAccountId, setSelectedAccountId] = useState('');
+  const [selectedSfUserId, setSelectedSfUserId] = useState('');
   const [sessionDate, setSessionDate] = useState<Date>(new Date());
   const [model, setModel] = useState<string>('blended');
   const [recommendedTier, setRecommendedTier] = useState<string | null>(null);
@@ -289,14 +290,130 @@ export default function Calculator() {
 
   const handleNewSession = () => {
     if (!confirm('Clear all inputs and start a new session?')) return;
-    setCompany(''); setAeName(''); setSessionDate(new Date());
+    setSelectedAccountId(''); setSelectedSfUserId(''); setSessionDate(new Date());
     setFunnelDepth('meetings_set');
     setCustomer({ reps: null, annualCostPerRep: null, dialsPerDay: null, connectRate: null, conversationRate: null, meetingRate: null, meetingShowRate: null, oppQualificationRate: null, winRate: null, acv: null });
     setTitanx({ highIntent: 20, highIntentReach: 85, avgPhones: 2, titanxConnectRate: 25, creditPriceGrow: 0.50, creditPriceAccelerate: 0.50, creditPriceScale: 0.50, multipleGrow: 1.5, multipleAccelerate: 2.0, multipleScale: 2.5 });
   };
 
-  const handleSave = () => {
-    toast.success('Session saved. Shareable link ready.', { description: 'Connect Lovable Cloud to enable persistence.' });
+  const handleSave = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) { toast.error('Not logged in'); return; }
+    if (!results) { toast.error('Complete all inputs first'); return; }
+
+    const td = model === 'blended' ? results.blended : results.highIntent;
+
+    const { error } = await supabase.from('calculator_sessions').insert({
+      app_user_id:     session.user.id,
+      sf_account_id:   selectedAccountId  || null,
+      sf_user_id:      selectedSfUserId   || null,
+      session_date:    format(sessionDate, 'yyyy-MM-dd'),
+      model,
+      funnel_depth:    funnelDepth,
+      recommended_tier: recommendedTier  || null,
+
+      inp_reps:                   customer.reps,
+      inp_annual_cost_per_rep:    customer.annualCostPerRep,
+      inp_dials_per_day:          customer.dialsPerDay,
+      inp_connect_rate:           customer.connectRate,
+      inp_conversation_rate:      customer.conversationRate,
+      inp_meeting_rate:           customer.meetingRate,
+      inp_meeting_show_rate:      customer.meetingShowRate,
+      inp_opp_qualification_rate: customer.oppQualificationRate,
+      inp_win_rate:               customer.winRate,
+      inp_acv:                    customer.acv,
+
+      inp_high_intent:             titanx.highIntent,
+      inp_high_intent_reach:       titanx.highIntentReach,
+      inp_avg_phones:              titanx.avgPhones,
+      inp_titanx_connect_rate:     titanx.titanxConnectRate,
+      inp_credit_price_grow:       titanx.creditPriceGrow,
+      inp_credit_price_accelerate: titanx.creditPriceAccelerate,
+      inp_credit_price_scale:      titanx.creditPriceScale,
+      inp_multiple_grow:           titanx.multipleGrow,
+      inp_multiple_accelerate:     titanx.multipleAccelerate,
+      inp_multiple_scale:          titanx.multipleScale,
+
+      out_cs_monthly_dials:         results.currentState.monthlyDials,
+      out_cs_monthly_connects:      results.currentState.monthlyConnects,
+      out_cs_monthly_conversations: results.currentState.monthlyConversations,
+      out_cs_monthly_meetings:      results.currentState.monthlyMeetings,
+      out_cs_annual_meetings:       results.currentState.annualMeetings,
+      out_cs_annual_cost_reps:      results.currentState.annualCostReps,
+      out_cs_cost_per_connect:      results.currentState.costPerConnect,
+      out_cs_cost_per_meeting:      results.currentState.costPerMeeting,
+      out_cs_monthly_meetings_held: results.currentState.funnel.monthlyMeetingsHeld ?? null,
+      out_cs_monthly_opps:          results.currentState.funnel.monthlyOpps          ?? null,
+      out_cs_monthly_closed_won:    results.currentState.funnel.monthlyClosedWon     ?? null,
+      out_cs_annual_pipeline:       results.currentState.funnel.annualPipelineGenerated ?? null,
+      out_cs_annual_revenue:        results.currentState.funnel.annualClosedWonRevenue  ?? null,
+
+      out_grow_monthly_dials:         td.grow.monthlyDials,
+      out_grow_monthly_connects:      td.grow.monthlyConnects,
+      out_grow_monthly_conversations: td.grow.monthlyConversations,
+      out_grow_monthly_meetings:      td.grow.monthlyMeetings,
+      out_grow_annual_meetings:       td.grow.annualMeetings,
+      out_grow_credits_per_month:     td.grow.creditsPerMonth,
+      out_grow_cost_monthly:          td.grow.costMonthly,
+      out_grow_cost_annual:           td.grow.costAnnual,
+      out_grow_total_annual_cost:     td.grow.totalAnnualCost,
+      out_grow_cost_per_connect:      td.grow.costPerConnect,
+      out_grow_cost_per_meeting:      td.grow.costPerMeeting,
+      out_grow_rep_production_equiv:  td.grow.repProductionEquivalent,
+      out_grow_cost_of_equiv_reps:    td.grow.costOfEquivReps,
+      out_grow_pct_of_current_dials:  td.grow.pctOfCurrentDials,
+      out_grow_monthly_meetings_held: td.grow.funnel.monthlyMeetingsHeld       ?? null,
+      out_grow_monthly_opps:          td.grow.funnel.monthlyOpps               ?? null,
+      out_grow_monthly_closed_won:    td.grow.funnel.monthlyClosedWon          ?? null,
+      out_grow_annual_pipeline:       td.grow.funnel.annualPipelineGenerated   ?? null,
+      out_grow_annual_revenue:        td.grow.funnel.annualClosedWonRevenue    ?? null,
+
+      out_acc_monthly_dials:         td.accelerate.monthlyDials,
+      out_acc_monthly_connects:      td.accelerate.monthlyConnects,
+      out_acc_monthly_conversations: td.accelerate.monthlyConversations,
+      out_acc_monthly_meetings:      td.accelerate.monthlyMeetings,
+      out_acc_annual_meetings:       td.accelerate.annualMeetings,
+      out_acc_credits_per_month:     td.accelerate.creditsPerMonth,
+      out_acc_cost_monthly:          td.accelerate.costMonthly,
+      out_acc_cost_annual:           td.accelerate.costAnnual,
+      out_acc_total_annual_cost:     td.accelerate.totalAnnualCost,
+      out_acc_cost_per_connect:      td.accelerate.costPerConnect,
+      out_acc_cost_per_meeting:      td.accelerate.costPerMeeting,
+      out_acc_rep_production_equiv:  td.accelerate.repProductionEquivalent,
+      out_acc_cost_of_equiv_reps:    td.accelerate.costOfEquivReps,
+      out_acc_pct_of_current_dials:  td.accelerate.pctOfCurrentDials,
+      out_acc_monthly_meetings_held: td.accelerate.funnel.monthlyMeetingsHeld     ?? null,
+      out_acc_monthly_opps:          td.accelerate.funnel.monthlyOpps             ?? null,
+      out_acc_monthly_closed_won:    td.accelerate.funnel.monthlyClosedWon        ?? null,
+      out_acc_annual_pipeline:       td.accelerate.funnel.annualPipelineGenerated ?? null,
+      out_acc_annual_revenue:        td.accelerate.funnel.annualClosedWonRevenue  ?? null,
+
+      out_scale_monthly_dials:         td.scale.monthlyDials,
+      out_scale_monthly_connects:      td.scale.monthlyConnects,
+      out_scale_monthly_conversations: td.scale.monthlyConversations,
+      out_scale_monthly_meetings:      td.scale.monthlyMeetings,
+      out_scale_annual_meetings:       td.scale.annualMeetings,
+      out_scale_credits_per_month:     td.scale.creditsPerMonth,
+      out_scale_cost_monthly:          td.scale.costMonthly,
+      out_scale_cost_annual:           td.scale.costAnnual,
+      out_scale_total_annual_cost:     td.scale.totalAnnualCost,
+      out_scale_cost_per_connect:      td.scale.costPerConnect,
+      out_scale_cost_per_meeting:      td.scale.costPerMeeting,
+      out_scale_rep_production_equiv:  td.scale.repProductionEquivalent,
+      out_scale_cost_of_equiv_reps:    td.scale.costOfEquivReps,
+      out_scale_pct_of_current_dials:  td.scale.pctOfCurrentDials,
+      out_scale_monthly_meetings_held: td.scale.funnel.monthlyMeetingsHeld     ?? null,
+      out_scale_monthly_opps:          td.scale.funnel.monthlyOpps             ?? null,
+      out_scale_monthly_closed_won:    td.scale.funnel.monthlyClosedWon        ?? null,
+      out_scale_annual_pipeline:       td.scale.funnel.annualPipelineGenerated ?? null,
+      out_scale_annual_revenue:        td.scale.funnel.annualClosedWonRevenue  ?? null,
+    });
+
+    if (error) {
+      toast.error('Failed to save', { description: error.message });
+    } else {
+      toast.success('Session saved.');
+    }
   };
 
   const showROI = depthAtLeast(funnelDepth, 'opps') && customer.acv != null && customer.acv > 0 && results && tierData;
@@ -333,11 +450,11 @@ export default function Calculator() {
         <div className="glass rounded-xl grid grid-cols-1 md:grid-cols-3 gap-4 p-5 relative z-20">
           <div className="space-y-1.5">
             <label className="text-[11px] font-medium uppercase tracking-[0.1em] text-muted-foreground">Account</label>
-            <AccountSelector value={company} onChange={setCompany} />
+            <AccountSelector value={selectedAccountId} onChange={setSelectedAccountId} />
           </div>
           <div className="space-y-1.5">
             <label className="text-[11px] font-medium uppercase tracking-[0.1em] text-muted-foreground">TitanX User</label>
-            <UserSelector value={aeName} onChange={setAeName} />
+            <UserSelector value={selectedSfUserId} onChange={setSelectedSfUserId} />
           </div>
           <div className="space-y-1.5">
             <label className="text-[11px] font-medium uppercase tracking-[0.1em] text-muted-foreground">Date</label>
