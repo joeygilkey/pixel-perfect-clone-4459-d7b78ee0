@@ -450,7 +450,7 @@ export default function Calculator() {
         <div className="glass rounded-xl grid grid-cols-1 md:grid-cols-3 gap-4 p-5 relative z-20">
           <div className="space-y-1.5">
             <label className="text-[11px] font-medium uppercase tracking-[0.1em] text-muted-foreground">Account</label>
-            <AccountSelector value={company} onChange={setCompany} />
+            <AccountSelector value={selectedAccountId} onChange={setSelectedAccountId} />
           </div>
           <div className="space-y-1.5">
             <label className="text-[11px] font-medium uppercase tracking-[0.1em] text-muted-foreground">TitanX User</label>
