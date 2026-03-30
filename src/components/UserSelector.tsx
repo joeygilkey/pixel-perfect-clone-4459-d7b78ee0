@@ -1,19 +1,12 @@
-import { useState, useRef, useEffect, useMemo } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Search, ChevronDown, X } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
 
 interface User {
+  id: string;
   name: string;
-  role: string;
+  email: string | null;
 }
-
-const USERS: User[] = [
-  { name: 'Joey Gilkey', role: 'Sales' },
-  { name: 'Rob Anderson', role: 'Sales' },
-  { name: 'Sam Byassee', role: 'Sales' },
-  { name: 'Andrew Congleton', role: 'Sales' },
-  { name: 'Caitlyn Parker', role: 'Sales' },
-  { name: 'Matt Mattison', role: 'Sales' },
-];
 
 function SalesforceIcon({ className }: { className?: string }) {
   return (
@@ -26,17 +19,43 @@ function SalesforceIcon({ className }: { className?: string }) {
 export default function UserSelector({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
+  const [users, setUsers] = useState<User[]>([]);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [fetching, setFetching] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
 
-  const selectedUser = useMemo(() => USERS.find(u => u.name === value), [value]);
-
-  const filtered = useMemo(() => {
-    const q = search.toLowerCase();
-    return USERS
-      .filter(u => u.name.toLowerCase().includes(q))
-      .sort((a, b) => a.name.localeCompare(b.name));
+  // Fetch users on search change
+  useEffect(() => {
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(async () => {
+      setFetching(true);
+      const { data } = await supabase
+        .from('sf_users')
+        .select('id, name, email')
+        .eq('is_active', true)
+        .ilike('name', `%${search}%`)
+        .order('name')
+        .limit(50);
+      setUsers(data ?? []);
+      setFetching(false);
+    }, 200);
+    return () => clearTimeout(debounceRef.current);
   }, [search]);
+
+  // Fetch selected user by id when value changes
+  useEffect(() => {
+    if (!value) { setSelectedUser(null); return; }
+    (async () => {
+      const { data } = await supabase
+        .from('sf_users')
+        .select('id, name, email')
+        .eq('id', value)
+        .single();
+      setSelectedUser(data ?? null);
+    })();
+  }, [value]);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -94,21 +113,21 @@ export default function UserSelector({ value, onChange }: { value: string; onCha
               className="bg-transparent text-sm text-foreground placeholder:text-muted-foreground/40 outline-none w-full"
             />
           </div>
-          <div className="max-h-[240px] overflow-y-auto py-1">
-            {filtered.length === 0 ? (
-              <div className="px-3 py-4 text-center text-xs text-muted-foreground/50">No users found</div>
+          <div className={`max-h-[240px] overflow-y-auto py-1 transition-opacity ${fetching ? 'opacity-50' : ''}`}>
+            {users.length === 0 ? (
+              <div className="px-3 py-4 text-center text-xs text-muted-foreground/50">{fetching ? 'Loading…' : 'No users found'}</div>
             ) : (
-              filtered.map(user => (
+              users.map(user => (
                 <button
-                  key={user.name}
+                  key={user.id}
                   type="button"
-                  onClick={() => { onChange(user.name); setOpen(false); setSearch(''); }}
-                  className={`w-full flex items-center gap-2.5 px-3 py-2 text-left transition-colors duration-150 hover:bg-primary/10 ${value === user.name ? 'bg-primary/10' : ''}`}
+                  onClick={() => { onChange(user.id); setOpen(false); setSearch(''); }}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 text-left transition-colors duration-150 hover:bg-primary/10 ${value === user.id ? 'bg-primary/10' : ''}`}
                 >
                   <SalesforceIcon className="h-4 w-4 flex-shrink-0" />
                   <div className="flex flex-col min-w-0 leading-tight">
                     <span className="text-sm text-foreground truncate">{user.name}</span>
-                    <span className="text-[10px] text-muted-foreground/50 truncate">{user.role}</span>
+                    <span className="text-[10px] text-muted-foreground/50 truncate">{user.email}</span>
                   </div>
                 </button>
               ))

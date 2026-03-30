@@ -1,50 +1,12 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { Search, ChevronDown, X } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
 
 interface Account {
+  id: string;
   name: string;
-  domain: string;
+  domain: string | null;
 }
-
-const DUMMY_ACCOUNTS: Account[] = [
-  { name: 'Acme Corporation', domain: 'acme.com' },
-  { name: 'Adobe Systems', domain: 'adobe.com' },
-  { name: 'Amazon Web Services', domain: 'aws.amazon.com' },
-  { name: 'Apple Inc.', domain: 'apple.com' },
-  { name: 'Atlassian', domain: 'atlassian.com' },
-  { name: 'Block Inc.', domain: 'block.xyz' },
-  { name: 'Cisco Systems', domain: 'cisco.com' },
-  { name: 'Cloudflare', domain: 'cloudflare.com' },
-  { name: 'CrowdStrike', domain: 'crowdstrike.com' },
-  { name: 'Datadog', domain: 'datadoghq.com' },
-  { name: 'Dell Technologies', domain: 'dell.com' },
-  { name: 'DocuSign', domain: 'docusign.com' },
-  { name: 'Figma', domain: 'figma.com' },
-  { name: 'Google Cloud', domain: 'cloud.google.com' },
-  { name: 'HubSpot', domain: 'hubspot.com' },
-  { name: 'IBM', domain: 'ibm.com' },
-  { name: 'Intuit', domain: 'intuit.com' },
-  { name: 'Microsoft', domain: 'microsoft.com' },
-  { name: 'MongoDB', domain: 'mongodb.com' },
-  { name: 'Netflix', domain: 'netflix.com' },
-  { name: 'Okta', domain: 'okta.com' },
-  { name: 'Oracle', domain: 'oracle.com' },
-  { name: 'Palo Alto Networks', domain: 'paloaltonetworks.com' },
-  { name: 'Salesforce', domain: 'salesforce.com' },
-  { name: 'ServiceNow', domain: 'servicenow.com' },
-  { name: 'Shopify', domain: 'shopify.com' },
-  { name: 'Slack Technologies', domain: 'slack.com' },
-  { name: 'Snowflake', domain: 'snowflake.com' },
-  { name: 'Splunk', domain: 'splunk.com' },
-  { name: 'Stripe', domain: 'stripe.com' },
-  { name: 'Twilio', domain: 'twilio.com' },
-  { name: 'Uber Technologies', domain: 'uber.com' },
-  { name: 'VMware', domain: 'vmware.com' },
-  { name: 'Workday', domain: 'workday.com' },
-  { name: 'Zendesk', domain: 'zendesk.com' },
-  { name: 'Zoom Video', domain: 'zoom.us' },
-  { name: 'ZoomInfo', domain: 'zoominfo.com' },
-];
 
 function SalesforceIcon({ className }: { className?: string }) {
   return (
@@ -57,17 +19,42 @@ function SalesforceIcon({ className }: { className?: string }) {
 export default function AccountSelector({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
+  const [accounts, setAccounts] = useState<Account[]>([]);
+  const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
+  const [fetching, setFetching] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
 
-  const selectedAccount = useMemo(() => DUMMY_ACCOUNTS.find(a => a.name === value), [value]);
-
-  const filtered = useMemo(() => {
-    const q = search.toLowerCase();
-    return DUMMY_ACCOUNTS
-      .filter(a => a.name.toLowerCase().includes(q) || a.domain.toLowerCase().includes(q))
-      .sort((a, b) => a.name.localeCompare(b.name));
+  // Fetch accounts on search change
+  useEffect(() => {
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(async () => {
+      setFetching(true);
+      const { data } = await supabase
+        .from('sf_accounts')
+        .select('id, name, domain')
+        .ilike('name', `%${search}%`)
+        .order('name')
+        .limit(50);
+      setAccounts(data ?? []);
+      setFetching(false);
+    }, 200);
+    return () => clearTimeout(debounceRef.current);
   }, [search]);
+
+  // Fetch selected account by id when value changes
+  useEffect(() => {
+    if (!value) { setSelectedAccount(null); return; }
+    (async () => {
+      const { data } = await supabase
+        .from('sf_accounts')
+        .select('id, name, domain')
+        .eq('id', value)
+        .single();
+      setSelectedAccount(data ?? null);
+    })();
+  }, [value]);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -132,20 +119,20 @@ export default function AccountSelector({ value, onChange }: { value: string; on
           </div>
 
           {/* List */}
-          <div className="max-h-[240px] overflow-y-auto py-1">
-            {filtered.length === 0 ? (
-              <div className="px-3 py-4 text-center text-xs text-muted-foreground/50">No accounts found</div>
+          <div className={`max-h-[240px] overflow-y-auto py-1 transition-opacity ${fetching ? 'opacity-50' : ''}`}>
+            {accounts.length === 0 ? (
+              <div className="px-3 py-4 text-center text-xs text-muted-foreground/50">{fetching ? 'Loading…' : 'No accounts found'}</div>
             ) : (
-              filtered.map(account => (
+              accounts.map(account => (
                 <button
-                  key={account.name}
+                  key={account.id}
                   type="button"
                   onClick={() => {
-                    onChange(account.name);
+                    onChange(account.id);
                     setOpen(false);
                     setSearch('');
                   }}
-                  className={`w-full flex items-center gap-2.5 px-3 py-2 text-left transition-colors duration-150 hover:bg-primary/10 ${value === account.name ? 'bg-primary/10' : ''}`}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 text-left transition-colors duration-150 hover:bg-primary/10 ${value === account.id ? 'bg-primary/10' : ''}`}
                 >
                   <SalesforceIcon className="h-4 w-4 flex-shrink-0" />
                   <div className="flex flex-col min-w-0 leading-tight">
