@@ -249,8 +249,8 @@ function TierColumn({ title, subtitle, results, currentState, recommended = fals
 }
 
 export default function Calculator() {
-  const [company, setCompany] = useState('');
-  const [aeName, setAeName] = useState('');
+  const [selectedAccountId, setSelectedAccountId] = useState('');
+  const [selectedSfUserId, setSelectedSfUserId] = useState('');
   const [sessionDate, setSessionDate] = useState<Date>(new Date());
   const [model, setModel] = useState<string>('blended');
   const [recommendedTier, setRecommendedTier] = useState<string | null>(null);
