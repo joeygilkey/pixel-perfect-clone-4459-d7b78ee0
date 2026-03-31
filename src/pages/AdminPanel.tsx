@@ -697,9 +697,9 @@ function AllSubmissionsTab({ sessions, onRefresh }: { sessions: SessionRow[]; on
                             )}
                           </div>
                           <div className="space-y-2">
-                            <DetailCell label="Mo. Dials" value={tier.dials != null ? tier.dials.toLocaleString() : undefined} />
-                            <DetailCell label="Mo. Connects" value={tier.connects != null ? tier.connects.toLocaleString() : undefined} />
-                            <DetailCell label="Mo. Meetings" value={tier.meetings != null ? tier.meetings.toLocaleString() : undefined} />
+                            <DetailCell label="Mo. Dials" value={tier.dials != null ? Math.round(tier.dials).toLocaleString() : undefined} />
+                            <DetailCell label="Mo. Connects" value={tier.connects != null ? Math.round(tier.connects).toLocaleString() : undefined} />
+                            <DetailCell label="Mo. Meetings" value={tier.meetings != null ? Math.round(tier.meetings).toLocaleString() : undefined} />
                             <DetailCell label="Annual Cost" value={tier.cost != null ? fCurrency(tier.cost) : undefined} />
                             <DetailCell label="Monthly Cost" value={tier.costMo != null ? fCurrency(tier.costMo) : undefined} />
                             <DetailCell label="Cost/Connect" value={tier.cpc != null ? fCurrency(tier.cpc) : undefined} />
