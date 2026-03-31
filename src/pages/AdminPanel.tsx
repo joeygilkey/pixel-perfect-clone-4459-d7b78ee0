@@ -548,7 +548,14 @@ function AllSubmissionsTab({ sessions, onRefresh }: { sessions: SessionRow[]; on
               {/* Summary Row */}
               <button
                 type="button"
-                onClick={() => setExpandedId(isExpanded ? null : s.id)}
+                onClick={async () => {
+                  if (isExpanded) { setExpandedId(null); return; }
+                  setExpandedId(s.id);
+                  if (!expandedData[s.id]) {
+                    const { data } = await supabase.from('calculator_sessions').select('*').eq('id', s.id).single();
+                    if (data) setExpandedData(prev => ({ ...prev, [s.id]: { ...s, ...data } }));
+                  }
+                }}
                 className="w-full flex items-center gap-4 px-5 py-3.5 text-left transition-all duration-200 hover:bg-primary/[0.03]"
               >
                 <ChevronRight className={cn("h-4 w-4 text-muted-foreground/40 flex-shrink-0 transition-transform duration-300", isExpanded && "rotate-90 text-primary")} />
