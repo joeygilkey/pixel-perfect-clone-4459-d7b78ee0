@@ -153,7 +153,7 @@ export default function AdminPanel() {
       </header>
 
       {/* Tabs */}
-      <div className="flex border-b border-border/30 px-6">
+      <div className="relative z-10 flex border-b border-border/30 px-6">
         {tabs.map(t => (
           <button
             key={t.key}
@@ -171,7 +171,7 @@ export default function AdminPanel() {
       </div>
 
       {/* Tab Content */}
-      <div className="p-6">
+      <div className="relative z-10 p-6">
         {activeTab === 'all' && (
           <AllSubmissionsTab
             sessions={sessions}
