@@ -718,7 +718,7 @@ function AllSubmissionsTab({ sessions, onRefresh }: { sessions: SessionRow[]; on
       {/* Table */}
       <div className="glass rounded-xl overflow-hidden border border-border/20">
         {/* Header */}
-        <div className="grid grid-cols-[180px_1fr_1fr_130px_130px_130px_140px] border-b border-border/30">
+        <div className="grid grid-cols-[180px_1fr_1fr_130px_130px_130px_160px] border-b border-border/30">
           {['Date', 'Account', 'User', 'Grow', 'Accelerate', 'Scale', 'Actions'].map(h => (
             <div key={h} className="px-4 py-3 text-[10px] uppercase tracking-[0.12em] font-bold text-muted-foreground/60">{h}</div>
           ))}
@@ -741,7 +741,7 @@ function AllSubmissionsTab({ sessions, onRefresh }: { sessions: SessionRow[]; on
                     if (data) setExpandedData(prev => ({ ...prev, [s.id]: { ...s, ...data } }));
                   }
                 }}
-                className={cn("w-full grid grid-cols-[180px_1fr_1fr_130px_130px_130px_140px] items-center transition-all duration-200 hover:bg-primary/[0.03] border-b border-border/10", rowBg)}
+                className={cn("w-full grid grid-cols-[180px_1fr_1fr_130px_130px_130px_160px] items-center transition-all duration-200 hover:bg-primary/[0.03] border-b border-border/10", rowBg)}
               >
                 <div className="px-4 py-3 flex items-center gap-2">
                   <ChevronRight className={cn("h-3.5 w-3.5 text-muted-foreground/40 flex-shrink-0 transition-transform duration-300", isExpanded && "rotate-90 text-primary")} />
@@ -799,9 +799,14 @@ function AllSubmissionsTab({ sessions, onRefresh }: { sessions: SessionRow[]; on
                     </TooltipTrigger>
                     <TooltipContent>Edit</TooltipContent>
                   </Tooltip>
-                  <button onClick={() => setDeleteConfirmId(s.id)} className="p-1.5 rounded-lg hover:bg-destructive/15 text-muted-foreground/50 hover:text-destructive transition-all duration-200">
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </button>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button onClick={() => setDeleteConfirmId(s.id)} className="p-1.5 rounded-lg hover:bg-destructive/15 text-muted-foreground/50 hover:text-destructive transition-all duration-200">
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent>Delete</TooltipContent>
+                  </Tooltip>
                 </div>
               </button>
 
