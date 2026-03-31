@@ -6,6 +6,16 @@ import CalculatorResultsView from '@/components/CalculatorResults';
 import titanxLogo from '@/assets/titanx-logo.svg';
 import bgDark from '@/assets/bg-dark.png';
 import { format } from 'date-fns';
+import { fCurrency, fNumber } from '@/lib/formatters';
+
+function ReadOnlyField({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="space-y-0.5">
+      <div className="text-[10px] font-medium uppercase tracking-[0.1em] text-muted-foreground">{label}</div>
+      <div className="text-sm font-medium text-foreground/90">{value}</div>
+    </div>
+  );
+}
 
 export default function GuestView() {
   const { token } = useParams<{ token: string }>();
@@ -116,6 +126,48 @@ export default function GuestView() {
             {recommendedTier && (
               <span>Recommended: <strong className="text-primary capitalize">{recommendedTier}</strong></span>
             )}
+          </div>
+        )}
+
+        {/* Read-only inputs */}
+        {customer && titanx && (
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Team & Baseline */}
+            <div className="glass rounded-xl p-5 space-y-4 relative overflow-hidden">
+              <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+              <span className="text-xs font-bold uppercase tracking-[0.15em] text-primary">Team & Baseline</span>
+              <div className="grid grid-cols-2 gap-4">
+                <ReadOnlyField label="Reps" value={fNumber(customer.reps)} />
+                <ReadOnlyField label="Annual Cost Per Rep" value={fCurrency(customer.annualCostPerRep)} />
+                <ReadOnlyField label="Dials / Day / Rep" value={fNumber(customer.dialsPerDay)} />
+                <ReadOnlyField label="Connect Rate" value={customer.connectRate != null ? `${customer.connectRate}%` : '—'} />
+                <ReadOnlyField label="Conversation Rate" value={customer.conversationRate != null ? `${customer.conversationRate}%` : '—'} />
+                <ReadOnlyField label="Meeting Rate" value={customer.meetingRate != null ? `${customer.meetingRate}%` : '—'} />
+                {customer.meetingShowRate != null && (
+                  <ReadOnlyField label="Meeting Show Rate" value={`${customer.meetingShowRate}%`} />
+                )}
+                {customer.oppQualificationRate != null && (
+                  <ReadOnlyField label="Opp Qualification Rate" value={`${customer.oppQualificationRate}%`} />
+                )}
+                {customer.winRate != null && (
+                  <ReadOnlyField label="Win Rate" value={`${customer.winRate}%`} />
+                )}
+                {customer.acv != null && (
+                  <ReadOnlyField label="ACV" value={fCurrency(customer.acv)} />
+                )}
+              </div>
+            </div>
+
+            {/* Desired Production Lift */}
+            <div className="glass rounded-xl p-5 space-y-4 relative overflow-hidden">
+              <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+              <span className="text-xs font-bold uppercase tracking-[0.15em] text-primary">Desired Production Lift</span>
+              <div className="grid grid-cols-3 gap-4">
+                <ReadOnlyField label="Grow" value={titanx.multipleGrow != null ? `${titanx.multipleGrow}×` : '—'} />
+                <ReadOnlyField label="Accelerate" value={titanx.multipleAccelerate != null ? `${titanx.multipleAccelerate}×` : '—'} />
+                <ReadOnlyField label="Scale" value={titanx.multipleScale != null ? `${titanx.multipleScale}×` : '—'} />
+              </div>
+            </div>
           </div>
         )}
 
