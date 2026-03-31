@@ -35,6 +35,7 @@ interface SessionRow {
   inp_acv: number;
   funnel_depth: string;
   recommended_tier: string | null;
+  model?: string;
   out_grow_cost_annual: number | null;
   out_grow_annual_pipeline: number | null;
   out_acc_cost_annual: number | null;
@@ -42,7 +43,7 @@ interface SessionRow {
   out_scale_cost_annual: number | null;
   out_scale_annual_pipeline: number | null;
   created_at: string;
-  // Edit fields
+  // Edit / detail fields
   sf_account_id?: string;
   sf_user_id?: string;
   inp_annual_cost_per_rep?: number;
@@ -52,6 +53,53 @@ interface SessionRow {
   inp_meeting_show_rate?: number;
   inp_opp_qualification_rate?: number;
   inp_win_rate?: number;
+  // TitanX inputs
+  inp_high_intent?: number;
+  inp_high_intent_reach?: number;
+  inp_avg_phones?: number;
+  inp_titanx_connect_rate?: number;
+  inp_credit_price_grow?: number;
+  inp_credit_price_accelerate?: number;
+  inp_credit_price_scale?: number;
+  inp_multiple_grow?: number;
+  inp_multiple_accelerate?: number;
+  inp_multiple_scale?: number;
+  // Current state outputs
+  out_cs_monthly_dials?: number | null;
+  out_cs_monthly_connects?: number | null;
+  out_cs_monthly_conversations?: number | null;
+  out_cs_monthly_meetings?: number | null;
+  out_cs_annual_meetings?: number | null;
+  out_cs_annual_cost_reps?: number | null;
+  out_cs_cost_per_connect?: number | null;
+  out_cs_cost_per_meeting?: number | null;
+  out_cs_annual_pipeline?: number | null;
+  out_cs_annual_revenue?: number | null;
+  // Tier outputs
+  out_grow_monthly_dials?: number | null;
+  out_grow_monthly_connects?: number | null;
+  out_grow_monthly_meetings?: number | null;
+  out_grow_cost_monthly?: number | null;
+  out_grow_cost_per_connect?: number | null;
+  out_grow_cost_per_meeting?: number | null;
+  out_grow_annual_revenue?: number | null;
+  out_grow_rep_production_equiv?: number | null;
+  out_acc_monthly_dials?: number | null;
+  out_acc_monthly_connects?: number | null;
+  out_acc_monthly_meetings?: number | null;
+  out_acc_cost_monthly?: number | null;
+  out_acc_cost_per_connect?: number | null;
+  out_acc_cost_per_meeting?: number | null;
+  out_acc_annual_revenue?: number | null;
+  out_acc_rep_production_equiv?: number | null;
+  out_scale_monthly_dials?: number | null;
+  out_scale_monthly_connects?: number | null;
+  out_scale_monthly_meetings?: number | null;
+  out_scale_cost_monthly?: number | null;
+  out_scale_cost_per_connect?: number | null;
+  out_scale_cost_per_meeting?: number | null;
+  out_scale_annual_revenue?: number | null;
+  out_scale_rep_production_equiv?: number | null;
 }
 
 const FUNNEL_LABELS: Record<string, string> = {
