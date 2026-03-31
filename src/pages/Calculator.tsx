@@ -409,6 +409,11 @@ export default function Calculator() {
         <img src={theme === 'light' ? titanxLogoLight : titanxLogo} alt="TitanX" className="h-[26px]" />
         <h1 className="text-base font-semibold text-foreground/80 hidden sm:block tracking-wide">Dream Outcome Calculator</h1>
         <div className="flex items-center gap-2">
+          {isAdmin && (
+            <button onClick={() => navigate('/admin')} className="p-2 rounded-lg glass-subtle border-none text-foreground/60 hover:text-foreground transition-all duration-300" aria-label="Admin Panel">
+              <Settings className="h-4 w-4" />
+            </button>
+          )}
           <button onClick={toggleTheme} className="p-2 rounded-lg glass-subtle border-none text-foreground/60 hover:text-foreground transition-all duration-300" aria-label="Toggle theme">
             {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
