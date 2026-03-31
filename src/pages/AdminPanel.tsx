@@ -696,7 +696,7 @@ function AllSubmissionsTab({ sessions, onRefresh }: { sessions: SessionRow[]; on
       {/* Table */}
       <div className="glass rounded-xl overflow-hidden border border-border/20">
         {/* Header */}
-        <div className="grid grid-cols-[180px_1fr_1fr_130px_130px_130px_100px] border-b border-border/30">
+        <div className="grid grid-cols-[180px_1fr_1fr_130px_130px_130px_140px] border-b border-border/30">
           {['Date', 'Account', 'User', 'Grow', 'Accelerate', 'Scale', 'Actions'].map(h => (
             <div key={h} className="px-4 py-3 text-[10px] uppercase tracking-[0.12em] font-bold text-muted-foreground/60">{h}</div>
           ))}
