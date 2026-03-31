@@ -42,8 +42,6 @@ export default function Calculator() {
   const [recommendedTier, setRecommendedTier] = useState<string | null>(null);
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const [funnelDepth, setFunnelDepth] = useState<FunnelDepth>('meetings_set');
-  const [financialOpen, setFinancialOpen] = useState(false);
-  const [roiOpen, setRoiOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
