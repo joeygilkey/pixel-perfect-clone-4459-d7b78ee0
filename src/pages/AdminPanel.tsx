@@ -513,7 +513,7 @@ function AllSubmissionsTab({ sessions, onRefresh }: { sessions: SessionRow[]; on
             const bg = i % 2 === 0 ? '#1A1A1A' : '#2A2A2A';
             const cell = "px-3 py-2.5 text-xs text-foreground/80 truncate";
             return (
-              <div key={s.id || i} className="grid" style={{ gridTemplateColumns: '90px 130px 150px 130px 55px 75px 85px 105px 90px 100px 100px 100px 100px 100px 100px 80px' }}>
+              <div key={s.id || i} className="grid" style={{ gridTemplateColumns: '90px 130px 150px 130px 55px 75px 85px 105px 90px 100px 100px 100px 100px 100px 100px 110px' }}>
                 <div style={{ background: bg }} className={cell}>{s.session_date}</div>
                 <div style={{ background: bg }} className={cell}>{s.submitted_by_name}</div>
                 <div style={{ background: bg }} className={cell}>{s.account_name}</div>
