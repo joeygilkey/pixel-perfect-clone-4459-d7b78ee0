@@ -610,44 +610,54 @@ function AllSubmissionsTab({ sessions, onRefresh }: { sessions: SessionRow[]; on
                     {d.recommended_tier && <span>Recommended: <strong className="text-primary">{d.recommended_tier}</strong></span>}
                   </div>
 
-                  {/* Customer Inputs */}
-                  <div>
-                    <div className="text-[10px] font-bold uppercase tracking-[0.15em] text-primary mb-3">Customer Inputs</div>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-x-6 gap-y-3">
-                      <DetailCell label="Reps" value={d.inp_reps} />
-                      <DetailCell label="Cost/Rep" value={d.inp_annual_cost_per_rep != null ? fCurrency(d.inp_annual_cost_per_rep) : undefined} />
-                      <DetailCell label="Dials/Day" value={d.inp_dials_per_day} />
-                      <DetailCell label="Connect %" value={d.inp_connect_rate != null ? `${d.inp_connect_rate}%` : undefined} />
-                      <DetailCell label="Conversation %" value={d.inp_conversation_rate != null ? `${d.inp_conversation_rate}%` : undefined} />
-                      <DetailCell label="Meeting %" value={d.inp_meeting_rate != null ? `${d.inp_meeting_rate}%` : undefined} />
-                      <DetailCell label="Show %" value={d.inp_meeting_show_rate != null ? `${d.inp_meeting_show_rate}%` : undefined} />
-                      <DetailCell label="Opp Qual %" value={d.inp_opp_qualification_rate != null ? `${d.inp_opp_qualification_rate}%` : undefined} />
-                      <DetailCell label="Win %" value={d.inp_win_rate != null ? `${d.inp_win_rate}%` : undefined} />
-                      <DetailCell label="ACV" value={d.inp_acv != null ? fCurrency(d.inp_acv) : undefined} />
+                  {/* Top row: Customer Inputs | Scoring Profile | Credit Costs */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {/* Customer Inputs */}
+                    <div className="rounded-lg border border-border/20 bg-background/20 p-4">
+                      <div className="text-[10px] font-bold uppercase tracking-[0.15em] text-primary mb-3 border-l-2 border-primary pl-2">Customer Inputs</div>
+                      <div className="space-y-2.5">
+                        <DetailCell label="Reps" value={d.inp_reps} />
+                        <DetailCell label="Cost/Rep" value={d.inp_annual_cost_per_rep != null ? fCurrency(d.inp_annual_cost_per_rep) : undefined} />
+                        <DetailCell label="Dials/Day" value={d.inp_dials_per_day} />
+                        <DetailCell label="Connect %" value={d.inp_connect_rate != null ? `${d.inp_connect_rate}%` : undefined} />
+                        <DetailCell label="Conversation %" value={d.inp_conversation_rate != null ? `${d.inp_conversation_rate}%` : undefined} />
+                        <DetailCell label="Meeting %" value={d.inp_meeting_rate != null ? `${d.inp_meeting_rate}%` : undefined} />
+                        <DetailCell label="Show %" value={d.inp_meeting_show_rate != null ? `${d.inp_meeting_show_rate}%` : undefined} />
+                        <DetailCell label="Opp Qual %" value={d.inp_opp_qualification_rate != null ? `${d.inp_opp_qualification_rate}%` : undefined} />
+                        <DetailCell label="Win %" value={d.inp_win_rate != null ? `${d.inp_win_rate}%` : undefined} />
+                        <DetailCell label="ACV" value={d.inp_acv != null ? fCurrency(d.inp_acv) : undefined} />
+                      </div>
                     </div>
-                  </div>
 
-                  {/* TitanX Inputs */}
-                  <div>
-                    <div className="text-[10px] font-bold uppercase tracking-[0.15em] text-primary mb-3">TitanX Scoring Profile</div>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-x-6 gap-y-3">
-                      <DetailCell label="High Intent %" value={d.inp_high_intent != null ? `${d.inp_high_intent}%` : undefined} />
-                      <DetailCell label="7-Dial Reach" value={d.inp_high_intent_reach != null ? `${d.inp_high_intent_reach}%` : undefined} />
-                      <DetailCell label="Avg Phones" value={d.inp_avg_phones} />
-                      <DetailCell label="TitanX Connect %" value={d.inp_titanx_connect_rate != null ? `${d.inp_titanx_connect_rate}%` : undefined} />
-                      <DetailCell label="Credit — Grow" value={d.inp_credit_price_grow != null ? `$${d.inp_credit_price_grow}` : undefined} />
-                      <DetailCell label="Credit — Acc" value={d.inp_credit_price_accelerate != null ? `$${d.inp_credit_price_accelerate}` : undefined} />
-                      <DetailCell label="Credit — Scale" value={d.inp_credit_price_scale != null ? `$${d.inp_credit_price_scale}` : undefined} />
-                      <DetailCell label="Lift — Grow" value={d.inp_multiple_grow != null ? `${d.inp_multiple_grow}×` : undefined} />
-                      <DetailCell label="Lift — Acc" value={d.inp_multiple_accelerate != null ? `${d.inp_multiple_accelerate}×` : undefined} />
-                      <DetailCell label="Lift — Scale" value={d.inp_multiple_scale != null ? `${d.inp_multiple_scale}×` : undefined} />
+                    {/* Scoring Profile */}
+                    <div className="rounded-lg border border-border/20 bg-background/20 p-4">
+                      <div className="text-[10px] font-bold uppercase tracking-[0.15em] text-primary mb-3 border-l-2 border-primary pl-2">Scoring Profile</div>
+                      <div className="space-y-2.5">
+                        <DetailCell label="High Intent %" value={d.inp_high_intent != null ? `${d.inp_high_intent}%` : undefined} />
+                        <DetailCell label="7-Dial Reach" value={d.inp_high_intent_reach != null ? `${d.inp_high_intent_reach}%` : undefined} />
+                        <DetailCell label="Avg Phones" value={d.inp_avg_phones} />
+                        <DetailCell label="TitanX Connect %" value={d.inp_titanx_connect_rate != null ? `${d.inp_titanx_connect_rate}%` : undefined} />
+                      </div>
+                    </div>
+
+                    {/* Credit Costs */}
+                    <div className="rounded-lg border border-border/20 bg-background/20 p-4">
+                      <div className="text-[10px] font-bold uppercase tracking-[0.15em] text-primary mb-3 border-l-2 border-primary pl-2">Credit Costs</div>
+                      <div className="space-y-2.5">
+                        <DetailCell label="Credit — Grow" value={d.inp_credit_price_grow != null ? `$${d.inp_credit_price_grow}` : undefined} />
+                        <DetailCell label="Credit — Accelerate" value={d.inp_credit_price_accelerate != null ? `$${d.inp_credit_price_accelerate}` : undefined} />
+                        <DetailCell label="Credit — Scale" value={d.inp_credit_price_scale != null ? `$${d.inp_credit_price_scale}` : undefined} />
+                        <DetailCell label="Lift — Grow" value={d.inp_multiple_grow != null ? `${d.inp_multiple_grow}×` : undefined} />
+                        <DetailCell label="Lift — Accelerate" value={d.inp_multiple_accelerate != null ? `${d.inp_multiple_accelerate}×` : undefined} />
+                        <DetailCell label="Lift — Scale" value={d.inp_multiple_scale != null ? `${d.inp_multiple_scale}×` : undefined} />
+                      </div>
                     </div>
                   </div>
 
                   {/* Current State */}
-                  <div>
-                    <div className="text-[10px] font-bold uppercase tracking-[0.15em] text-primary mb-3">Current State</div>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-x-6 gap-y-3">
+                  <div className="rounded-lg border border-border/20 bg-background/20 p-4">
+                    <div className="text-[10px] font-bold uppercase tracking-[0.15em] text-primary mb-3 border-l-2 border-primary pl-2">Current State</div>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-4">
                       <DetailCell label="Mo. Dials" value={d.out_cs_monthly_dials != null ? d.out_cs_monthly_dials.toLocaleString() : undefined} />
                       <DetailCell label="Mo. Connects" value={d.out_cs_monthly_connects != null ? d.out_cs_monthly_connects.toLocaleString() : undefined} />
                       <DetailCell label="Mo. Meetings" value={d.out_cs_monthly_meetings != null ? d.out_cs_monthly_meetings.toLocaleString() : undefined} />
@@ -659,8 +669,8 @@ function AllSubmissionsTab({ sessions, onRefresh }: { sessions: SessionRow[]; on
                   </div>
 
                   {/* Tier Results */}
-                  <div>
-                    <div className="text-[10px] font-bold uppercase tracking-[0.15em] text-primary mb-3">Tier Results</div>
+                  <div className="rounded-lg border border-border/20 bg-background/20 p-4">
+                    <div className="text-[10px] font-bold uppercase tracking-[0.15em] text-primary mb-3 border-l-2 border-primary pl-2">Tier Results</div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       {[
                         { name: 'Grow', cost: d.out_grow_cost_annual, costMo: d.out_grow_cost_monthly, pipe: d.out_grow_annual_pipeline, rev: d.out_grow_annual_revenue, dials: d.out_grow_monthly_dials, connects: d.out_grow_monthly_connects, meetings: d.out_grow_monthly_meetings, cpc: d.out_grow_cost_per_connect, cpm: d.out_grow_cost_per_meeting, rpe: d.out_grow_rep_production_equiv },
@@ -671,7 +681,7 @@ function AllSubmissionsTab({ sessions, onRefresh }: { sessions: SessionRow[]; on
                           "rounded-lg p-4 space-y-3 border transition-all duration-300",
                           d.recommended_tier === tier.name.toLowerCase()
                             ? "border-primary/30 bg-primary/[0.04] shadow-[0_0_20px_hsla(348,100%,50%,0.08)]"
-                            : "border-border/20 bg-background/30"
+                            : "border-border/10 bg-background/10"
                         )}>
                           <div className="flex items-center justify-between">
                             <span className="text-xs font-bold uppercase tracking-[0.12em] text-foreground/80">{tier.name}</span>
@@ -679,7 +689,7 @@ function AllSubmissionsTab({ sessions, onRefresh }: { sessions: SessionRow[]; on
                               <Star className="h-3.5 w-3.5 text-primary fill-primary" />
                             )}
                           </div>
-                          <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                          <div className="space-y-2">
                             <DetailCell label="Annual Cost" value={tier.cost != null ? fCurrency(tier.cost) : undefined} />
                             <DetailCell label="Monthly Cost" value={tier.costMo != null ? fCurrency(tier.costMo) : undefined} />
                             <DetailCell label="Mo. Meetings" value={tier.meetings != null ? tier.meetings.toLocaleString() : undefined} />
