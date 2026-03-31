@@ -171,7 +171,7 @@ export default function AdminPanel() {
       </div>
 
       {/* Tab Content */}
-      <div className="p-6">
+      <div className="relative z-10 p-6">
         {activeTab === 'all' && (
           <AllSubmissionsTab
             sessions={sessions}
