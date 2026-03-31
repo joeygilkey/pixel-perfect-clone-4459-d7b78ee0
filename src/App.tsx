@@ -52,6 +52,7 @@ const App = () => {
             <Route path="/login" element={session ? <Navigate to="/" replace /> : <Login />} />
             <Route path="/" element={<ProtectedRoute session={session}><Calculator /></ProtectedRoute>} />
             <Route path="/admin" element={<ProtectedRoute session={session}><AdminPanel /></ProtectedRoute>} />
+            <Route path="/share/:token" element={<GuestView />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
