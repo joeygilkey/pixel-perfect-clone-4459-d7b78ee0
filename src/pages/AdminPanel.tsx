@@ -1,4 +1,7 @@
 import { useEffect, useState, useMemo, useCallback } from 'react';
+import { useTheme } from 'next-themes';
+import bgDark from '@/assets/bg-dark.png';
+import bgLight from '@/assets/bg-light.png';
 import CalculatorResultsView from '@/components/CalculatorResults';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
@@ -79,6 +82,7 @@ export default function AdminPanel() {
   const [userEmail, setUserEmail] = useState('');
   const [userId, setUserId] = useState('');
   const navigate = useNavigate();
+  const { theme } = useTheme();
 
   // Shared state for Tab 2 → Tab 3 pre-fill
   const [prefilledAccountId, setPrefilledAccountId] = useState('');
@@ -131,7 +135,11 @@ export default function AdminPanel() {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      {/* Background image */}
+      <div className="fixed inset-0 pointer-events-none">
+        <img src={theme === 'light' ? bgLight : bgDark} alt="" className="w-full h-full object-cover" />
+      </div>
       {/* Header */}
       <header className="glass-strong sticky top-0 z-50 p-2.5 flex items-center justify-between">
         <img src={titanxLogo} alt="TitanX" className="h-[26px]" />
