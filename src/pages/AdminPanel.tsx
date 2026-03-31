@@ -720,7 +720,7 @@ function AllSubmissionsTab({ sessions, onRefresh }: { sessions: SessionRow[]; on
         {/* Header */}
         <div className="grid grid-cols-[180px_1fr_1fr_130px_130px_130px_160px] border-b border-border/30">
           {['Date', 'Account', 'User', 'Grow', 'Accelerate', 'Scale', 'Actions'].map(h => (
-            <div key={h} className="px-4 py-3 text-[10px] uppercase tracking-[0.12em] font-bold text-muted-foreground/60">{h}</div>
+            <div key={h} className={cn("px-4 py-3 text-[10px] uppercase tracking-[0.12em] font-bold text-muted-foreground/60", h === 'Actions' && "text-center")}>{h}</div>
           ))}
         </div>
 
@@ -752,7 +752,7 @@ function AllSubmissionsTab({ sessions, onRefresh }: { sessions: SessionRow[]; on
                 <div className="px-4 py-3 text-xs font-semibold text-foreground/80">{s.out_grow_cost_annual != null ? fCurrency(s.out_grow_cost_annual) : '—'}</div>
                 <div className="px-4 py-3 text-xs font-semibold text-foreground/80">{s.out_acc_cost_annual != null ? fCurrency(s.out_acc_cost_annual) : '—'}</div>
                 <div className="px-4 py-3 text-xs font-semibold text-foreground/80">{s.out_scale_cost_annual != null ? fCurrency(s.out_scale_cost_annual) : '—'}</div>
-                <div className="px-4 py-3 flex items-center gap-1" onClick={e => e.stopPropagation()}>
+                <div className="px-4 pr-6 py-3 flex items-center justify-center gap-1" onClick={e => e.stopPropagation()}>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <button onClick={async () => {
