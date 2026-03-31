@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Search, ChevronDown, X } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
@@ -26,28 +26,35 @@ export default function UserSelector({ value, onChange }: { value: string; onCha
   const inputRef = useRef<HTMLInputElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
 
-  // Fetch users on search change
+  const fetchUsers = useCallback(async (query: string) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+    setFetching(true);
+    const { data } = await supabase
+      .from('sf_users')
+      .select('id, name, email')
+      .eq('is_active', true)
+      .ilike('name', `%${query}%`)
+      .order('name')
+      .limit(50);
+    setUsers(data ?? []);
+    setFetching(false);
+  }, []);
+
+  // Fetch on search change, only when open
   useEffect(() => {
+    if (!open) return;
     clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(async () => {
-      setFetching(true);
-      const { data } = await supabase
-        .from('sf_users')
-        .select('id, name, email')
-        .eq('is_active', true)
-        .ilike('name', `%${search}%`)
-        .order('name')
-        .limit(50);
-      setUsers(data ?? []);
-      setFetching(false);
-    }, 200);
+    debounceRef.current = setTimeout(() => fetchUsers(search), 200);
     return () => clearTimeout(debounceRef.current);
-  }, [search]);
+  }, [search, open, fetchUsers]);
 
   // Fetch selected user by id when value changes
   useEffect(() => {
     if (!value) { setSelectedUser(null); return; }
     (async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
       const { data } = await supabase
         .from('sf_users')
         .select('id, name, email')
@@ -72,11 +79,20 @@ export default function UserSelector({ value, onChange }: { value: string; onCha
     if (open && inputRef.current) inputRef.current.focus();
   }, [open]);
 
+  const handleOpen = () => {
+    const next = !open;
+    setOpen(next);
+    setSearch('');
+    if (next) {
+      fetchUsers('');
+    }
+  };
+
   return (
     <div ref={containerRef} className="relative">
       <button
         type="button"
-        onClick={() => { setOpen(!open); setSearch(''); }}
+        onClick={handleOpen}
         className="glass-subtle border-none h-9 w-full flex items-center gap-2 px-3 rounded-md text-sm transition-all duration-300 hover:ring-1 hover:ring-primary/40 text-left"
       >
         {selectedUser ? (

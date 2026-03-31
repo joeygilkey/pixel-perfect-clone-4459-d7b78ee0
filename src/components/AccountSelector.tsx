@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Search, ChevronDown, X } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
@@ -26,27 +26,34 @@ export default function AccountSelector({ value, onChange }: { value: string; on
   const inputRef = useRef<HTMLInputElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
 
-  // Fetch accounts on search change
+  const fetchAccounts = useCallback(async (query: string) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+    setFetching(true);
+    const { data } = await supabase
+      .from('sf_accounts')
+      .select('id, name, domain')
+      .ilike('name', `%${query}%`)
+      .order('name')
+      .limit(50);
+    setAccounts(data ?? []);
+    setFetching(false);
+  }, []);
+
+  // Fetch on search change, only when open
   useEffect(() => {
+    if (!open) return;
     clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(async () => {
-      setFetching(true);
-      const { data } = await supabase
-        .from('sf_accounts')
-        .select('id, name, domain')
-        .ilike('name', `%${search}%`)
-        .order('name')
-        .limit(50);
-      setAccounts(data ?? []);
-      setFetching(false);
-    }, 200);
+    debounceRef.current = setTimeout(() => fetchAccounts(search), 200);
     return () => clearTimeout(debounceRef.current);
-  }, [search]);
+  }, [search, open, fetchAccounts]);
 
   // Fetch selected account by id when value changes
   useEffect(() => {
     if (!value) { setSelectedAccount(null); return; }
     (async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
       const { data } = await supabase
         .from('sf_accounts')
         .select('id, name, domain')
@@ -71,12 +78,20 @@ export default function AccountSelector({ value, onChange }: { value: string; on
     if (open && inputRef.current) inputRef.current.focus();
   }, [open]);
 
+  const handleOpen = () => {
+    const next = !open;
+    setOpen(next);
+    setSearch('');
+    if (next) {
+      fetchAccounts('');
+    }
+  };
+
   return (
     <div ref={containerRef} className="relative">
-      {/* Trigger */}
       <button
         type="button"
-        onClick={() => { setOpen(!open); setSearch(''); }}
+        onClick={handleOpen}
         className="glass-subtle border-none h-9 w-full flex items-center gap-2 px-3 rounded-md text-sm transition-all duration-300 hover:ring-1 hover:ring-primary/40 text-left"
       >
         {selectedAccount ? (
@@ -102,10 +117,8 @@ export default function AccountSelector({ value, onChange }: { value: string; on
         <ChevronDown className={`h-3.5 w-3.5 text-muted-foreground/50 ${selectedAccount ? '' : 'ml-auto'} flex-shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
       </button>
 
-      {/* Dropdown */}
       {open && (
         <div className="absolute top-full left-0 right-0 mt-1.5 z-[100] rounded-lg overflow-hidden border border-border/50 shadow-2xl animate-fade-in bg-background backdrop-blur-3xl" style={{ WebkitBackdropFilter: 'blur(60px)', backdropFilter: 'blur(60px)' }}>
-          {/* Search input */}
           <div className="flex items-center gap-2 px-3 py-2 border-b border-border/30">
             <Search className="h-3.5 w-3.5 text-muted-foreground/50 flex-shrink-0" />
             <input
@@ -117,8 +130,6 @@ export default function AccountSelector({ value, onChange }: { value: string; on
               className="bg-transparent text-sm text-foreground placeholder:text-muted-foreground/40 outline-none w-full"
             />
           </div>
-
-          {/* List */}
           <div className={`max-h-[240px] overflow-y-auto py-1 transition-opacity ${fetching ? 'opacity-50' : ''}`}>
             {accounts.length === 0 ? (
               <div className="px-3 py-4 text-center text-xs text-muted-foreground/50">{fetching ? 'Loading…' : 'No accounts found'}</div>
@@ -127,11 +138,7 @@ export default function AccountSelector({ value, onChange }: { value: string; on
                 <button
                   key={account.id}
                   type="button"
-                  onClick={() => {
-                    onChange(account.id);
-                    setOpen(false);
-                    setSearch('');
-                  }}
+                  onClick={() => { onChange(account.id); setOpen(false); setSearch(''); }}
                   className={`w-full flex items-center gap-2.5 px-3 py-2 text-left transition-colors duration-150 hover:bg-primary/10 ${value === account.id ? 'bg-primary/10' : ''}`}
                 >
                   <SalesforceIcon className="h-4 w-4 flex-shrink-0" />
