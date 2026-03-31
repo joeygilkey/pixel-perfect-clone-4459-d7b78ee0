@@ -618,7 +618,9 @@ function AllSubmissionsTab({ sessions, onRefresh }: { sessions: SessionRow[]; on
               </button>
 
               {/* Expanded Detail */}
-              {isExpanded && (
+              {isExpanded && (() => {
+                const d = expandedData[s.id] ?? s;
+                return (
                 <div className="border-t border-border/20 px-5 py-5 space-y-5 animate-fade-in">
                   {/* Meta */}
                   <div className="flex flex-wrap gap-6 text-xs text-muted-foreground/60">
