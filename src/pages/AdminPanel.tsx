@@ -580,6 +580,25 @@ function AllSubmissionsTab({ sessions, onRefresh }: { sessions: SessionRow[]; on
                 <div className="px-4 py-3 flex items-center gap-1" onClick={e => e.stopPropagation()}>
                   <Tooltip>
                     <TooltipTrigger asChild>
+                      <button onClick={async () => {
+                        let shareToken = s.share_token;
+                        if (!shareToken) {
+                          shareToken = crypto.randomUUID();
+                          const { error } = await supabase.from('calculator_sessions').update({ share_token: shareToken }).eq('id', s.id);
+                          if (error) { toast.error('Failed to generate link'); return; }
+                          setSessions(prev => prev.map(ss => ss.id === s.id ? { ...ss, share_token: shareToken } : ss));
+                        }
+                        const url = `${window.location.origin}/share/${shareToken}`;
+                        navigator.clipboard.writeText(url);
+                        toast.success('Guest link copied to clipboard!');
+                      }} className="p-1.5 rounded-lg hover:bg-primary/15 text-muted-foreground/50 hover:text-primary transition-all duration-200">
+                        <Link2 className="h-3.5 w-3.5" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent>Copy Guest Link</TooltipContent>
+                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
                       <button onClick={() => window.open(`/?session=${s.id}`, '_blank')} className="p-1.5 rounded-lg hover:bg-primary/15 text-muted-foreground/50 hover:text-primary transition-all duration-200">
                         <ExternalLink className="h-3.5 w-3.5" />
                       </button>
