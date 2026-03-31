@@ -207,6 +207,7 @@ function TierColumn({ title, subtitle, results, currentState, recommended = fals
 }
 
 export default function Calculator() {
+  const navigate = useNavigate();
   const [selectedAccountId, setSelectedAccountId] = useState('');
   const [selectedSfUserId, setSelectedSfUserId] = useState('');
   const [sessionDate, setSessionDate] = useState<Date>(new Date());
@@ -216,6 +217,20 @@ export default function Calculator() {
   const [funnelDepth, setFunnelDepth] = useState<FunnelDepth>('meetings_set');
   const [financialOpen, setFinancialOpen] = useState(false);
   const [roiOpen, setRoiOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+      const { data } = await supabase
+        .from('app_users')
+        .select('role')
+        .eq('id', session.user.id)
+        .single();
+      if (data?.role === 'admin') setIsAdmin(true);
+    })();
+  }, []);
 
   const toggleTheme = useCallback(() => {
     setTheme(prev => {
