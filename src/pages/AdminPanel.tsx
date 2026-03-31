@@ -1053,7 +1053,10 @@ function ByAccountTab({ onCreateSession }: { onCreateSession: (accountId: string
                       )}
                     </div>
                     <div className="flex items-center gap-1">
-                      <button onClick={() => setEditingSession(s)} className="p-1.5 rounded hover:bg-primary/20 text-muted-foreground hover:text-primary transition-colors">
+                      <button onClick={async () => {
+                        const { data } = await supabase.from('calculator_sessions').select('*').eq('id', s.id).single();
+                        setEditingSession(data ? { ...s, ...data } : s);
+                      }} className="p-1.5 rounded hover:bg-primary/20 text-muted-foreground hover:text-primary transition-colors">
                         <Pencil className="h-3.5 w-3.5" />
                       </button>
                       <button onClick={() => setDeleteConfirmId(s.id)} className="p-1.5 rounded hover:bg-destructive/20 text-muted-foreground hover:text-destructive transition-colors">
