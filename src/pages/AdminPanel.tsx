@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, useCallback } from 'react';
+import { useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import { useTheme } from 'next-themes';
 import bgDark from '@/assets/bg-dark.png';
 import bgLight from '@/assets/bg-light.png';
@@ -205,49 +205,278 @@ export default function AdminPanel() {
    TAB 1 — ALL SUBMISSIONS
    ═══════════════════════════════════════════════════════ */
 
+function AdminFilterDropdown({ label, value, options, onChange }: {
+  label: string;
+  value: string;
+  options: { value: string; label: string }[];
+  onChange: (v: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const selected = options.find(o => o.value === value);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  return (
+    <div ref={containerRef} className="relative min-w-[160px]">
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className="glass-subtle border-none h-9 w-full flex items-center gap-2 px-3 rounded-md text-sm transition-all duration-300 hover:ring-1 hover:ring-primary/40 text-left"
+      >
+        <span className="text-foreground truncate">{selected?.label ?? label}</span>
+        {value && value !== 'all' && (
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); onChange('all'); }}
+            className="ml-auto flex-shrink-0 p-0.5 rounded-full text-muted-foreground/40 hover:text-foreground transition-colors"
+          >
+            <X className="h-3 w-3" />
+          </button>
+        )}
+        <ChevronDown className={`h-3.5 w-3.5 text-muted-foreground/50 ${value && value !== 'all' ? '' : 'ml-auto'} flex-shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
+      </button>
+      {open && (
+        <div className="absolute top-full left-0 right-0 mt-1.5 z-[100] rounded-lg overflow-hidden border border-border/50 shadow-2xl animate-fade-in bg-background backdrop-blur-3xl" style={{ WebkitBackdropFilter: 'blur(60px)', backdropFilter: 'blur(60px)' }}>
+          <div className="max-h-[240px] overflow-y-auto py-1">
+            {options.map(opt => (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => { onChange(opt.value); setOpen(false); }}
+                className={`w-full flex items-center px-3 py-2 text-left text-sm transition-colors duration-150 hover:bg-primary/10 ${value === opt.value ? 'bg-primary/10 text-foreground' : 'text-foreground/80'}`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function AdminAccountFilter({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const [accounts, setAccounts] = useState<{ id: string; name: string; domain: string | null }[]>([]);
+  const [selectedName, setSelectedName] = useState('');
+  const [fetching, setFetching] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+
+  const fetchAccounts = useCallback(async (q: string) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+    setFetching(true);
+    const { data } = await supabase.from('sf_accounts').select('id, name, domain').ilike('name', `%${q}%`).order('name').limit(50);
+    setAccounts(data ?? []);
+    setFetching(false);
+  }, []);
+
+  useEffect(() => {
+    if (!open) return;
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => fetchAccounts(search), 200);
+    return () => clearTimeout(debounceRef.current);
+  }, [search, open, fetchAccounts]);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) { setOpen(false); setSearch(''); }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  useEffect(() => { if (open && inputRef.current) inputRef.current.focus(); }, [open]);
+
+  return (
+    <div ref={containerRef} className="relative min-w-[200px]">
+      <button
+        type="button"
+        onClick={() => { setOpen(!open); setSearch(''); if (!open) fetchAccounts(''); }}
+        className="glass-subtle border-none h-9 w-full flex items-center gap-2 px-3 rounded-md text-sm transition-all duration-300 hover:ring-1 hover:ring-primary/40 text-left"
+      >
+        <span className={selectedName ? 'text-foreground truncate' : 'text-muted-foreground/40'}>{selectedName || 'All Accounts'}</span>
+        {selectedName && (
+          <button type="button" onClick={(e) => { e.stopPropagation(); onChange(''); setSelectedName(''); }} className="ml-auto flex-shrink-0 p-0.5 rounded-full text-muted-foreground/40 hover:text-foreground transition-colors">
+            <X className="h-3 w-3" />
+          </button>
+        )}
+        <ChevronDown className={`h-3.5 w-3.5 text-muted-foreground/50 ${selectedName ? '' : 'ml-auto'} flex-shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
+      </button>
+      {open && (
+        <div className="absolute top-full left-0 right-0 mt-1.5 z-[100] rounded-lg overflow-hidden border border-border/50 shadow-2xl animate-fade-in bg-background backdrop-blur-3xl" style={{ WebkitBackdropFilter: 'blur(60px)', backdropFilter: 'blur(60px)' }}>
+          <div className="flex items-center gap-2 px-3 py-2 border-b border-border/30">
+            <Search className="h-3.5 w-3.5 text-muted-foreground/50 flex-shrink-0" />
+            <input ref={inputRef} type="text" value={search} onChange={e => setSearch(e.target.value)} placeholder="Search accounts…" className="bg-transparent text-sm text-foreground placeholder:text-muted-foreground/40 outline-none w-full" />
+          </div>
+          <div className={`max-h-[240px] overflow-y-auto py-1 transition-opacity ${fetching ? 'opacity-50' : ''}`}>
+            <button type="button" onClick={() => { onChange(''); setSelectedName(''); setOpen(false); }} className={`w-full flex items-center px-3 py-2 text-left text-sm transition-colors duration-150 hover:bg-primary/10 ${!value ? 'bg-primary/10' : ''}`}>
+              All Accounts
+            </button>
+            {accounts.map(a => (
+              <button key={a.id} type="button" onClick={() => { onChange(a.name); setSelectedName(a.name); setOpen(false); setSearch(''); }} className={`w-full flex items-center gap-2.5 px-3 py-2 text-left transition-colors duration-150 hover:bg-primary/10 ${value === a.name ? 'bg-primary/10' : ''}`}>
+                <div className="flex flex-col min-w-0 leading-tight">
+                  <span className="text-sm text-foreground truncate">{a.name}</span>
+                  <span className="text-[10px] text-muted-foreground/50 truncate">{a.domain}</span>
+                </div>
+              </button>
+            ))}
+            {accounts.length === 0 && <div className="px-3 py-4 text-center text-xs text-muted-foreground/50">{fetching ? 'Loading…' : 'No accounts found'}</div>}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function AdminUserFilter({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const [users, setUsers] = useState<{ id: string; name: string; email: string | null }[]>([]);
+  const [selectedName, setSelectedName] = useState('');
+  const [fetching, setFetching] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+
+  const fetchUsers = useCallback(async (q: string) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+    setFetching(true);
+    const { data } = await supabase.from('sf_users').select('id, name, email').ilike('name', `%${q}%`).order('name').limit(50);
+    setUsers(data ?? []);
+    setFetching(false);
+  }, []);
+
+  useEffect(() => {
+    if (!open) return;
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => fetchUsers(search), 200);
+    return () => clearTimeout(debounceRef.current);
+  }, [search, open, fetchUsers]);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) { setOpen(false); setSearch(''); }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  useEffect(() => { if (open && inputRef.current) inputRef.current.focus(); }, [open]);
+
+  return (
+    <div ref={containerRef} className="relative min-w-[200px]">
+      <button
+        type="button"
+        onClick={() => { setOpen(!open); setSearch(''); if (!open) fetchUsers(''); }}
+        className="glass-subtle border-none h-9 w-full flex items-center gap-2 px-3 rounded-md text-sm transition-all duration-300 hover:ring-1 hover:ring-primary/40 text-left"
+      >
+        <span className={selectedName ? 'text-foreground truncate' : 'text-muted-foreground/40'}>{selectedName || 'All Users'}</span>
+        {selectedName && (
+          <button type="button" onClick={(e) => { e.stopPropagation(); onChange(''); setSelectedName(''); }} className="ml-auto flex-shrink-0 p-0.5 rounded-full text-muted-foreground/40 hover:text-foreground transition-colors">
+            <X className="h-3 w-3" />
+          </button>
+        )}
+        <ChevronDown className={`h-3.5 w-3.5 text-muted-foreground/50 ${selectedName ? '' : 'ml-auto'} flex-shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
+      </button>
+      {open && (
+        <div className="absolute top-full left-0 right-0 mt-1.5 z-[100] rounded-lg overflow-hidden border border-border/50 shadow-2xl animate-fade-in bg-background backdrop-blur-3xl" style={{ WebkitBackdropFilter: 'blur(60px)', backdropFilter: 'blur(60px)' }}>
+          <div className="flex items-center gap-2 px-3 py-2 border-b border-border/30">
+            <Search className="h-3.5 w-3.5 text-muted-foreground/50 flex-shrink-0" />
+            <input ref={inputRef} type="text" value={search} onChange={e => setSearch(e.target.value)} placeholder="Search users…" className="bg-transparent text-sm text-foreground placeholder:text-muted-foreground/40 outline-none w-full" />
+          </div>
+          <div className={`max-h-[240px] overflow-y-auto py-1 transition-opacity ${fetching ? 'opacity-50' : ''}`}>
+            <button type="button" onClick={() => { onChange(''); setSelectedName(''); setOpen(false); }} className={`w-full flex items-center px-3 py-2 text-left text-sm transition-colors duration-150 hover:bg-primary/10 ${!value ? 'bg-primary/10' : ''}`}>
+              All Users
+            </button>
+            {users.map(u => (
+              <button key={u.id} type="button" onClick={() => { onChange(u.name); setSelectedName(u.name); setOpen(false); setSearch(''); }} className={`w-full flex items-center gap-2.5 px-3 py-2 text-left transition-colors duration-150 hover:bg-primary/10 ${value === u.name ? 'bg-primary/10' : ''}`}>
+                <div className="flex flex-col min-w-0 leading-tight">
+                  <span className="text-sm text-foreground truncate">{u.name}</span>
+                  <span className="text-[10px] text-muted-foreground/50 truncate">{u.email}</span>
+                </div>
+              </button>
+            ))}
+            {users.length === 0 && <div className="px-3 py-4 text-center text-xs text-muted-foreground/50">{fetching ? 'Loading…' : 'No users found'}</div>}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+const DATE_OPTIONS = [
+  { value: 'all', label: 'All Dates' },
+  { value: 'today', label: 'Today' },
+  { value: 'this_week', label: 'This Week' },
+  { value: 'this_month', label: 'This Month' },
+  { value: 'last_30', label: 'Last 30 Days' },
+  { value: 'last_90', label: 'Last 90 Days' },
+];
+
 function AllSubmissionsTab({ sessions, onRefresh }: { sessions: SessionRow[]; onRefresh: () => Promise<void> }) {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState('date_desc');
-  const [filterFunnel, setFilterFunnel] = useState('all');
-  const [filterTier, setFilterTier] = useState('all');
+  const [filterAccount, setFilterAccount] = useState('');
+  const [filterUser, setFilterUser] = useState('');
+  const [filterDate, setFilterDate] = useState('all');
   const [editingSession, setEditingSession] = useState<SessionRow | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   const filtered = useMemo(() => {
     let list = [...sessions];
 
-    if (searchTerm) {
-      const q = searchTerm.toLowerCase();
-      list = list.filter(s =>
-        s.account_name?.toLowerCase().includes(q) ||
-        s.sf_user_name?.toLowerCase().includes(q)
-      );
+    if (filterAccount) {
+      const q = filterAccount.toLowerCase();
+      list = list.filter(s => s.account_name?.toLowerCase().includes(q));
     }
 
-    if (filterFunnel !== 'all') {
-      list = list.filter(s => s.funnel_depth === filterFunnel);
+    if (filterUser) {
+      const q = filterUser.toLowerCase();
+      list = list.filter(s => s.sf_user_name?.toLowerCase().includes(q));
     }
 
-    if (filterTier !== 'all') {
-      list = list.filter(s => s.recommended_tier?.toLowerCase() === filterTier);
+    if (filterDate !== 'all') {
+      const now = new Date();
+      let cutoff: Date;
+      switch (filterDate) {
+        case 'today':
+          cutoff = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+          break;
+        case 'this_week': {
+          const day = now.getDay();
+          cutoff = new Date(now.getFullYear(), now.getMonth(), now.getDate() - day);
+          break;
+        }
+        case 'this_month':
+          cutoff = new Date(now.getFullYear(), now.getMonth(), 1);
+          break;
+        case 'last_30':
+          cutoff = new Date(now.getTime() - 30 * 86400000);
+          break;
+        case 'last_90':
+          cutoff = new Date(now.getTime() - 90 * 86400000);
+          break;
+        default:
+          cutoff = new Date(0);
+      }
+      list = list.filter(s => new Date(s.created_at) >= cutoff);
     }
 
-    switch (sortBy) {
-      case 'date_asc':
-        list.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
-        break;
-      case 'account_az':
-        list.sort((a, b) => (a.account_name ?? '').localeCompare(b.account_name ?? ''));
-        break;
-      case 'reps_desc':
-        list.sort((a, b) => (b.inp_reps ?? 0) - (a.inp_reps ?? 0));
-        break;
-      default: // date_desc
-        list.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-    }
+    // Default sort: newest first
+    list.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
     return list;
-  }, [sessions, searchTerm, sortBy, filterFunnel, filterTier]);
+  }, [sessions, filterAccount, filterUser, filterDate]);
 
   const handleDelete = async (id: string) => {
     const { error } = await supabase.from('calculator_sessions').delete().eq('id', id);
@@ -264,49 +493,9 @@ function AllSubmissionsTab({ sessions, onRefresh }: { sessions: SessionRow[]; on
     <>
       {/* Filters */}
       <div className="flex flex-wrap gap-3 mb-4">
-        <div className="relative flex-1 min-w-[200px] max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground/50" />
-          <Input
-            placeholder="Search account or user…"
-            value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
-            className="glass-subtle border-none pl-9 h-9 text-sm"
-          />
-        </div>
-
-        <select
-          value={sortBy}
-          onChange={e => setSortBy(e.target.value)}
-          className="glass-subtle border-none h-9 px-3 rounded-md text-sm text-foreground bg-transparent"
-        >
-          <option value="date_desc">Date (newest)</option>
-          <option value="date_asc">Date (oldest)</option>
-          <option value="account_az">Account A-Z</option>
-          <option value="reps_desc">Reps (high-low)</option>
-        </select>
-
-        <select
-          value={filterFunnel}
-          onChange={e => setFilterFunnel(e.target.value)}
-          className="glass-subtle border-none h-9 px-3 rounded-md text-sm text-foreground bg-transparent"
-        >
-          <option value="all">All Funnels</option>
-          <option value="meetings_set">Meetings Set</option>
-          <option value="meetings_held">Meetings Held</option>
-          <option value="opps">Qualified Opps</option>
-          <option value="closed_won">Closed Won</option>
-        </select>
-
-        <select
-          value={filterTier}
-          onChange={e => setFilterTier(e.target.value)}
-          className="glass-subtle border-none h-9 px-3 rounded-md text-sm text-foreground bg-transparent"
-        >
-          <option value="all">All Tiers</option>
-          <option value="grow">Grow</option>
-          <option value="accelerate">Accelerate</option>
-          <option value="scale">Scale</option>
-        </select>
+        <AdminAccountFilter value={filterAccount} onChange={setFilterAccount} />
+        <AdminUserFilter value={filterUser} onChange={setFilterUser} />
+        <AdminFilterDropdown label="All Dates" value={filterDate} options={DATE_OPTIONS} onChange={setFilterDate} />
       </div>
 
       {/* Table */}
