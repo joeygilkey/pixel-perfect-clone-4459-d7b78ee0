@@ -714,7 +714,8 @@ function AllSubmissionsTab({ sessions, onRefresh }: { sessions: SessionRow[]; on
                     </div>
                   </div>
                 </div>
-              )}
+                );
+              })()}
             </div>
           );
         })}
