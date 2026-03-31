@@ -36,6 +36,19 @@ function depthAtLeast(current: FunnelDepth, target: FunnelDepth): boolean {
 
 // NumericInput is now imported from @/components/NumericInput
 
+function getPrimaryMetric(depth: FunnelDepth, funnel: FunnelMetrics, monthlyMeetings: number): { label: string; value: string } {
+  switch (depth) {
+    case 'closed_won':
+      return { label: 'Monthly Closed Won', value: fMeetings(funnel.monthlyClosedWon ?? 0) };
+    case 'opps':
+      return { label: 'Monthly Qualified Opps', value: fMeetings(funnel.monthlyOpps ?? 0) };
+    case 'meetings_held':
+      return { label: 'Monthly Meetings Held', value: fMeetings(funnel.monthlyMeetingsHeld ?? 0) };
+    default:
+      return { label: 'Monthly Meetings Set', value: fMeetings(monthlyMeetings) };
+  }
+}
+
 function StatCard({ label, value, highlight = false, muted = false, index = 0 }: {
   label: React.ReactNode; value: string; highlight?: boolean; muted?: boolean; index?: number;
 }) {
