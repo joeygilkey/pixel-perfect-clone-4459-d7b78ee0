@@ -20,7 +20,7 @@ import { calculate, type CustomerInputs, type TitanXInputs, type FunnelDepth } f
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
-import { Search, Trash2, Pencil, X, CalendarIcon, Save, Star, ChevronDown, Calculator, ExternalLink } from 'lucide-react';
+import { Search, Trash2, Pencil, X, CalendarIcon, Save, Star, ChevronDown, ChevronRight, Calculator, ExternalLink } from 'lucide-react';
 
 /* ───── Types ───── */
 
@@ -35,6 +35,7 @@ interface SessionRow {
   inp_acv: number;
   funnel_depth: string;
   recommended_tier: string | null;
+  model?: string;
   out_grow_cost_annual: number | null;
   out_grow_annual_pipeline: number | null;
   out_acc_cost_annual: number | null;
@@ -42,7 +43,7 @@ interface SessionRow {
   out_scale_cost_annual: number | null;
   out_scale_annual_pipeline: number | null;
   created_at: string;
-  // Edit fields
+  // Edit / detail fields
   sf_account_id?: string;
   sf_user_id?: string;
   inp_annual_cost_per_rep?: number;
@@ -52,6 +53,53 @@ interface SessionRow {
   inp_meeting_show_rate?: number;
   inp_opp_qualification_rate?: number;
   inp_win_rate?: number;
+  // TitanX inputs
+  inp_high_intent?: number;
+  inp_high_intent_reach?: number;
+  inp_avg_phones?: number;
+  inp_titanx_connect_rate?: number;
+  inp_credit_price_grow?: number;
+  inp_credit_price_accelerate?: number;
+  inp_credit_price_scale?: number;
+  inp_multiple_grow?: number;
+  inp_multiple_accelerate?: number;
+  inp_multiple_scale?: number;
+  // Current state outputs
+  out_cs_monthly_dials?: number | null;
+  out_cs_monthly_connects?: number | null;
+  out_cs_monthly_conversations?: number | null;
+  out_cs_monthly_meetings?: number | null;
+  out_cs_annual_meetings?: number | null;
+  out_cs_annual_cost_reps?: number | null;
+  out_cs_cost_per_connect?: number | null;
+  out_cs_cost_per_meeting?: number | null;
+  out_cs_annual_pipeline?: number | null;
+  out_cs_annual_revenue?: number | null;
+  // Tier outputs
+  out_grow_monthly_dials?: number | null;
+  out_grow_monthly_connects?: number | null;
+  out_grow_monthly_meetings?: number | null;
+  out_grow_cost_monthly?: number | null;
+  out_grow_cost_per_connect?: number | null;
+  out_grow_cost_per_meeting?: number | null;
+  out_grow_annual_revenue?: number | null;
+  out_grow_rep_production_equiv?: number | null;
+  out_acc_monthly_dials?: number | null;
+  out_acc_monthly_connects?: number | null;
+  out_acc_monthly_meetings?: number | null;
+  out_acc_cost_monthly?: number | null;
+  out_acc_cost_per_connect?: number | null;
+  out_acc_cost_per_meeting?: number | null;
+  out_acc_annual_revenue?: number | null;
+  out_acc_rep_production_equiv?: number | null;
+  out_scale_monthly_dials?: number | null;
+  out_scale_monthly_connects?: number | null;
+  out_scale_monthly_meetings?: number | null;
+  out_scale_cost_monthly?: number | null;
+  out_scale_cost_per_connect?: number | null;
+  out_scale_cost_per_meeting?: number | null;
+  out_scale_annual_revenue?: number | null;
+  out_scale_rep_production_equiv?: number | null;
 }
 
 const FUNNEL_LABELS: Record<string, string> = {
@@ -434,50 +482,32 @@ function AllSubmissionsTab({ sessions, onRefresh }: { sessions: SessionRow[]; on
   const [filterDate, setFilterDate] = useState('all');
   const [editingSession, setEditingSession] = useState<SessionRow | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const filtered = useMemo(() => {
     let list = [...sessions];
-
     if (filterAccount) {
       const q = filterAccount.toLowerCase();
       list = list.filter(s => s.account_name?.toLowerCase().includes(q));
     }
-
     if (filterUser) {
       const q = filterUser.toLowerCase();
       list = list.filter(s => s.sf_user_name?.toLowerCase().includes(q));
     }
-
     if (filterDate !== 'all') {
       const now = new Date();
       let cutoff: Date;
       switch (filterDate) {
-        case 'today':
-          cutoff = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-          break;
-        case 'this_week': {
-          const day = now.getDay();
-          cutoff = new Date(now.getFullYear(), now.getMonth(), now.getDate() - day);
-          break;
-        }
-        case 'this_month':
-          cutoff = new Date(now.getFullYear(), now.getMonth(), 1);
-          break;
-        case 'last_30':
-          cutoff = new Date(now.getTime() - 30 * 86400000);
-          break;
-        case 'last_90':
-          cutoff = new Date(now.getTime() - 90 * 86400000);
-          break;
-        default:
-          cutoff = new Date(0);
+        case 'today': cutoff = new Date(now.getFullYear(), now.getMonth(), now.getDate()); break;
+        case 'this_week': { const day = now.getDay(); cutoff = new Date(now.getFullYear(), now.getMonth(), now.getDate() - day); break; }
+        case 'this_month': cutoff = new Date(now.getFullYear(), now.getMonth(), 1); break;
+        case 'last_30': cutoff = new Date(now.getTime() - 30 * 86400000); break;
+        case 'last_90': cutoff = new Date(now.getTime() - 90 * 86400000); break;
+        default: cutoff = new Date(0);
       }
       list = list.filter(s => new Date(s.created_at) >= cutoff);
     }
-
-    // Default sort: newest first
     list.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-
     return list;
   }, [sessions, filterAccount, filterUser, filterDate]);
 
@@ -492,72 +522,195 @@ function AllSubmissionsTab({ sessions, onRefresh }: { sessions: SessionRow[]; on
     }
   };
 
+  const DetailCell = ({ label, value }: { label: string; value: string | number | null | undefined }) => (
+    <div className="space-y-0.5">
+      <div className="text-[9px] uppercase tracking-[0.12em] text-muted-foreground/50 font-semibold">{label}</div>
+      <div className="text-sm text-foreground/90 font-medium">{value ?? '—'}</div>
+    </div>
+  );
+
   return (
     <>
       {/* Filters */}
-      <div className="flex flex-wrap gap-3 mb-4">
+      <div className="flex flex-wrap gap-3 mb-5">
         <AdminAccountFilter value={filterAccount} onChange={setFilterAccount} />
         <AdminUserFilter value={filterUser} onChange={setFilterUser} />
         <AdminFilterDropdown label="All Dates" value={filterDate} options={DATE_OPTIONS} onChange={setFilterDate} />
       </div>
 
-      {/* Table */}
-      <div className="overflow-x-auto">
-        <div className="rounded-xl overflow-hidden border border-border/30 min-w-[1600px]">
-          <div className="grid" style={{ gridTemplateColumns: '90px 130px 150px 130px 55px 75px 85px 105px 90px 100px 100px 100px 100px 100px 100px 110px' }}>
-            {['Date', 'Submitted By', 'Account', 'SF User', 'Reps', 'Connect %', 'ACV', 'Funnel', 'Tier', 'Grow Cost', 'Grow Pipe', 'Acc Cost', 'Acc Pipe', 'Scale Cost', 'Scale Pipe', 'Actions'].map(h => (
-              <div key={h} style={{ background: '#1A1A1A' }} className="px-3 py-3 text-[10px] uppercase tracking-[0.12em] font-bold text-muted-foreground">{h}</div>
-            ))}
-          </div>
-          {filtered.map((s, i) => {
-            const bg = i % 2 === 0 ? '#1A1A1A' : '#2A2A2A';
-            const cell = "px-3 py-2.5 text-xs text-foreground/80 truncate";
-            return (
-              <div key={s.id || i} className="grid" style={{ gridTemplateColumns: '90px 130px 150px 130px 55px 75px 85px 105px 90px 100px 100px 100px 100px 100px 100px 110px' }}>
-                <div style={{ background: bg }} className={cell}>{s.session_date}</div>
-                <div style={{ background: bg }} className={cell}>{s.submitted_by_name}</div>
-                <div style={{ background: bg }} className={cell}>{s.account_name}</div>
-                <div style={{ background: bg }} className={cell}>{s.sf_user_name}</div>
-                <div style={{ background: bg }} className={cell}>{s.inp_reps}</div>
-                <div style={{ background: bg }} className={cell}>{s.inp_connect_rate}%</div>
-                <div style={{ background: bg }} className={cell}>{fCurrency(s.inp_acv)}</div>
-                <div style={{ background: bg }} className={cell}>{FUNNEL_LABELS[s.funnel_depth] ?? s.funnel_depth}</div>
-                <div style={{ background: bg }} className={cell}>
-                  {s.recommended_tier && (
-                    <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full" style={{ backgroundColor: 'rgba(255,0,76,0.2)', color: '#FF004C' }}>
+      {/* Session Cards */}
+      <div className="space-y-2">
+        {filtered.map((s) => {
+          const isExpanded = expandedId === s.id;
+          return (
+            <div key={s.id} className="glass rounded-xl overflow-hidden border border-border/20 transition-all duration-300 hover:border-primary/20">
+              {/* Summary Row */}
+              <button
+                type="button"
+                onClick={() => setExpandedId(isExpanded ? null : s.id)}
+                className="w-full flex items-center gap-4 px-5 py-3.5 text-left transition-all duration-200 hover:bg-primary/[0.03]"
+              >
+                <ChevronRight className={cn("h-4 w-4 text-muted-foreground/40 flex-shrink-0 transition-transform duration-300", isExpanded && "rotate-90 text-primary")} />
+
+                {/* Date */}
+                <div className="w-[85px] flex-shrink-0">
+                  <div className="text-xs font-semibold text-foreground/90">{s.session_date}</div>
+                </div>
+
+                {/* Account */}
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-semibold text-foreground truncate">{s.account_name || '—'}</div>
+                  <div className="text-[10px] text-muted-foreground/50 truncate">{s.sf_user_name || 'No user'}</div>
+                </div>
+
+                {/* Quick Stats */}
+                <div className="hidden md:flex items-center gap-6 flex-shrink-0">
+                  <div className="text-center">
+                    <div className="text-[9px] uppercase tracking-wider text-muted-foreground/40 font-semibold">Reps</div>
+                    <div className="text-xs font-bold text-foreground/80">{s.inp_reps}</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-[9px] uppercase tracking-wider text-muted-foreground/40 font-semibold">ACV</div>
+                    <div className="text-xs font-bold text-foreground/80">{fCurrency(s.inp_acv)}</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-[9px] uppercase tracking-wider text-muted-foreground/40 font-semibold">Funnel</div>
+                    <div className="text-xs font-bold text-foreground/80">{FUNNEL_LABELS[s.funnel_depth] ?? s.funnel_depth}</div>
+                  </div>
+                </div>
+
+                {/* Tier Badge */}
+                <div className="w-[80px] flex-shrink-0 text-center">
+                  {s.recommended_tier ? (
+                    <span className="text-[10px] font-bold uppercase px-2.5 py-1 rounded-full bg-primary/15 text-primary shadow-[0_0_8px_hsla(348,100%,50%,0.15)]">
                       {s.recommended_tier}
                     </span>
+                  ) : (
+                    <span className="text-[10px] text-muted-foreground/30">—</span>
                   )}
                 </div>
-                <div style={{ background: bg }} className={cell}>{s.out_grow_cost_annual != null ? fCurrency(s.out_grow_cost_annual) : '—'}</div>
-                <div style={{ background: bg }} className={cell}>{s.out_grow_annual_pipeline != null ? fCurrency(s.out_grow_annual_pipeline) : '—'}</div>
-                <div style={{ background: bg }} className={cell}>{s.out_acc_cost_annual != null ? fCurrency(s.out_acc_cost_annual) : '—'}</div>
-                <div style={{ background: bg }} className={cell}>{s.out_acc_annual_pipeline != null ? fCurrency(s.out_acc_annual_pipeline) : '—'}</div>
-                <div style={{ background: bg }} className={cell}>{s.out_scale_cost_annual != null ? fCurrency(s.out_scale_cost_annual) : '—'}</div>
-                <div style={{ background: bg }} className={cell}>{s.out_scale_annual_pipeline != null ? fCurrency(s.out_scale_annual_pipeline) : '—'}</div>
-                <div style={{ background: bg }} className={cn(cell, "flex items-center gap-1")}>
+
+                {/* Actions */}
+                <div className="flex items-center gap-1 flex-shrink-0" onClick={e => e.stopPropagation()}>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <button onClick={() => window.open(`/?session=${s.id}`, '_blank')} className="p-1 rounded hover:bg-primary/20 text-muted-foreground hover:text-primary transition-colors">
+                      <button onClick={() => window.open(`/?session=${s.id}`, '_blank')} className="p-1.5 rounded-lg hover:bg-primary/15 text-muted-foreground/50 hover:text-primary transition-all duration-200">
                         <ExternalLink className="h-3.5 w-3.5" />
                       </button>
                     </TooltipTrigger>
                     <TooltipContent>Present to Client</TooltipContent>
                   </Tooltip>
-                  <button onClick={() => setEditingSession(s)} className="p-1 rounded hover:bg-primary/20 text-muted-foreground hover:text-primary transition-colors">
+                  <button onClick={() => setEditingSession(s)} className="p-1.5 rounded-lg hover:bg-primary/15 text-muted-foreground/50 hover:text-primary transition-all duration-200">
                     <Pencil className="h-3.5 w-3.5" />
                   </button>
-                  <button onClick={() => setDeleteConfirmId(s.id)} className="p-1 rounded hover:bg-destructive/20 text-muted-foreground hover:text-destructive transition-colors">
+                  <button onClick={() => setDeleteConfirmId(s.id)} className="p-1.5 rounded-lg hover:bg-destructive/15 text-muted-foreground/50 hover:text-destructive transition-all duration-200">
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
                 </div>
-              </div>
-            );
-          })}
-          {filtered.length === 0 && (
-            <div className="px-4 py-8 text-center text-sm text-muted-foreground/50">No sessions found.</div>
-          )}
-        </div>
+              </button>
+
+              {/* Expanded Detail */}
+              {isExpanded && (
+                <div className="border-t border-border/20 px-5 py-5 space-y-5 animate-fade-in">
+                  {/* Meta */}
+                  <div className="flex flex-wrap gap-6 text-xs text-muted-foreground/60">
+                    <span>Submitted by <strong className="text-foreground/70">{s.submitted_by_name}</strong></span>
+                    <span>Model: <strong className="text-foreground/70">{s.model === 'highIntent' ? 'High Intent Only' : 'Blended Calling'}</strong></span>
+                    <span>Created {new Date(s.created_at).toLocaleDateString()}</span>
+                  </div>
+
+                  {/* Inputs Section */}
+                  <div>
+                    <div className="text-[10px] font-bold uppercase tracking-[0.15em] text-primary mb-3">Customer Inputs</div>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-x-6 gap-y-3">
+                      <DetailCell label="Reps" value={s.inp_reps} />
+                      <DetailCell label="Cost/Rep" value={s.inp_annual_cost_per_rep != null ? fCurrency(s.inp_annual_cost_per_rep) : undefined} />
+                      <DetailCell label="Dials/Day" value={s.inp_dials_per_day} />
+                      <DetailCell label="Connect %" value={s.inp_connect_rate != null ? `${s.inp_connect_rate}%` : undefined} />
+                      <DetailCell label="Conversation %" value={s.inp_conversation_rate != null ? `${s.inp_conversation_rate}%` : undefined} />
+                      <DetailCell label="Meeting %" value={s.inp_meeting_rate != null ? `${s.inp_meeting_rate}%` : undefined} />
+                      <DetailCell label="Show %" value={s.inp_meeting_show_rate != null ? `${s.inp_meeting_show_rate}%` : undefined} />
+                      <DetailCell label="Opp Qual %" value={s.inp_opp_qualification_rate != null ? `${s.inp_opp_qualification_rate}%` : undefined} />
+                      <DetailCell label="Win %" value={s.inp_win_rate != null ? `${s.inp_win_rate}%` : undefined} />
+                      <DetailCell label="ACV" value={s.inp_acv != null ? fCurrency(s.inp_acv) : undefined} />
+                    </div>
+                  </div>
+
+                  {/* TitanX Inputs */}
+                  <div>
+                    <div className="text-[10px] font-bold uppercase tracking-[0.15em] text-primary mb-3">TitanX Scoring Profile</div>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-x-6 gap-y-3">
+                      <DetailCell label="High Intent %" value={s.inp_high_intent != null ? `${s.inp_high_intent}%` : undefined} />
+                      <DetailCell label="7-Dial Reach" value={s.inp_high_intent_reach != null ? `${s.inp_high_intent_reach}%` : undefined} />
+                      <DetailCell label="Avg Phones" value={s.inp_avg_phones} />
+                      <DetailCell label="TitanX Connect %" value={s.inp_titanx_connect_rate != null ? `${s.inp_titanx_connect_rate}%` : undefined} />
+                      <DetailCell label="Credit — Grow" value={s.inp_credit_price_grow != null ? `$${s.inp_credit_price_grow}` : undefined} />
+                      <DetailCell label="Credit — Acc" value={s.inp_credit_price_accelerate != null ? `$${s.inp_credit_price_accelerate}` : undefined} />
+                      <DetailCell label="Credit — Scale" value={s.inp_credit_price_scale != null ? `$${s.inp_credit_price_scale}` : undefined} />
+                      <DetailCell label="Lift — Grow" value={s.inp_multiple_grow != null ? `${s.inp_multiple_grow}×` : undefined} />
+                      <DetailCell label="Lift — Acc" value={s.inp_multiple_accelerate != null ? `${s.inp_multiple_accelerate}×` : undefined} />
+                      <DetailCell label="Lift — Scale" value={s.inp_multiple_scale != null ? `${s.inp_multiple_scale}×` : undefined} />
+                    </div>
+                  </div>
+
+                  {/* Current State Output */}
+                  <div>
+                    <div className="text-[10px] font-bold uppercase tracking-[0.15em] text-primary mb-3">Current State</div>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-x-6 gap-y-3">
+                      <DetailCell label="Mo. Dials" value={s.out_cs_monthly_dials != null ? s.out_cs_monthly_dials.toLocaleString() : undefined} />
+                      <DetailCell label="Mo. Connects" value={s.out_cs_monthly_connects != null ? s.out_cs_monthly_connects.toLocaleString() : undefined} />
+                      <DetailCell label="Mo. Meetings" value={s.out_cs_monthly_meetings != null ? s.out_cs_monthly_meetings.toLocaleString() : undefined} />
+                      <DetailCell label="Annual Cost" value={s.out_cs_annual_cost_reps != null ? fCurrency(s.out_cs_annual_cost_reps) : undefined} />
+                      <DetailCell label="Cost/Meeting" value={s.out_cs_cost_per_meeting != null ? fCurrency(s.out_cs_cost_per_meeting) : undefined} />
+                      <DetailCell label="Annual Pipeline" value={s.out_cs_annual_pipeline != null ? fCurrency(s.out_cs_annual_pipeline) : undefined} />
+                      <DetailCell label="Annual Revenue" value={s.out_cs_annual_revenue != null ? fCurrency(s.out_cs_annual_revenue) : undefined} />
+                    </div>
+                  </div>
+
+                  {/* Tier Outputs */}
+                  <div>
+                    <div className="text-[10px] font-bold uppercase tracking-[0.15em] text-primary mb-3">Tier Results</div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {[
+                        { name: 'Grow', prefix: 'out_grow' as const, cost: s.out_grow_cost_annual, costMo: s.out_grow_cost_monthly, pipe: s.out_grow_annual_pipeline, rev: s.out_grow_annual_revenue, dials: s.out_grow_monthly_dials, connects: s.out_grow_monthly_connects, meetings: s.out_grow_monthly_meetings, cpc: s.out_grow_cost_per_connect, cpm: s.out_grow_cost_per_meeting, rpe: s.out_grow_rep_production_equiv },
+                        { name: 'Accelerate', prefix: 'out_acc' as const, cost: s.out_acc_cost_annual, costMo: s.out_acc_cost_monthly, pipe: s.out_acc_annual_pipeline, rev: s.out_acc_annual_revenue, dials: s.out_acc_monthly_dials, connects: s.out_acc_monthly_connects, meetings: s.out_acc_monthly_meetings, cpc: s.out_acc_cost_per_connect, cpm: s.out_acc_cost_per_meeting, rpe: s.out_acc_rep_production_equiv },
+                        { name: 'Scale', prefix: 'out_scale' as const, cost: s.out_scale_cost_annual, costMo: s.out_scale_cost_monthly, pipe: s.out_scale_annual_pipeline, rev: s.out_scale_annual_revenue, dials: s.out_scale_monthly_dials, connects: s.out_scale_monthly_connects, meetings: s.out_scale_monthly_meetings, cpc: s.out_scale_cost_per_connect, cpm: s.out_scale_cost_per_meeting, rpe: s.out_scale_rep_production_equiv },
+                      ].map(tier => (
+                        <div key={tier.name} className={cn(
+                          "rounded-lg p-4 space-y-3 border transition-all duration-300",
+                          s.recommended_tier === tier.name.toLowerCase()
+                            ? "border-primary/30 bg-primary/[0.04] shadow-[0_0_20px_hsla(348,100%,50%,0.08)]"
+                            : "border-border/20 bg-background/30"
+                        )}>
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-bold uppercase tracking-[0.12em] text-foreground/80">{tier.name}</span>
+                            {s.recommended_tier === tier.name.toLowerCase() && (
+                              <Star className="h-3.5 w-3.5 text-primary fill-primary" />
+                            )}
+                          </div>
+                          <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                            <DetailCell label="Annual Cost" value={tier.cost != null ? fCurrency(tier.cost) : undefined} />
+                            <DetailCell label="Monthly Cost" value={tier.costMo != null ? fCurrency(tier.costMo) : undefined} />
+                            <DetailCell label="Mo. Meetings" value={tier.meetings != null ? tier.meetings.toLocaleString() : undefined} />
+                            <DetailCell label="Mo. Connects" value={tier.connects != null ? tier.connects.toLocaleString() : undefined} />
+                            <DetailCell label="Cost/Connect" value={tier.cpc != null ? fCurrency(tier.cpc) : undefined} />
+                            <DetailCell label="Cost/Meeting" value={tier.cpm != null ? fCurrency(tier.cpm) : undefined} />
+                            <DetailCell label="Annual Pipeline" value={tier.pipe != null ? fCurrency(tier.pipe) : undefined} />
+                            <DetailCell label="Annual Revenue" value={tier.rev != null ? fCurrency(tier.rev) : undefined} />
+                            <DetailCell label="Rep Equiv" value={tier.rpe != null ? tier.rpe.toFixed(1) : undefined} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+        {filtered.length === 0 && (
+          <div className="glass rounded-xl px-4 py-12 text-center text-sm text-muted-foreground/50">No sessions found.</div>
+        )}
       </div>
 
       {/* Delete Confirmation */}
