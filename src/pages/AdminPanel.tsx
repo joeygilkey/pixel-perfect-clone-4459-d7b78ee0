@@ -719,7 +719,7 @@ function AllSubmissionsTab({ sessions, onRefresh }: { sessions: SessionRow[]; on
                     if (data) setExpandedData(prev => ({ ...prev, [s.id]: { ...s, ...data } }));
                   }
                 }}
-                className={cn("w-full grid grid-cols-[180px_1fr_1fr_130px_130px_130px_100px] items-center transition-all duration-200 hover:bg-primary/[0.03] border-b border-border/10", rowBg)}
+                className={cn("w-full grid grid-cols-[180px_1fr_1fr_130px_130px_130px_140px] items-center transition-all duration-200 hover:bg-primary/[0.03] border-b border-border/10", rowBg)}
               >
                 <div className="px-4 py-3 flex items-center gap-2">
                   <ChevronRight className={cn("h-3.5 w-3.5 text-muted-foreground/40 flex-shrink-0 transition-transform duration-300", isExpanded && "rotate-90 text-primary")} />
