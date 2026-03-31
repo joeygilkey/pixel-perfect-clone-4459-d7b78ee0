@@ -33,7 +33,6 @@ const FUNNEL_DEPTHS: { value: FunnelDepth; label: string }[] = [
 // depthAtLeast is now imported from @/components/CalculatorResults
 
 // Display components (TierColumn, StatCard, etc.) are now in @/components/CalculatorResults
-}
 
 export default function Calculator() {
   const navigate = useNavigate();
