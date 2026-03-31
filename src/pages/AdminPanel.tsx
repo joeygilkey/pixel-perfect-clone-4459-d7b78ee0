@@ -146,6 +146,9 @@ export default function AdminPanel() {
         <h1 className="text-base font-semibold text-foreground/80 tracking-wide">Admin Panel</h1>
         <div className="flex items-center gap-3">
           <span className="text-xs text-muted-foreground hidden sm:inline">{userEmail}</span>
+          <button onClick={() => window.open('/', '_blank')} className="p-2 rounded-lg glass-subtle border-none text-foreground/60 hover:text-foreground transition-all duration-300" aria-label="Open Calculator">
+            <Calculator className="h-4 w-4" />
+          </button>
           <Button variant="outline" size="sm" onClick={handleSignOut} className="glass-subtle border-none text-foreground/80 hover:text-foreground transition-all duration-300">
             Sign Out
           </Button>
