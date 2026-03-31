@@ -135,7 +135,11 @@ export default function AdminPanel() {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      {/* Background image */}
+      <div className="fixed inset-0 pointer-events-none">
+        <img src={theme === 'light' ? bgLight : bgDark} alt="" className="w-full h-full object-cover" />
+      </div>
       {/* Header */}
       <header className="glass-strong sticky top-0 z-50 p-2.5 flex items-center justify-between">
         <img src={titanxLogo} alt="TitanX" className="h-[26px]" />
