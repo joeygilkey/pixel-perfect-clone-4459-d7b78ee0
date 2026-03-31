@@ -15,12 +15,13 @@ import AccountSelector from '@/components/AccountSelector';
 import UserSelector from '@/components/UserSelector';
 import NumericInput from '@/components/NumericInput';
 import titanxLogo from '@/assets/titanx-logo.svg';
-import { fCurrency, fPercent } from '@/lib/formatters';
+import { fCurrency, fPercent, fNumber } from '@/lib/formatters';
 import { calculate, type CustomerInputs, type TitanXInputs, type FunnelDepth } from '@/lib/calculations';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
-import { Search, Trash2, Pencil, X, CalendarIcon, Save, Star, ChevronDown, ChevronRight, Calculator, ExternalLink, Link2 } from 'lucide-react';
+import { Search, Trash2, Pencil, X, CalendarIcon, Save, Star, ChevronDown, ChevronRight, Calculator, ExternalLink, Link2, Download } from 'lucide-react';
+import jsPDF from 'jspdf';
 
 /* ───── Types ───── */
 
