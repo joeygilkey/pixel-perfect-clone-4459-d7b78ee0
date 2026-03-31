@@ -30,11 +30,7 @@ const FUNNEL_DEPTHS: { value: FunnelDepth; label: string }[] = [
   { value: 'closed_won', label: 'Closed Won' },
 ];
 
-const FUNNEL_DEPTH_ORDER: FunnelDepth[] = ['meetings_set', 'meetings_held', 'opps', 'closed_won'];
-
-function depthAtLeast(current: FunnelDepth, target: FunnelDepth): boolean {
-  return FUNNEL_DEPTH_ORDER.indexOf(current) >= FUNNEL_DEPTH_ORDER.indexOf(target);
-}
+// depthAtLeast is now imported from @/components/CalculatorResults
 
 // NumericInput is now imported from @/components/NumericInput
 
