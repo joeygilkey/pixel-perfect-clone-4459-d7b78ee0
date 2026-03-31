@@ -1,50 +1,41 @@
 
 
-## Plan: Redesign Expanded Row Layout — Vertical Sections with Containers
+## Plan: Guest Read-Only Links for Calculator Sessions
 
-### Summary
-Restructure the expanded detail area (lines 604–697 in AdminPanel.tsx) so each section is displayed vertically inside its own bordered glass container, arranged in a responsive grid.
+### Concept
+Generate a unique share token for any saved session. Non-authenticated users can open a `/share/:token` route and see the full calculator results in read-only mode — no login required, no ability to edit inputs or access admin.
 
-### Layout
+### How it works
 
-```text
-┌─────────────────────────────────────────────────────────┐
-│ Meta bar (model, funnel, submitted by)                  │
-├──────────────┬──────────────┬────────────────────────────┤
-│ Customer     │ Scoring      │ Credit Costs               │
-│ Inputs       │ Profile      │                            │
-│              │              │ Credit — Grow: $X          │
-│ Reps: 5      │ HI%: 40%    │ Credit — Acc:  $X          │
-│ Cost/Rep: $X │ 7-Dial: 80% │ Credit — Scale: $X         │
-│ Dials/Day: X │ Avg Phones:X │                            │
-│ Connect%: X  │ TitanX Con%X │                            │
-│ Conv%: X     │              │                            │
-│ Meeting%: X  │              │                            │
-│ ...          │              │                            │
-├──────────────┴──────────────┴────────────────────────────┤
-│ Current State                                           │
-│ (vertical list in a container)                          │
-├─────────────────────────────────────────────────────────┤
-│ Tier Results — Grow │ Accelerate │ Scale                │
-│ (existing 3-col cards, already vertical)                │
-└─────────────────────────────────────────────────────────┘
-```
+1. **New DB column**: Add a `share_token` (UUID, unique, nullable) column to `calculator_sessions`. When a user clicks "Share" on a session, generate a UUID token and store it.
 
-### Changes (single file: `src/pages/AdminPanel.tsx`)
+2. **RLS policy**: Add a `SELECT` policy on `calculator_sessions` that allows anonymous access when filtering by `share_token` — so the guest link works without authentication.
 
-1. **Wrap each section** (Customer Inputs, Scoring Profile, Credit Costs, Current State, Tier Results) in a glass container div with `rounded-lg border border-border/20 bg-background/20 p-4` and a section header with the existing brand-red styling.
+3. **New route `/share/:token`**:
+   - Public route (no `ProtectedRoute` wrapper)
+   - Fetches the session by `share_token` from `calculator_sessions`
+   - Runs the calculation engine with the stored inputs
+   - Renders `CalculatorResultsView` in a branded, read-only layout (no input fields, no save button, no admin link)
+   - Shows account name, date, model, and recommended tier as context
 
-2. **Customer Inputs** — change from 5-col grid to a single-column vertical list of label–value pairs stacked top-to-bottom.
+4. **"Copy Guest Link" button** in Admin Panel:
+   - On the All Submissions table (next to "Present to Client")
+   - First click generates a `share_token` if one doesn't exist, saves it, then copies the URL
+   - Subsequent clicks just copy the existing URL
+   - URL format: `https://yourapp.com/share/<token>`
 
-3. **Scoring Profile** — same vertical list layout. Extract credit costs and lift multipliers into their own "Credit Costs" container.
+### Files to change
 
-4. **Credit Costs** — new container with 6 items (3 credit prices + 3 lift multipliers) in a vertical list.
+| File | Change |
+|---|---|
+| **Migration** | Add `share_token uuid unique` column to `calculator_sessions`; add anon SELECT policy filtered by `share_token IS NOT NULL` |
+| `src/App.tsx` | Add public route `/share/:token` pointing to new `GuestView` page |
+| `src/pages/GuestView.tsx` | **New file** — fetch session by token, run `calculate()`, render read-only results with branding |
+| `src/pages/AdminPanel.tsx` | Add "Copy Guest Link" button per row that generates/copies the share URL |
 
-5. **Current State** — vertical list instead of 5-col grid.
-
-6. **Tier Results** — keep existing 3-column card layout (already looks good), just ensure it's also wrapped in a container.
-
-7. **Top row**: Customer Inputs, Scoring Profile, and Credit Costs side-by-side in a `grid-cols-3` layout. Current State full-width below. Tier Results full-width below that.
-
-8. Each vertical list item: label in `text-muted-foreground text-[10px] uppercase` and value in `text-foreground text-sm font-medium`, stacked vertically with small gap between items.
+### Security
+- Token is a random UUID — not guessable
+- Guest can only see the single session tied to that token
+- No auth session = no access to any other route or data
+- No edit/save capabilities exposed in the guest view
 
