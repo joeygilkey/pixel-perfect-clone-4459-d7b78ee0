@@ -20,7 +20,7 @@ import { calculate, type CustomerInputs, type TitanXInputs, type FunnelDepth } f
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
-import { Search, Trash2, Pencil, X, CalendarIcon, Save, Star, ChevronDown, ChevronRight, Calculator, ExternalLink } from 'lucide-react';
+import { Search, Trash2, Pencil, X, CalendarIcon, Save, Star, ChevronDown, ChevronRight, Calculator, ExternalLink, Link2 } from 'lucide-react';
 
 /* ───── Types ───── */
 
