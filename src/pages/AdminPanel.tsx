@@ -483,6 +483,7 @@ function AllSubmissionsTab({ sessions, onRefresh }: { sessions: SessionRow[]; on
   const [editingSession, setEditingSession] = useState<SessionRow | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [expandedData, setExpandedData] = useState<Record<string, SessionRow>>({});
 
   const filtered = useMemo(() => {
     let list = [...sessions];
