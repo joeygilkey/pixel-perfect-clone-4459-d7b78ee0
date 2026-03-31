@@ -69,7 +69,7 @@ export default function Calculator() {
       if (!authSession) return;
 
       const { data, error } = await supabase
-        .from('admin_sessions_view')
+        .from('calculator_sessions')
         .select('*')
         .eq('id', sessionId)
         .single();
