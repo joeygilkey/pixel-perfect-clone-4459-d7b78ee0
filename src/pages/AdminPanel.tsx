@@ -752,7 +752,7 @@ function AllSubmissionsTab({ sessions, onRefresh }: { sessions: SessionRow[]; on
                 <div className="px-4 py-3 text-xs font-semibold text-foreground/80">{s.out_grow_cost_annual != null ? fCurrency(s.out_grow_cost_annual) : '—'}</div>
                 <div className="px-4 py-3 text-xs font-semibold text-foreground/80">{s.out_acc_cost_annual != null ? fCurrency(s.out_acc_cost_annual) : '—'}</div>
                 <div className="px-4 py-3 text-xs font-semibold text-foreground/80">{s.out_scale_cost_annual != null ? fCurrency(s.out_scale_cost_annual) : '—'}</div>
-                <div className="px-4 py-3 flex items-center gap-1" onClick={e => e.stopPropagation()}>
+                <div className="px-4 pr-6 py-3 flex items-center justify-center gap-1" onClick={e => e.stopPropagation()}>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <button onClick={async () => {
