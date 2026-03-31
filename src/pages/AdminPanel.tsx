@@ -82,6 +82,7 @@ export default function AdminPanel() {
   const [userEmail, setUserEmail] = useState('');
   const [userId, setUserId] = useState('');
   const navigate = useNavigate();
+  const { theme } = useTheme();
 
   // Shared state for Tab 2 → Tab 3 pre-fill
   const [prefilledAccountId, setPrefilledAccountId] = useState('');
