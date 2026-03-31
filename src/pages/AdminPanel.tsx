@@ -608,7 +608,10 @@ function AllSubmissionsTab({ sessions, onRefresh }: { sessions: SessionRow[]; on
                     </TooltipTrigger>
                     <TooltipContent>Present to Client</TooltipContent>
                   </Tooltip>
-                  <button onClick={() => setEditingSession(s)} className="p-1.5 rounded-lg hover:bg-primary/15 text-muted-foreground/50 hover:text-primary transition-all duration-200">
+                  <button onClick={async () => {
+                    const { data } = await supabase.from('calculator_sessions').select('*').eq('id', s.id).single();
+                    setEditingSession(data ? { ...s, ...data } : s);
+                  }} className="p-1.5 rounded-lg hover:bg-primary/15 text-muted-foreground/50 hover:text-primary transition-all duration-200">
                     <Pencil className="h-3.5 w-3.5" />
                   </button>
                   <button onClick={() => setDeleteConfirmId(s.id)} className="p-1.5 rounded-lg hover:bg-destructive/15 text-muted-foreground/50 hover:text-destructive transition-all duration-200">
