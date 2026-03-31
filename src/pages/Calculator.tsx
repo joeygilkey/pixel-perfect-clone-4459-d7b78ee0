@@ -1,4 +1,5 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { BarChart, Bar, XAxis, YAxis, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, ReferenceLine } from 'recharts';
 import { format } from 'date-fns';
 import { Input } from '@/components/ui/input';
@@ -11,7 +12,7 @@ import AccountSelector from '@/components/AccountSelector';
 import UserSelector from '@/components/UserSelector';
 import NumericInput from '@/components/NumericInput';
 import { toast } from 'sonner';
-import { HelpCircle, Copy, Plus, Save, CalendarIcon, Star, Sun, Moon, ChevronDown } from 'lucide-react';
+import { HelpCircle, Copy, Plus, Save, CalendarIcon, Star, Sun, Moon, ChevronDown, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import titanxLogo from '@/assets/titanx-logo.svg';
 import titanxLogoLight from '@/assets/titanx-logo-light.svg';
@@ -206,6 +207,7 @@ function TierColumn({ title, subtitle, results, currentState, recommended = fals
 }
 
 export default function Calculator() {
+  const navigate = useNavigate();
   const [selectedAccountId, setSelectedAccountId] = useState('');
   const [selectedSfUserId, setSelectedSfUserId] = useState('');
   const [sessionDate, setSessionDate] = useState<Date>(new Date());
@@ -215,6 +217,20 @@ export default function Calculator() {
   const [funnelDepth, setFunnelDepth] = useState<FunnelDepth>('meetings_set');
   const [financialOpen, setFinancialOpen] = useState(false);
   const [roiOpen, setRoiOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+      const { data } = await supabase
+        .from('app_users')
+        .select('role')
+        .eq('id', session.user.id)
+        .single();
+      if (data?.role === 'admin') setIsAdmin(true);
+    })();
+  }, []);
 
   const toggleTheme = useCallback(() => {
     setTheme(prev => {
@@ -393,6 +409,11 @@ export default function Calculator() {
         <img src={theme === 'light' ? titanxLogoLight : titanxLogo} alt="TitanX" className="h-[26px]" />
         <h1 className="text-base font-semibold text-foreground/80 hidden sm:block tracking-wide">Dream Outcome Calculator</h1>
         <div className="flex items-center gap-2">
+          {isAdmin && (
+            <button onClick={() => navigate('/admin')} className="p-2 rounded-lg glass-subtle border-none text-foreground/60 hover:text-foreground transition-all duration-300" aria-label="Admin Panel">
+              <Settings className="h-4 w-4" />
+            </button>
+          )}
           <button onClick={toggleTheme} className="p-2 rounded-lg glass-subtle border-none text-foreground/60 hover:text-foreground transition-all duration-300" aria-label="Toggle theme">
             {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
