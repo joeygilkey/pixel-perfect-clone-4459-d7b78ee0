@@ -611,7 +611,7 @@ function AllSubmissionsTab({ sessions, onRefresh }: { sessions: SessionRow[]; on
                   </div>
 
                   {/* Top row: Customer Inputs | Scoring Profile | Credit Costs */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     {/* Customer Inputs */}
                     <div className="rounded-lg border border-border/20 bg-background/20 p-4">
                       <div className="text-[10px] font-bold uppercase tracking-[0.15em] text-primary mb-3 border-l-2 border-primary pl-2">Customer Inputs</div>
@@ -647,6 +647,13 @@ function AllSubmissionsTab({ sessions, onRefresh }: { sessions: SessionRow[]; on
                         <DetailCell label="Credit — Grow" value={d.inp_credit_price_grow != null ? `$${d.inp_credit_price_grow}` : undefined} />
                         <DetailCell label="Credit — Accelerate" value={d.inp_credit_price_accelerate != null ? `$${d.inp_credit_price_accelerate}` : undefined} />
                         <DetailCell label="Credit — Scale" value={d.inp_credit_price_scale != null ? `$${d.inp_credit_price_scale}` : undefined} />
+                      </div>
+                    </div>
+
+                    {/* Production Lift */}
+                    <div className="rounded-lg border border-border/20 bg-background/20 p-4">
+                      <div className="text-[10px] font-bold uppercase tracking-[0.15em] text-primary mb-3 border-l-2 border-primary pl-2">Production Lift</div>
+                      <div className="space-y-2.5">
                         <DetailCell label="Lift — Grow" value={d.inp_multiple_grow != null ? `${d.inp_multiple_grow}×` : undefined} />
                         <DetailCell label="Lift — Accelerate" value={d.inp_multiple_accelerate != null ? `${d.inp_multiple_accelerate}×` : undefined} />
                         <DetailCell label="Lift — Scale" value={d.inp_multiple_scale != null ? `${d.inp_multiple_scale}×` : undefined} />
