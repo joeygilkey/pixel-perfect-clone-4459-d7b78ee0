@@ -1,25 +1,50 @@
 
 
-## Plan: Add Navigation Link + "Present to Client" Button
+## Plan: Redesign Expanded Row Layout — Vertical Sections with Containers
 
-### What we're building
-1. **Nav link in Admin header** — an icon/button (e.g. calculator icon or "Open Calculator") in the admin header bar that links to `/` (main calculator) in a new tab.
-2. **"Present to Client" button on individual sessions** — in the All Submissions tab, each session row gets a button that opens the main calculator in a new tab with query params (e.g. `/?session=<id>`) so the calculator can load that session's data and display results in the client-facing view.
-3. **Calculator reads query params** — on mount, if `?session=<id>` is present, fetch that session from Supabase and pre-fill all inputs + show results automatically.
+### Summary
+Restructure the expanded detail area (lines 604–697 in AdminPanel.tsx) so each section is displayed vertically inside its own bordered glass container, arranged in a responsive grid.
 
-### Files to change
+### Layout
 
-**`src/pages/AdminPanel.tsx`**
-- Add an "Open Calculator" link/icon button in the header (next to Sign Out) that does `window.open('/', '_blank')`
-- Add a "Present" button on each session row in the All Submissions table that does `window.open('/?session=' + row.id, '_blank')`
+```text
+┌─────────────────────────────────────────────────────────┐
+│ Meta bar (model, funnel, submitted by)                  │
+├──────────────┬──────────────┬────────────────────────────┤
+│ Customer     │ Scoring      │ Credit Costs               │
+│ Inputs       │ Profile      │                            │
+│              │              │ Credit — Grow: $X          │
+│ Reps: 5      │ HI%: 40%    │ Credit — Acc:  $X          │
+│ Cost/Rep: $X │ 7-Dial: 80% │ Credit — Scale: $X         │
+│ Dials/Day: X │ Avg Phones:X │                            │
+│ Connect%: X  │ TitanX Con%X │                            │
+│ Conv%: X     │              │                            │
+│ Meeting%: X  │              │                            │
+│ ...          │              │                            │
+├──────────────┴──────────────┴────────────────────────────┤
+│ Current State                                           │
+│ (vertical list in a container)                          │
+├─────────────────────────────────────────────────────────┤
+│ Tier Results — Grow │ Accelerate │ Scale                │
+│ (existing 3-col cards, already vertical)                │
+└─────────────────────────────────────────────────────────┘
+```
 
-**`src/pages/Calculator.tsx`**
-- On mount, check for `session` query param via `useSearchParams`
-- If present, fetch the session from `admin_sessions_view` by ID and populate all input state fields + trigger calculation
-- This lets the calculator render the full branded results for that saved session
+### Changes (single file: `src/pages/AdminPanel.tsx`)
 
-### Technical details
-- Query param approach keeps it simple — no new routes needed
-- The calculator already has all the state fields; we just set them from the fetched row
-- The "Present" button will use a branded style (glass-subtle with an external-link icon)
+1. **Wrap each section** (Customer Inputs, Scoring Profile, Credit Costs, Current State, Tier Results) in a glass container div with `rounded-lg border border-border/20 bg-background/20 p-4` and a section header with the existing brand-red styling.
+
+2. **Customer Inputs** — change from 5-col grid to a single-column vertical list of label–value pairs stacked top-to-bottom.
+
+3. **Scoring Profile** — same vertical list layout. Extract credit costs and lift multipliers into their own "Credit Costs" container.
+
+4. **Credit Costs** — new container with 6 items (3 credit prices + 3 lift multipliers) in a vertical list.
+
+5. **Current State** — vertical list instead of 5-col grid.
+
+6. **Tier Results** — keep existing 3-column card layout (already looks good), just ensure it's also wrapped in a container.
+
+7. **Top row**: Customer Inputs, Scoring Profile, and Credit Costs side-by-side in a `grid-cols-3` layout. Current State full-width below. Tier Results full-width below that.
+
+8. Each vertical list item: label in `text-muted-foreground text-[10px] uppercase` and value in `text-foreground text-sm font-medium`, stacked vertically with small gap between items.
 
