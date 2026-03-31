@@ -36,6 +36,7 @@ interface SessionRow {
   funnel_depth: string;
   recommended_tier: string | null;
   model?: string;
+  share_token?: string | null;
   out_grow_cost_annual: number | null;
   out_grow_annual_pipeline: number | null;
   out_acc_cost_annual: number | null;
