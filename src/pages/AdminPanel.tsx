@@ -266,6 +266,28 @@ async function generateSessionPDF(sessionId: string) {
       if (t.funnel.annualClosedWon != null) kv('Annual Closed Won', fNumber(Math.round(t.funnel.annualClosedWon)));
       if (t.funnel.annualPipelineGenerated != null) kv('Annual Pipeline', fCurrency(t.funnel.annualPipelineGenerated));
       if (t.funnel.annualClosedWonRevenue != null) kv('Annual Closed Won Revenue', fCurrency(t.funnel.annualClosedWonRevenue));
+
+      // ROI & Financial Metrics
+      const additionalReps = t.repProductionEquivalent - cInputs.reps!;
+      const headcountEquivCost = additionalReps * cInputs.annualCostPerRep!;
+      kv('Additional Reps to Match', fNumber(additionalReps, 1));
+      kv('Headcount Equivalence Cost', fCurrency(headcountEquivCost));
+
+      const currentPipeline = results.currentState.funnel.annualPipelineGenerated ?? 0;
+      const currentRevenue = results.currentState.funnel.annualClosedWonRevenue ?? 0;
+      const tierPipeline = t.funnel.annualPipelineGenerated ?? 0;
+      const tierRevenue = t.funnel.annualClosedWonRevenue ?? 0;
+
+      if (tierPipeline > 0) {
+        const incrPipeline = tierPipeline - currentPipeline;
+        kv('Incremental Pipeline', fCurrency(incrPipeline));
+        if (t.costAnnual > 0) kv('Pipeline ROI Multiple', `${(incrPipeline / t.costAnnual).toFixed(1)}x`);
+      }
+      if (tierRevenue > 0) {
+        const incrRevenue = tierRevenue - currentRevenue;
+        kv('Incremental Revenue', fCurrency(incrRevenue));
+        if (t.costAnnual > 0) kv('Revenue ROI Multiple', `${(incrRevenue / t.costAnnual).toFixed(1)}x`);
+      }
       spacer();
     }
   }
