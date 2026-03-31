@@ -15,12 +15,13 @@ import AccountSelector from '@/components/AccountSelector';
 import UserSelector from '@/components/UserSelector';
 import NumericInput from '@/components/NumericInput';
 import titanxLogo from '@/assets/titanx-logo.svg';
-import { fCurrency, fPercent } from '@/lib/formatters';
+import { fCurrency, fPercent, fNumber } from '@/lib/formatters';
 import { calculate, type CustomerInputs, type TitanXInputs, type FunnelDepth } from '@/lib/calculations';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
-import { Search, Trash2, Pencil, X, CalendarIcon, Save, Star, ChevronDown, ChevronRight, Calculator, ExternalLink, Link2 } from 'lucide-react';
+import { Search, Trash2, Pencil, X, CalendarIcon, Save, Star, ChevronDown, ChevronRight, Calculator, ExternalLink, Link2, Download } from 'lucide-react';
+import jsPDF from 'jspdf';
 
 /* ───── Types ───── */
 
@@ -120,6 +121,158 @@ const FUNNEL_DEPTHS: { value: FunnelDepth; label: string }[] = [
 function depthAtLeast(current: FunnelDepth, target: FunnelDepth): boolean {
   const order: FunnelDepth[] = ['meetings_set', 'meetings_held', 'opps', 'closed_won'];
   return order.indexOf(current) >= order.indexOf(target);
+}
+
+/* ───── PDF Export ───── */
+
+async function generateSessionPDF(sessionId: string) {
+  const { data: s } = await supabase.from('calculator_sessions').select('*').eq('id', sessionId).single();
+  if (!s) { toast.error('Failed to load session'); return; }
+
+  const cInputs: CustomerInputs = {
+    reps: s.inp_reps, annualCostPerRep: s.inp_annual_cost_per_rep, dialsPerDay: s.inp_dials_per_day,
+    connectRate: s.inp_connect_rate, conversationRate: s.inp_conversation_rate, meetingRate: s.inp_meeting_rate,
+    meetingShowRate: s.inp_meeting_show_rate, oppQualificationRate: s.inp_opp_qualification_rate,
+    winRate: s.inp_win_rate, acv: s.inp_acv,
+  };
+  const tInputs: TitanXInputs = {
+    highIntent: s.inp_high_intent, highIntentReach: s.inp_high_intent_reach, avgPhones: s.inp_avg_phones,
+    titanxConnectRate: s.inp_titanx_connect_rate, creditPriceGrow: s.inp_credit_price_grow,
+    creditPriceAccelerate: s.inp_credit_price_accelerate, creditPriceScale: s.inp_credit_price_scale,
+    multipleGrow: s.inp_multiple_grow, multipleAccelerate: s.inp_multiple_accelerate, multipleScale: s.inp_multiple_scale,
+  };
+  const results = calculate(cInputs, tInputs);
+
+  const doc = new jsPDF();
+  let y = 15;
+  const lm = 14;
+  const pageH = 280;
+
+  function checkPage(needed = 10) { if (y + needed > pageH) { doc.addPage(); y = 15; } }
+  function heading(text: string) { checkPage(14); doc.setFontSize(13); doc.setFont('helvetica', 'bold'); doc.text(text, lm, y); y += 8; }
+  function kv(label: string, value: string) { checkPage(6); doc.setFontSize(9); doc.setFont('helvetica', 'normal'); doc.text(`${label}: ${value}`, lm + 2, y); y += 5; }
+  function spacer() { y += 4; }
+
+  // Title
+  doc.setFontSize(16); doc.setFont('helvetica', 'bold');
+  doc.text('TitanX ROI Calculator — Full Export', lm, y); y += 8;
+  doc.setFontSize(9); doc.setFont('helvetica', 'normal');
+  doc.text(`Generated: ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`, lm, y); y += 10;
+
+  // Meta
+  heading('Session Info');
+  kv('Date', new Date(s.session_date + 'T12:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }));
+  kv('Account', s.account_name || '—');
+  kv('User', s.sf_user_name || '—');
+  kv('Submitted By', s.submitted_by_name || '—');
+  kv('Model', (s.model || 'blended') === 'blended' ? 'Blended Calling' : 'High Intent Only');
+  kv('Funnel Depth', FUNNEL_LABELS[s.funnel_depth] || s.funnel_depth);
+  kv('Recommended Tier', s.recommended_tier || '—');
+  spacer();
+
+  // Customer Inputs
+  heading('Customer Inputs');
+  kv('Reps', String(s.inp_reps ?? '—'));
+  kv('Annual Cost/Rep', s.inp_annual_cost_per_rep != null ? fCurrency(s.inp_annual_cost_per_rep) : '—');
+  kv('Dials/Day/Rep', String(s.inp_dials_per_day ?? '—'));
+  kv('Connect Rate', s.inp_connect_rate != null ? `${s.inp_connect_rate}%` : '—');
+  kv('Conversation Rate', s.inp_conversation_rate != null ? `${s.inp_conversation_rate}%` : '—');
+  kv('Meeting Rate', s.inp_meeting_rate != null ? `${s.inp_meeting_rate}%` : '—');
+  kv('Meeting Show Rate', s.inp_meeting_show_rate != null ? `${s.inp_meeting_show_rate}%` : '—');
+  kv('Opp Qualification Rate', s.inp_opp_qualification_rate != null ? `${s.inp_opp_qualification_rate}%` : '—');
+  kv('Win Rate', s.inp_win_rate != null ? `${s.inp_win_rate}%` : '—');
+  kv('ACV', s.inp_acv != null ? fCurrency(s.inp_acv) : '—');
+  spacer();
+
+  // Scoring Profile
+  heading('Scoring Profile');
+  kv('High Intent %', s.inp_high_intent != null ? `${s.inp_high_intent}%` : '—');
+  kv('High Intent Reach %', s.inp_high_intent_reach != null ? `${s.inp_high_intent_reach}%` : '—');
+  kv('Avg Phones', String(s.inp_avg_phones ?? '—'));
+  kv('TitanX Connect Rate', s.inp_titanx_connect_rate != null ? `${s.inp_titanx_connect_rate}%` : '—');
+  spacer();
+
+  // Credit Costs
+  heading('Credit Costs');
+  kv('Grow Price/Credit', s.inp_credit_price_grow != null ? `$${s.inp_credit_price_grow}` : '—');
+  kv('Accelerate Price/Credit', s.inp_credit_price_accelerate != null ? `$${s.inp_credit_price_accelerate}` : '—');
+  kv('Scale Price/Credit', s.inp_credit_price_scale != null ? `$${s.inp_credit_price_scale}` : '—');
+  spacer();
+
+  // Lift Multiples
+  heading('Production Lift Multiples');
+  kv('Grow', s.inp_multiple_grow != null ? `${s.inp_multiple_grow}×` : '—');
+  kv('Accelerate', s.inp_multiple_accelerate != null ? `${s.inp_multiple_accelerate}×` : '—');
+  kv('Scale', s.inp_multiple_scale != null ? `${s.inp_multiple_scale}×` : '—');
+  spacer();
+
+  if (results) {
+    const cs = results.currentState;
+    const fd = (s.funnel_depth || 'meetings_set') as FunnelDepth;
+    const model = (s.model || 'blended') as 'blended' | 'highIntent';
+    const tiers = model === 'blended' ? results.blended : results.highIntent;
+
+    // Current State
+    heading('Current State');
+    kv('Monthly Dials', fNumber(Math.round(cs.monthlyDials)));
+    kv('Monthly Connects', fNumber(Math.round(cs.monthlyConnects)));
+    kv('Monthly Conversations', fNumber(Math.round(cs.monthlyConversations)));
+    kv('Monthly Meetings Set', fNumber(Math.round(cs.monthlyMeetings)));
+    kv('Annual Meetings Set', fNumber(Math.round(cs.annualMeetings)));
+    kv('Annual Rep Cost', fCurrency(cs.annualCostReps));
+    kv('Cost/Connect', fCurrency(cs.costPerConnect, 2));
+    kv('Cost/Meeting Set', fCurrency(cs.costPerMeeting, 2));
+    if (cs.costPerMeetingHeld != null) kv('Cost/Meeting Held', fCurrency(cs.costPerMeetingHeld, 2));
+    if (cs.costPerOpp != null) kv('Cost/Opp', fCurrency(cs.costPerOpp, 2));
+    if (cs.costPerAcquisition != null) kv('Cost/Acquisition', fCurrency(cs.costPerAcquisition, 2));
+    if (cs.funnel.monthlyMeetingsHeld != null) kv('Monthly Meetings Held', fNumber(Math.round(cs.funnel.monthlyMeetingsHeld)));
+    if (cs.funnel.annualMeetingsHeld != null) kv('Annual Meetings Held', fNumber(Math.round(cs.funnel.annualMeetingsHeld)));
+    if (cs.funnel.monthlyOpps != null) kv('Monthly Opps', fNumber(Math.round(cs.funnel.monthlyOpps)));
+    if (cs.funnel.annualOpps != null) kv('Annual Opps', fNumber(Math.round(cs.funnel.annualOpps)));
+    if (cs.funnel.monthlyClosedWon != null) kv('Monthly Closed Won', fNumber(Math.round(cs.funnel.monthlyClosedWon)));
+    if (cs.funnel.annualClosedWon != null) kv('Annual Closed Won', fNumber(Math.round(cs.funnel.annualClosedWon)));
+    if (cs.funnel.annualPipelineGenerated != null) kv('Annual Pipeline', fCurrency(cs.funnel.annualPipelineGenerated));
+    if (cs.funnel.annualClosedWonRevenue != null) kv('Annual Closed Won Revenue', fCurrency(cs.funnel.annualClosedWonRevenue));
+    spacer();
+
+    // Tier Results
+    const tierNames = ['grow', 'accelerate', 'scale'] as const;
+    const tierLabels = { grow: 'Grow', accelerate: 'Accelerate', scale: 'Scale' };
+    for (const tier of tierNames) {
+      const t = tiers[tier];
+      heading(`${tierLabels[tier]} Tier Results`);
+      kv('Monthly Dials', fNumber(Math.round(t.monthlyDials)));
+      kv('Monthly Connects', fNumber(Math.round(t.monthlyConnects)));
+      kv('Monthly Conversations', fNumber(Math.round(t.monthlyConversations)));
+      kv('Monthly Meetings Set', fNumber(Math.round(t.monthlyMeetings)));
+      kv('Annual Meetings Set', fNumber(Math.round(t.annualMeetings)));
+      kv('Credits/Month', fNumber(t.creditsPerMonth));
+      kv('Monthly TitanX Cost', fCurrency(t.costMonthly));
+      kv('Annual TitanX Cost', fCurrency(t.costAnnual));
+      kv('Total Annual Cost (Reps + TitanX)', fCurrency(t.totalAnnualCost));
+      kv('Cost/Connect', fCurrency(t.costPerConnect, 2));
+      kv('Cost/Meeting Set', fCurrency(t.costPerMeeting, 2));
+      if (t.costPerMeetingHeld != null) kv('Cost/Meeting Held', fCurrency(t.costPerMeetingHeld, 2));
+      if (t.costPerOpp != null) kv('Cost/Opp', fCurrency(t.costPerOpp, 2));
+      if (t.costPerAcquisition != null) kv('Cost/Acquisition', fCurrency(t.costPerAcquisition, 2));
+      kv('Rep Production Equivalent', `${t.repProductionEquivalent.toFixed(1)} reps`);
+      kv('Cost of Equiv. Reps', `${t.costOfEquivReps.toFixed(1)} reps`);
+      kv('% of Current Dials', `${(t.pctOfCurrentDials * 100).toFixed(1)}%`);
+      if (t.funnel.monthlyMeetingsHeld != null) kv('Monthly Meetings Held', fNumber(Math.round(t.funnel.monthlyMeetingsHeld)));
+      if (t.funnel.annualMeetingsHeld != null) kv('Annual Meetings Held', fNumber(Math.round(t.funnel.annualMeetingsHeld)));
+      if (t.funnel.monthlyOpps != null) kv('Monthly Opps', fNumber(Math.round(t.funnel.monthlyOpps)));
+      if (t.funnel.annualOpps != null) kv('Annual Opps', fNumber(Math.round(t.funnel.annualOpps)));
+      if (t.funnel.monthlyClosedWon != null) kv('Monthly Closed Won', fNumber(Math.round(t.funnel.monthlyClosedWon)));
+      if (t.funnel.annualClosedWon != null) kv('Annual Closed Won', fNumber(Math.round(t.funnel.annualClosedWon)));
+      if (t.funnel.annualPipelineGenerated != null) kv('Annual Pipeline', fCurrency(t.funnel.annualPipelineGenerated));
+      if (t.funnel.annualClosedWonRevenue != null) kv('Annual Closed Won Revenue', fCurrency(t.funnel.annualClosedWonRevenue));
+      spacer();
+    }
+  }
+
+  const accountName = (s.account_name || 'session').replace(/[^a-zA-Z0-9]/g, '_');
+  doc.save(`TitanX_ROI_${accountName}_${s.session_date}.pdf`);
+  toast.success('PDF downloaded!');
 }
 
 /* ───── Admin Panel ───── */
@@ -605,6 +758,14 @@ function AllSubmissionsTab({ sessions, onRefresh }: { sessions: SessionRow[]; on
                     </TooltipTrigger>
                     <TooltipContent>Present to Client</TooltipContent>
                   </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button onClick={() => generateSessionPDF(s.id)} className="p-1.5 rounded-lg hover:bg-primary/15 text-muted-foreground/50 hover:text-primary transition-all duration-200">
+                        <Download className="h-3.5 w-3.5" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent>Export to PDF</TooltipContent>
+                  </Tooltip>
                   <button onClick={async () => {
                     const { data } = await supabase.from('calculator_sessions').select('*').eq('id', s.id).single();
                     setEditingSession(data ? { ...s, ...data } : s);
@@ -1071,6 +1232,9 @@ function ByAccountTab({ onCreateSession }: { onCreateSession: (accountId: string
                       )}
                     </div>
                     <div className="flex items-center gap-1">
+                      <button onClick={() => generateSessionPDF(s.id)} className="p-1.5 rounded hover:bg-primary/20 text-muted-foreground hover:text-primary transition-colors">
+                        <Download className="h-3.5 w-3.5" />
+                      </button>
                       <button onClick={async () => {
                         const { data } = await supabase.from('calculator_sessions').select('*').eq('id', s.id).single();
                         setEditingSession(data ? { ...s, ...data } : s);
