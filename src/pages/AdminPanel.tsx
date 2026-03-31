@@ -624,25 +624,25 @@ function AllSubmissionsTab({ sessions, onRefresh }: { sessions: SessionRow[]; on
                 <div className="border-t border-border/20 px-5 py-5 space-y-5 animate-fade-in">
                   {/* Meta */}
                   <div className="flex flex-wrap gap-6 text-xs text-muted-foreground/60">
-                    <span>Submitted by <strong className="text-foreground/70">{s.submitted_by_name}</strong></span>
-                    <span>Model: <strong className="text-foreground/70">{s.model === 'highIntent' ? 'High Intent Only' : 'Blended Calling'}</strong></span>
-                    <span>Created {new Date(s.created_at).toLocaleDateString()}</span>
+                    <span>Submitted by <strong className="text-foreground/70">{d.submitted_by_name}</strong></span>
+                    <span>Model: <strong className="text-foreground/70">{d.model === 'highIntent' ? 'High Intent Only' : 'Blended Calling'}</strong></span>
+                    <span>Created {new Date(d.created_at).toLocaleDateString()}</span>
                   </div>
 
                   {/* Inputs Section */}
                   <div>
                     <div className="text-[10px] font-bold uppercase tracking-[0.15em] text-primary mb-3">Customer Inputs</div>
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-x-6 gap-y-3">
-                      <DetailCell label="Reps" value={s.inp_reps} />
-                      <DetailCell label="Cost/Rep" value={s.inp_annual_cost_per_rep != null ? fCurrency(s.inp_annual_cost_per_rep) : undefined} />
-                      <DetailCell label="Dials/Day" value={s.inp_dials_per_day} />
-                      <DetailCell label="Connect %" value={s.inp_connect_rate != null ? `${s.inp_connect_rate}%` : undefined} />
-                      <DetailCell label="Conversation %" value={s.inp_conversation_rate != null ? `${s.inp_conversation_rate}%` : undefined} />
-                      <DetailCell label="Meeting %" value={s.inp_meeting_rate != null ? `${s.inp_meeting_rate}%` : undefined} />
-                      <DetailCell label="Show %" value={s.inp_meeting_show_rate != null ? `${s.inp_meeting_show_rate}%` : undefined} />
-                      <DetailCell label="Opp Qual %" value={s.inp_opp_qualification_rate != null ? `${s.inp_opp_qualification_rate}%` : undefined} />
-                      <DetailCell label="Win %" value={s.inp_win_rate != null ? `${s.inp_win_rate}%` : undefined} />
-                      <DetailCell label="ACV" value={s.inp_acv != null ? fCurrency(s.inp_acv) : undefined} />
+                      <DetailCell label="Reps" value={d.inp_reps} />
+                      <DetailCell label="Cost/Rep" value={d.inp_annual_cost_per_rep != null ? fCurrency(d.inp_annual_cost_per_rep) : undefined} />
+                      <DetailCell label="Dials/Day" value={d.inp_dials_per_day} />
+                      <DetailCell label="Connect %" value={d.inp_connect_rate != null ? `${d.inp_connect_rate}%` : undefined} />
+                      <DetailCell label="Conversation %" value={d.inp_conversation_rate != null ? `${d.inp_conversation_rate}%` : undefined} />
+                      <DetailCell label="Meeting %" value={d.inp_meeting_rate != null ? `${d.inp_meeting_rate}%` : undefined} />
+                      <DetailCell label="Show %" value={d.inp_meeting_show_rate != null ? `${d.inp_meeting_show_rate}%` : undefined} />
+                      <DetailCell label="Opp Qual %" value={d.inp_opp_qualification_rate != null ? `${d.inp_opp_qualification_rate}%` : undefined} />
+                      <DetailCell label="Win %" value={d.inp_win_rate != null ? `${d.inp_win_rate}%` : undefined} />
+                      <DetailCell label="ACV" value={d.inp_acv != null ? fCurrency(d.inp_acv) : undefined} />
                     </div>
                   </div>
 
@@ -650,16 +650,16 @@ function AllSubmissionsTab({ sessions, onRefresh }: { sessions: SessionRow[]; on
                   <div>
                     <div className="text-[10px] font-bold uppercase tracking-[0.15em] text-primary mb-3">TitanX Scoring Profile</div>
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-x-6 gap-y-3">
-                      <DetailCell label="High Intent %" value={s.inp_high_intent != null ? `${s.inp_high_intent}%` : undefined} />
-                      <DetailCell label="7-Dial Reach" value={s.inp_high_intent_reach != null ? `${s.inp_high_intent_reach}%` : undefined} />
-                      <DetailCell label="Avg Phones" value={s.inp_avg_phones} />
-                      <DetailCell label="TitanX Connect %" value={s.inp_titanx_connect_rate != null ? `${s.inp_titanx_connect_rate}%` : undefined} />
-                      <DetailCell label="Credit — Grow" value={s.inp_credit_price_grow != null ? `$${s.inp_credit_price_grow}` : undefined} />
-                      <DetailCell label="Credit — Acc" value={s.inp_credit_price_accelerate != null ? `$${s.inp_credit_price_accelerate}` : undefined} />
-                      <DetailCell label="Credit — Scale" value={s.inp_credit_price_scale != null ? `$${s.inp_credit_price_scale}` : undefined} />
-                      <DetailCell label="Lift — Grow" value={s.inp_multiple_grow != null ? `${s.inp_multiple_grow}×` : undefined} />
-                      <DetailCell label="Lift — Acc" value={s.inp_multiple_accelerate != null ? `${s.inp_multiple_accelerate}×` : undefined} />
-                      <DetailCell label="Lift — Scale" value={s.inp_multiple_scale != null ? `${s.inp_multiple_scale}×` : undefined} />
+                      <DetailCell label="High Intent %" value={d.inp_high_intent != null ? `${d.inp_high_intent}%` : undefined} />
+                      <DetailCell label="7-Dial Reach" value={d.inp_high_intent_reach != null ? `${d.inp_high_intent_reach}%` : undefined} />
+                      <DetailCell label="Avg Phones" value={d.inp_avg_phones} />
+                      <DetailCell label="TitanX Connect %" value={d.inp_titanx_connect_rate != null ? `${d.inp_titanx_connect_rate}%` : undefined} />
+                      <DetailCell label="Credit — Grow" value={d.inp_credit_price_grow != null ? `$${d.inp_credit_price_grow}` : undefined} />
+                      <DetailCell label="Credit — Acc" value={d.inp_credit_price_accelerate != null ? `$${d.inp_credit_price_accelerate}` : undefined} />
+                      <DetailCell label="Credit — Scale" value={d.inp_credit_price_scale != null ? `$${d.inp_credit_price_scale}` : undefined} />
+                      <DetailCell label="Lift — Grow" value={d.inp_multiple_grow != null ? `${d.inp_multiple_grow}×` : undefined} />
+                      <DetailCell label="Lift — Acc" value={d.inp_multiple_accelerate != null ? `${d.inp_multiple_accelerate}×` : undefined} />
+                      <DetailCell label="Lift — Scale" value={d.inp_multiple_scale != null ? `${d.inp_multiple_scale}×` : undefined} />
                     </div>
                   </div>
 
@@ -667,13 +667,13 @@ function AllSubmissionsTab({ sessions, onRefresh }: { sessions: SessionRow[]; on
                   <div>
                     <div className="text-[10px] font-bold uppercase tracking-[0.15em] text-primary mb-3">Current State</div>
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-x-6 gap-y-3">
-                      <DetailCell label="Mo. Dials" value={s.out_cs_monthly_dials != null ? s.out_cs_monthly_dials.toLocaleString() : undefined} />
-                      <DetailCell label="Mo. Connects" value={s.out_cs_monthly_connects != null ? s.out_cs_monthly_connects.toLocaleString() : undefined} />
-                      <DetailCell label="Mo. Meetings" value={s.out_cs_monthly_meetings != null ? s.out_cs_monthly_meetings.toLocaleString() : undefined} />
-                      <DetailCell label="Annual Cost" value={s.out_cs_annual_cost_reps != null ? fCurrency(s.out_cs_annual_cost_reps) : undefined} />
-                      <DetailCell label="Cost/Meeting" value={s.out_cs_cost_per_meeting != null ? fCurrency(s.out_cs_cost_per_meeting) : undefined} />
-                      <DetailCell label="Annual Pipeline" value={s.out_cs_annual_pipeline != null ? fCurrency(s.out_cs_annual_pipeline) : undefined} />
-                      <DetailCell label="Annual Revenue" value={s.out_cs_annual_revenue != null ? fCurrency(s.out_cs_annual_revenue) : undefined} />
+                      <DetailCell label="Mo. Dials" value={d.out_cs_monthly_dials != null ? d.out_cs_monthly_dials.toLocaleString() : undefined} />
+                      <DetailCell label="Mo. Connects" value={d.out_cs_monthly_connects != null ? d.out_cs_monthly_connects.toLocaleString() : undefined} />
+                      <DetailCell label="Mo. Meetings" value={d.out_cs_monthly_meetings != null ? d.out_cs_monthly_meetings.toLocaleString() : undefined} />
+                      <DetailCell label="Annual Cost" value={d.out_cs_annual_cost_reps != null ? fCurrency(d.out_cs_annual_cost_reps) : undefined} />
+                      <DetailCell label="Cost/Meeting" value={d.out_cs_cost_per_meeting != null ? fCurrency(d.out_cs_cost_per_meeting) : undefined} />
+                      <DetailCell label="Annual Pipeline" value={d.out_cs_annual_pipeline != null ? fCurrency(d.out_cs_annual_pipeline) : undefined} />
+                      <DetailCell label="Annual Revenue" value={d.out_cs_annual_revenue != null ? fCurrency(d.out_cs_annual_revenue) : undefined} />
                     </div>
                   </div>
 
@@ -682,19 +682,19 @@ function AllSubmissionsTab({ sessions, onRefresh }: { sessions: SessionRow[]; on
                     <div className="text-[10px] font-bold uppercase tracking-[0.15em] text-primary mb-3">Tier Results</div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       {[
-                        { name: 'Grow', prefix: 'out_grow' as const, cost: s.out_grow_cost_annual, costMo: s.out_grow_cost_monthly, pipe: s.out_grow_annual_pipeline, rev: s.out_grow_annual_revenue, dials: s.out_grow_monthly_dials, connects: s.out_grow_monthly_connects, meetings: s.out_grow_monthly_meetings, cpc: s.out_grow_cost_per_connect, cpm: s.out_grow_cost_per_meeting, rpe: s.out_grow_rep_production_equiv },
-                        { name: 'Accelerate', prefix: 'out_acc' as const, cost: s.out_acc_cost_annual, costMo: s.out_acc_cost_monthly, pipe: s.out_acc_annual_pipeline, rev: s.out_acc_annual_revenue, dials: s.out_acc_monthly_dials, connects: s.out_acc_monthly_connects, meetings: s.out_acc_monthly_meetings, cpc: s.out_acc_cost_per_connect, cpm: s.out_acc_cost_per_meeting, rpe: s.out_acc_rep_production_equiv },
-                        { name: 'Scale', prefix: 'out_scale' as const, cost: s.out_scale_cost_annual, costMo: s.out_scale_cost_monthly, pipe: s.out_scale_annual_pipeline, rev: s.out_scale_annual_revenue, dials: s.out_scale_monthly_dials, connects: s.out_scale_monthly_connects, meetings: s.out_scale_monthly_meetings, cpc: s.out_scale_cost_per_connect, cpm: s.out_scale_cost_per_meeting, rpe: s.out_scale_rep_production_equiv },
+                        { name: 'Grow', cost: d.out_grow_cost_annual, costMo: d.out_grow_cost_monthly, pipe: d.out_grow_annual_pipeline, rev: d.out_grow_annual_revenue, dials: d.out_grow_monthly_dials, connects: d.out_grow_monthly_connects, meetings: d.out_grow_monthly_meetings, cpc: d.out_grow_cost_per_connect, cpm: d.out_grow_cost_per_meeting, rpe: d.out_grow_rep_production_equiv },
+                        { name: 'Accelerate', cost: d.out_acc_cost_annual, costMo: d.out_acc_cost_monthly, pipe: d.out_acc_annual_pipeline, rev: d.out_acc_annual_revenue, dials: d.out_acc_monthly_dials, connects: d.out_acc_monthly_connects, meetings: d.out_acc_monthly_meetings, cpc: d.out_acc_cost_per_connect, cpm: d.out_acc_cost_per_meeting, rpe: d.out_acc_rep_production_equiv },
+                        { name: 'Scale', cost: d.out_scale_cost_annual, costMo: d.out_scale_cost_monthly, pipe: d.out_scale_annual_pipeline, rev: d.out_scale_annual_revenue, dials: d.out_scale_monthly_dials, connects: d.out_scale_monthly_connects, meetings: d.out_scale_monthly_meetings, cpc: d.out_scale_cost_per_connect, cpm: d.out_scale_cost_per_meeting, rpe: d.out_scale_rep_production_equiv },
                       ].map(tier => (
                         <div key={tier.name} className={cn(
                           "rounded-lg p-4 space-y-3 border transition-all duration-300",
-                          s.recommended_tier === tier.name.toLowerCase()
+                          d.recommended_tier === tier.name.toLowerCase()
                             ? "border-primary/30 bg-primary/[0.04] shadow-[0_0_20px_hsla(348,100%,50%,0.08)]"
                             : "border-border/20 bg-background/30"
                         )}>
                           <div className="flex items-center justify-between">
                             <span className="text-xs font-bold uppercase tracking-[0.12em] text-foreground/80">{tier.name}</span>
-                            {s.recommended_tier === tier.name.toLowerCase() && (
+                            {d.recommended_tier === tier.name.toLowerCase() && (
                               <Star className="h-3.5 w-3.5 text-primary fill-primary" />
                             )}
                           </div>
