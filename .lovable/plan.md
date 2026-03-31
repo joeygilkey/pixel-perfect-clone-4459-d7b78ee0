@@ -1,29 +1,27 @@
 
 
-## Plan: Add "Export to PDF" Action Button per Session Row
+## Plan: Add ROI & Financial Metrics to PDF Export
 
 ### Summary
-Add a PDF export button (download icon) to each row's action buttons in the All Submissions table. Clicking it will recalculate the full results from the stored inputs and generate a plain PDF containing every single input and output value.
+Add the missing ROI and financial comparison metrics to each tier section in the PDF export, matching what the calculator UI shows.
 
-### Approach
-- Use the browser-side `jspdf` library (no server needed)
-- On click: pull the session's stored inputs, run `calculate()`, and dump every input field and every output field into a simple text-based PDF
-- Sections: Meta info, Customer Inputs, TitanX/Scoring Inputs, Current State, Grow Tier, Accelerate Tier, Scale Tier (each with all funnel metrics)
-- No fancy design — just labeled key-value pairs organized by section
+### Metrics to add per tier
+
+1. **Headcount Equivalence**: Additional reps needed = `repProductionEquivalent - reps`, cost = `additionalReps * annualCostPerRep`
+2. **Incremental Pipeline**: `tier.funnel.annualPipelineGenerated - currentState.funnel.annualPipelineGenerated`
+3. **Incremental Revenue**: `tier.funnel.annualClosedWonRevenue - currentState.funnel.annualClosedWonRevenue`
+4. **ROI Multiple**: `incrementalValue / tier.costAnnual` (uses revenue if closed_won depth, otherwise pipeline)
 
 ### Files to change
 
 | File | Change |
 |---|---|
-| `package.json` | Add `jspdf` dependency |
-| `src/pages/AdminPanel.tsx` | Add PDF export button + `generatePDF(session)` function that builds inputs → runs `calculate()` → writes all values to a jsPDF document → triggers download |
+| `src/pages/AdminPanel.tsx` | In `generateSessionPDF`, after existing tier metrics (lines ~258-269), add ROI section: headcount equivalence cost, incremental pipeline delta, incremental revenue delta, and ROI multiple |
 
-### PDF Content (all fields)
-- **Meta**: Date, Account, User, Model, Funnel Depth, Recommended Tier
-- **Customer Inputs**: Reps, Annual Cost/Rep, Dials/Day, Connect Rate, Conversation Rate, Meeting Rate, Show Rate, Opp Rate, Win Rate, ACV
-- **Scoring Profile**: High Intent %, Reach %, Avg Phones, TitanX Connect Rate
-- **Credit Costs**: Grow/Accelerate/Scale price per credit
-- **Lift Multiples**: Grow/Accelerate/Scale multiplier
-- **Current State**: All monthly/annual activity, costs, funnel metrics
-- **Tier Results (×3)**: Dials, connects, conversations, meetings, credits, costs, cost-per metrics, rep equivalents, all funnel metrics
+### Technical details
+- Compute `additionalReps = t.repProductionEquivalent - cInputs.reps`
+- Compute `additionalCost = additionalReps * cInputs.annualCostPerRep`
+- Compute incremental pipeline/revenue by subtracting current state funnel values from tier funnel values
+- Compute ROI = incremental value / `t.costAnnual` (guard against zero)
+- All values formatted with existing `fCurrency`/`fNumber` helpers
 
