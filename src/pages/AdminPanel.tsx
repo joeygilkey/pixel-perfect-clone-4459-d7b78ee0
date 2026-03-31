@@ -586,7 +586,7 @@ function AllSubmissionsTab({ sessions, onRefresh }: { sessions: SessionRow[]; on
                           shareToken = crypto.randomUUID();
                           const { error } = await supabase.from('calculator_sessions').update({ share_token: shareToken }).eq('id', s.id);
                           if (error) { toast.error('Failed to generate link'); return; }
-                          setSessions(prev => prev.map(ss => ss.id === s.id ? { ...ss, share_token: shareToken } : ss));
+                          await onRefresh();
                         }
                         const url = `${window.location.origin}/share/${shareToken}`;
                         navigator.clipboard.writeText(url);
