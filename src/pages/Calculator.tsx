@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { format } from 'date-fns';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -35,6 +35,7 @@ const FUNNEL_DEPTHS: { value: FunnelDepth; label: string }[] = [
 
 export default function Calculator() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [selectedAccountId, setSelectedAccountId] = useState('');
   const [selectedSfUserId, setSelectedSfUserId] = useState('');
   const [sessionDate, setSessionDate] = useState<Date>(new Date());
@@ -43,6 +44,7 @@ export default function Calculator() {
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const [funnelDepth, setFunnelDepth] = useState<FunnelDepth>('meetings_set');
   const [isAdmin, setIsAdmin] = useState(false);
+  const [sessionLoaded, setSessionLoaded] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -56,6 +58,67 @@ export default function Calculator() {
       if (data?.role === 'admin') setIsAdmin(true);
     })();
   }, []);
+
+  // Load session from query param
+  useEffect(() => {
+    const sessionId = searchParams.get('session');
+    if (!sessionId || sessionLoaded) return;
+
+    (async () => {
+      const { data: { session: authSession } } = await supabase.auth.getSession();
+      if (!authSession) return;
+
+      const { data, error } = await supabase
+        .from('admin_sessions_view')
+        .select('*')
+        .eq('id', sessionId)
+        .single();
+
+      if (error || !data) {
+        toast.error('Could not load session');
+        return;
+      }
+
+      // Pre-fill customer inputs
+      setCustomer({
+        reps: data.inp_reps ?? null,
+        annualCostPerRep: data.inp_annual_cost_per_rep ?? null,
+        dialsPerDay: data.inp_dials_per_day ?? null,
+        connectRate: data.inp_connect_rate ?? null,
+        conversationRate: data.inp_conversation_rate ?? null,
+        meetingRate: data.inp_meeting_rate ?? null,
+        meetingShowRate: data.inp_meeting_show_rate ?? null,
+        oppQualificationRate: data.inp_opp_qualification_rate ?? null,
+        winRate: data.inp_win_rate ?? null,
+        acv: data.inp_acv ?? null,
+      });
+
+      // Pre-fill TitanX inputs
+      setTitanx({
+        highIntent: data.inp_high_intent ?? 20,
+        highIntentReach: data.inp_high_intent_reach ?? 85,
+        avgPhones: data.inp_avg_phones ?? 2,
+        titanxConnectRate: data.inp_titanx_connect_rate ?? 25,
+        creditPriceGrow: data.inp_credit_price_grow ?? 0.50,
+        creditPriceAccelerate: data.inp_credit_price_accelerate ?? 0.50,
+        creditPriceScale: data.inp_credit_price_scale ?? 0.50,
+        multipleGrow: data.inp_multiple_grow ?? 1.5,
+        multipleAccelerate: data.inp_multiple_accelerate ?? 2.0,
+        multipleScale: data.inp_multiple_scale ?? 2.5,
+      });
+
+      // Pre-fill metadata
+      if (data.sf_account_id) setSelectedAccountId(data.sf_account_id);
+      if (data.sf_user_id) setSelectedSfUserId(data.sf_user_id);
+      if (data.session_date) setSessionDate(new Date(data.session_date + 'T12:00:00'));
+      if (data.funnel_depth) setFunnelDepth(data.funnel_depth as FunnelDepth);
+      if (data.recommended_tier) setRecommendedTier(data.recommended_tier);
+      if (data.model) setModel(data.model);
+
+      setSessionLoaded(true);
+      toast.success('Session loaded for presentation');
+    })();
+  }, [searchParams, sessionLoaded]);
 
   const toggleTheme = useCallback(() => {
     setTheme(prev => {

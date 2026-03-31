@@ -20,7 +20,7 @@ import { calculate, type CustomerInputs, type TitanXInputs, type FunnelDepth } f
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
-import { Search, Trash2, Pencil, X, CalendarIcon, Save, Star, ChevronDown } from 'lucide-react';
+import { Search, Trash2, Pencil, X, CalendarIcon, Save, Star, ChevronDown, Calculator, ExternalLink } from 'lucide-react';
 
 /* ───── Types ───── */
 
@@ -146,6 +146,9 @@ export default function AdminPanel() {
         <h1 className="text-base font-semibold text-foreground/80 tracking-wide">Admin Panel</h1>
         <div className="flex items-center gap-3">
           <span className="text-xs text-muted-foreground hidden sm:inline">{userEmail}</span>
+          <button onClick={() => window.open('/', '_blank')} className="p-2 rounded-lg glass-subtle border-none text-foreground/60 hover:text-foreground transition-all duration-300" aria-label="Open Calculator">
+            <Calculator className="h-4 w-4" />
+          </button>
           <Button variant="outline" size="sm" onClick={handleSignOut} className="glass-subtle border-none text-foreground/80 hover:text-foreground transition-all duration-300">
             Sign Out
           </Button>
@@ -501,7 +504,7 @@ function AllSubmissionsTab({ sessions, onRefresh }: { sessions: SessionRow[]; on
       {/* Table */}
       <div className="overflow-x-auto">
         <div className="rounded-xl overflow-hidden border border-border/30 min-w-[1600px]">
-          <div className="grid" style={{ gridTemplateColumns: '90px 130px 150px 130px 55px 75px 85px 105px 90px 100px 100px 100px 100px 100px 100px 80px' }}>
+          <div className="grid" style={{ gridTemplateColumns: '90px 130px 150px 130px 55px 75px 85px 105px 90px 100px 100px 100px 100px 100px 100px 110px' }}>
             {['Date', 'Submitted By', 'Account', 'SF User', 'Reps', 'Connect %', 'ACV', 'Funnel', 'Tier', 'Grow Cost', 'Grow Pipe', 'Acc Cost', 'Acc Pipe', 'Scale Cost', 'Scale Pipe', 'Actions'].map(h => (
               <div key={h} style={{ background: '#1A1A1A' }} className="px-3 py-3 text-[10px] uppercase tracking-[0.12em] font-bold text-muted-foreground">{h}</div>
             ))}
@@ -510,7 +513,7 @@ function AllSubmissionsTab({ sessions, onRefresh }: { sessions: SessionRow[]; on
             const bg = i % 2 === 0 ? '#1A1A1A' : '#2A2A2A';
             const cell = "px-3 py-2.5 text-xs text-foreground/80 truncate";
             return (
-              <div key={s.id || i} className="grid" style={{ gridTemplateColumns: '90px 130px 150px 130px 55px 75px 85px 105px 90px 100px 100px 100px 100px 100px 100px 80px' }}>
+              <div key={s.id || i} className="grid" style={{ gridTemplateColumns: '90px 130px 150px 130px 55px 75px 85px 105px 90px 100px 100px 100px 100px 100px 100px 110px' }}>
                 <div style={{ background: bg }} className={cell}>{s.session_date}</div>
                 <div style={{ background: bg }} className={cell}>{s.submitted_by_name}</div>
                 <div style={{ background: bg }} className={cell}>{s.account_name}</div>
@@ -533,6 +536,14 @@ function AllSubmissionsTab({ sessions, onRefresh }: { sessions: SessionRow[]; on
                 <div style={{ background: bg }} className={cell}>{s.out_scale_cost_annual != null ? fCurrency(s.out_scale_cost_annual) : '—'}</div>
                 <div style={{ background: bg }} className={cell}>{s.out_scale_annual_pipeline != null ? fCurrency(s.out_scale_annual_pipeline) : '—'}</div>
                 <div style={{ background: bg }} className={cn(cell, "flex items-center gap-1")}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button onClick={() => window.open(`/?session=${s.id}`, '_blank')} className="p-1 rounded hover:bg-primary/20 text-muted-foreground hover:text-primary transition-colors">
+                        <ExternalLink className="h-3.5 w-3.5" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent>Present to Client</TooltipContent>
+                  </Tooltip>
                   <button onClick={() => setEditingSession(s)} className="p-1 rounded hover:bg-primary/20 text-muted-foreground hover:text-primary transition-colors">
                     <Pencil className="h-3.5 w-3.5" />
                   </button>
