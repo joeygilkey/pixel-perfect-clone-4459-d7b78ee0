@@ -1,4 +1,7 @@
 import { useEffect, useState, useMemo, useCallback } from 'react';
+import { useTheme } from 'next-themes';
+import bgDark from '@/assets/bg-dark.png';
+import bgLight from '@/assets/bg-light.png';
 import CalculatorResultsView from '@/components/CalculatorResults';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
