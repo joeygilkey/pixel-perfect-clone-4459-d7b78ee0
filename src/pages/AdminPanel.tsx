@@ -766,12 +766,17 @@ function AllSubmissionsTab({ sessions, onRefresh }: { sessions: SessionRow[]; on
                     </TooltipTrigger>
                     <TooltipContent>Export to PDF</TooltipContent>
                   </Tooltip>
-                  <button onClick={async () => {
-                    const { data } = await supabase.from('calculator_sessions').select('*').eq('id', s.id).single();
-                    setEditingSession(data ? { ...s, ...data } : s);
-                  }} className="p-1.5 rounded-lg hover:bg-primary/15 text-muted-foreground/50 hover:text-primary transition-all duration-200">
-                    <Pencil className="h-3.5 w-3.5" />
-                  </button>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button onClick={async () => {
+                        const { data } = await supabase.from('calculator_sessions').select('*').eq('id', s.id).single();
+                        setEditingSession(data ? { ...s, ...data } : s);
+                      }} className="p-1.5 rounded-lg hover:bg-primary/15 text-muted-foreground/50 hover:text-primary transition-all duration-200">
+                        <Pencil className="h-3.5 w-3.5" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent>Edit</TooltipContent>
+                  </Tooltip>
                   <button onClick={() => setDeleteConfirmId(s.id)} className="p-1.5 rounded-lg hover:bg-destructive/15 text-muted-foreground/50 hover:text-destructive transition-all duration-200">
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
