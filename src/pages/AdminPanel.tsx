@@ -539,13 +539,22 @@ function AllSubmissionsTab({ sessions, onRefresh }: { sessions: SessionRow[]; on
         <AdminFilterDropdown label="All Dates" value={filterDate} options={DATE_OPTIONS} onChange={setFilterDate} />
       </div>
 
-      {/* Session Cards */}
-      <div className="space-y-2">
-        {filtered.map((s) => {
+      {/* Table */}
+      <div className="glass rounded-xl overflow-hidden border border-border/20">
+        {/* Header */}
+        <div className="grid grid-cols-[180px_1fr_1fr_130px_130px_130px_100px] border-b border-border/30">
+          {['Date', 'Account', 'User', 'Grow', 'Accelerate', 'Scale', 'Actions'].map(h => (
+            <div key={h} className="px-4 py-3 text-[10px] uppercase tracking-[0.12em] font-bold text-muted-foreground/60">{h}</div>
+          ))}
+        </div>
+
+        {/* Rows */}
+        {filtered.map((s, i) => {
           const isExpanded = expandedId === s.id;
+          const rowBg = i % 2 === 0 ? 'bg-background/40' : 'bg-background/20';
           return (
-            <div key={s.id} className="glass rounded-xl overflow-hidden border border-border/20 transition-all duration-300 hover:border-primary/20">
-              {/* Summary Row */}
+            <div key={s.id}>
+              {/* Row */}
               <button
                 type="button"
                 onClick={async () => {
@@ -556,50 +565,18 @@ function AllSubmissionsTab({ sessions, onRefresh }: { sessions: SessionRow[]; on
                     if (data) setExpandedData(prev => ({ ...prev, [s.id]: { ...s, ...data } }));
                   }
                 }}
-                className="w-full flex items-center gap-4 px-5 py-3.5 text-left transition-all duration-200 hover:bg-primary/[0.03]"
+                className={cn("w-full grid grid-cols-[180px_1fr_1fr_130px_130px_130px_100px] items-center transition-all duration-200 hover:bg-primary/[0.03] border-b border-border/10", rowBg)}
               >
-                <ChevronRight className={cn("h-4 w-4 text-muted-foreground/40 flex-shrink-0 transition-transform duration-300", isExpanded && "rotate-90 text-primary")} />
-
-                {/* Date */}
-                <div className="w-[85px] flex-shrink-0">
-                  <div className="text-xs font-semibold text-foreground/90">{s.session_date}</div>
+                <div className="px-4 py-3 flex items-center gap-2">
+                  <ChevronRight className={cn("h-3.5 w-3.5 text-muted-foreground/40 flex-shrink-0 transition-transform duration-300", isExpanded && "rotate-90 text-primary")} />
+                  <span className="text-xs font-medium text-foreground/80">{new Date(s.session_date + 'T12:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
                 </div>
-
-                {/* Account */}
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm font-semibold text-foreground truncate">{s.account_name || '—'}</div>
-                  <div className="text-[10px] text-muted-foreground/50 truncate">{s.sf_user_name || 'No user'}</div>
-                </div>
-
-                {/* Quick Stats */}
-                <div className="hidden md:flex items-center gap-6 flex-shrink-0">
-                  <div className="text-center">
-                    <div className="text-[9px] uppercase tracking-wider text-muted-foreground/40 font-semibold">Reps</div>
-                    <div className="text-xs font-bold text-foreground/80">{s.inp_reps}</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-[9px] uppercase tracking-wider text-muted-foreground/40 font-semibold">ACV</div>
-                    <div className="text-xs font-bold text-foreground/80">{fCurrency(s.inp_acv)}</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-[9px] uppercase tracking-wider text-muted-foreground/40 font-semibold">Funnel</div>
-                    <div className="text-xs font-bold text-foreground/80">{FUNNEL_LABELS[s.funnel_depth] ?? s.funnel_depth}</div>
-                  </div>
-                </div>
-
-                {/* Tier Badge */}
-                <div className="w-[80px] flex-shrink-0 text-center">
-                  {s.recommended_tier ? (
-                    <span className="text-[10px] font-bold uppercase px-2.5 py-1 rounded-full bg-primary/15 text-primary shadow-[0_0_8px_hsla(348,100%,50%,0.15)]">
-                      {s.recommended_tier}
-                    </span>
-                  ) : (
-                    <span className="text-[10px] text-muted-foreground/30">—</span>
-                  )}
-                </div>
-
-                {/* Actions */}
-                <div className="flex items-center gap-1 flex-shrink-0" onClick={e => e.stopPropagation()}>
+                <div className="px-4 py-3 text-sm font-semibold text-foreground truncate text-left">{s.account_name || '—'}</div>
+                <div className="px-4 py-3 text-xs text-foreground/70 truncate text-left">{s.sf_user_name || '—'}</div>
+                <div className="px-4 py-3 text-xs font-semibold text-foreground/80">{s.out_grow_cost_annual != null ? fCurrency(s.out_grow_cost_annual) : '—'}</div>
+                <div className="px-4 py-3 text-xs font-semibold text-foreground/80">{s.out_acc_cost_annual != null ? fCurrency(s.out_acc_cost_annual) : '—'}</div>
+                <div className="px-4 py-3 text-xs font-semibold text-foreground/80">{s.out_scale_cost_annual != null ? fCurrency(s.out_scale_cost_annual) : '—'}</div>
+                <div className="px-4 py-3 flex items-center gap-1" onClick={e => e.stopPropagation()}>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <button onClick={() => window.open(`/?session=${s.id}`, '_blank')} className="p-1.5 rounded-lg hover:bg-primary/15 text-muted-foreground/50 hover:text-primary transition-all duration-200">
@@ -624,15 +601,16 @@ function AllSubmissionsTab({ sessions, onRefresh }: { sessions: SessionRow[]; on
               {isExpanded && (() => {
                 const d = expandedData[s.id] ?? s;
                 return (
-                <div className="border-t border-border/20 px-5 py-5 space-y-5 animate-fade-in">
+                <div className="border-b border-border/20 px-6 py-5 space-y-5 animate-fade-in bg-background/30">
                   {/* Meta */}
                   <div className="flex flex-wrap gap-6 text-xs text-muted-foreground/60">
                     <span>Submitted by <strong className="text-foreground/70">{d.submitted_by_name}</strong></span>
                     <span>Model: <strong className="text-foreground/70">{d.model === 'highIntent' ? 'High Intent Only' : 'Blended Calling'}</strong></span>
-                    <span>Created {new Date(d.created_at).toLocaleDateString()}</span>
+                    <span>Funnel: <strong className="text-foreground/70">{FUNNEL_LABELS[d.funnel_depth] ?? d.funnel_depth}</strong></span>
+                    {d.recommended_tier && <span>Recommended: <strong className="text-primary">{d.recommended_tier}</strong></span>}
                   </div>
 
-                  {/* Inputs Section */}
+                  {/* Customer Inputs */}
                   <div>
                     <div className="text-[10px] font-bold uppercase tracking-[0.15em] text-primary mb-3">Customer Inputs</div>
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-x-6 gap-y-3">
@@ -666,7 +644,7 @@ function AllSubmissionsTab({ sessions, onRefresh }: { sessions: SessionRow[]; on
                     </div>
                   </div>
 
-                  {/* Current State Output */}
+                  {/* Current State */}
                   <div>
                     <div className="text-[10px] font-bold uppercase tracking-[0.15em] text-primary mb-3">Current State</div>
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-x-6 gap-y-3">
@@ -680,7 +658,7 @@ function AllSubmissionsTab({ sessions, onRefresh }: { sessions: SessionRow[]; on
                     </div>
                   </div>
 
-                  {/* Tier Outputs */}
+                  {/* Tier Results */}
                   <div>
                     <div className="text-[10px] font-bold uppercase tracking-[0.15em] text-primary mb-3">Tier Results</div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -723,7 +701,7 @@ function AllSubmissionsTab({ sessions, onRefresh }: { sessions: SessionRow[]; on
           );
         })}
         {filtered.length === 0 && (
-          <div className="glass rounded-xl px-4 py-12 text-center text-sm text-muted-foreground/50">No sessions found.</div>
+          <div className="px-4 py-12 text-center text-sm text-muted-foreground/50">No sessions found.</div>
         )}
       </div>
 
