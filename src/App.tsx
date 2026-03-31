@@ -9,6 +9,7 @@ import type { Session } from '@supabase/supabase-js';
 import Calculator from "./pages/Calculator";
 import Login from "./pages/Login";
 import AdminPanel from "./pages/AdminPanel";
+import GuestView from "./pages/GuestView";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -51,6 +52,7 @@ const App = () => {
             <Route path="/login" element={session ? <Navigate to="/" replace /> : <Login />} />
             <Route path="/" element={<ProtectedRoute session={session}><Calculator /></ProtectedRoute>} />
             <Route path="/admin" element={<ProtectedRoute session={session}><AdminPanel /></ProtectedRoute>} />
+            <Route path="/share/:token" element={<GuestView />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
