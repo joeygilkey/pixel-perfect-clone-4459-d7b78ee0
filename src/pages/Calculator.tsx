@@ -11,6 +11,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import AccountSelector from '@/components/AccountSelector';
 import UserSelector from '@/components/UserSelector';
 import NumericInput from '@/components/NumericInput';
+import CalculatorResultsView, { depthAtLeast } from '@/components/CalculatorResults';
 import { toast } from 'sonner';
 import { HelpCircle, Copy, Plus, Save, CalendarIcon, Star, Sun, Moon, ChevronDown, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
