@@ -12,7 +12,7 @@ import AccountSelector from '@/components/AccountSelector';
 import UserSelector from '@/components/UserSelector';
 import NumericInput from '@/components/NumericInput';
 import { toast } from 'sonner';
-import { HelpCircle, Copy, Plus, Save, CalendarIcon, Star, Sun, Moon, ChevronDown } from 'lucide-react';
+import { HelpCircle, Copy, Plus, Save, CalendarIcon, Star, Sun, Moon, ChevronDown, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import titanxLogo from '@/assets/titanx-logo.svg';
 import titanxLogoLight from '@/assets/titanx-logo-light.svg';
