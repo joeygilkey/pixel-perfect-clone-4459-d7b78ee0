@@ -700,13 +700,15 @@ function AllSubmissionsTab({ sessions, onRefresh }: { sessions: SessionRow[]; on
                             <DetailCell label="Mo. Dials" value={tier.dials != null ? Math.round(tier.dials).toLocaleString() : undefined} />
                             <DetailCell label="Mo. Connects" value={tier.connects != null ? Math.round(tier.connects).toLocaleString() : undefined} />
                             <DetailCell label="Mo. Meetings" value={tier.meetings != null ? Math.round(tier.meetings).toLocaleString() : undefined} />
-                            <DetailCell label="Annual Cost" value={tier.cost != null ? fCurrency(tier.cost) : undefined} />
-                            <DetailCell label="Monthly Cost" value={tier.costMo != null ? fCurrency(tier.costMo) : undefined} />
                             <DetailCell label="Cost/Connect" value={tier.cpc != null ? fCurrency(tier.cpc) : undefined} />
                             <DetailCell label="Cost/Meeting" value={tier.cpm != null ? fCurrency(tier.cpm) : undefined} />
                             <DetailCell label="Annual Pipeline" value={tier.pipe != null ? fCurrency(tier.pipe) : undefined} />
                             <DetailCell label="Annual Revenue" value={tier.rev != null ? fCurrency(tier.rev) : undefined} />
                             <DetailCell label="Rep Equiv" value={tier.rpe != null ? tier.rpe.toFixed(1) : undefined} />
+                          </div>
+                          <div className="mt-3 pt-3 border-t border-border/20 space-y-2">
+                            <DetailCell label="Annual Cost" value={tier.cost != null ? fCurrency(tier.cost) : undefined} />
+                            <DetailCell label="Monthly Cost" value={tier.costMo != null ? fCurrency(tier.costMo) : undefined} />
                           </div>
                         </div>
                       ))}
