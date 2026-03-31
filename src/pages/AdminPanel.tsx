@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo, useCallback } from 'react';
+import CalculatorResultsView from '@/components/CalculatorResults';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
@@ -1020,30 +1021,22 @@ function NewSessionTab({ userId, prefilledAccountId, onSaved }: { userId: string
         </div>
       </div>
 
-      {/* Results Preview */}
-      {results && tierData && (
-        <div className="glass rounded-xl p-5 space-y-4">
-          <h3 className="text-sm font-bold uppercase tracking-wider text-primary border-l-2 border-primary pl-3">Preview</h3>
-          <div className="grid grid-cols-3 gap-4">
-            {(['grow', 'accelerate', 'scale'] as const).map(tier => (
-              <div key={tier} className={cn(
-                "glass rounded-lg p-4 text-center space-y-2",
-                recommendedTier === tier ? "ring-1 ring-primary" : ""
-              )}>
-                <button
-                  onClick={() => setRecommendedTier(prev => prev === tier ? null : tier)}
-                  className="mx-auto block"
-                >
-                  <Star className={cn("h-4 w-4", recommendedTier === tier ? "fill-primary text-primary" : "text-muted-foreground/40")} />
-                </button>
-                <div className="text-xs font-bold uppercase text-primary">{tier}</div>
-                <div className="text-sm font-semibold text-foreground">{fCurrency(tierData[tier].costAnnual)} <span className="text-[10px] text-muted-foreground">annual</span></div>
-                {tierData[tier].funnel.annualPipelineGenerated != null && (
-                  <div className="text-xs text-primary">{fCurrency(tierData[tier].funnel.annualPipelineGenerated!)} pipeline</div>
-                )}
-              </div>
-            ))}
-          </div>
+      {/* Full Results */}
+      {results && tierData ? (
+        <CalculatorResultsView
+          results={results}
+          tierData={tierData}
+          funnelDepth={funnelDepth}
+          recommendedTier={recommendedTier}
+          onRecommendTier={setRecommendedTier}
+          reps={customer.reps}
+          annualCostPerRep={customer.annualCostPerRep}
+          multiples={{ grow: titanx.multipleGrow, accelerate: titanx.multipleAccelerate, scale: titanx.multipleScale }}
+        />
+      ) : (
+        <div className="glass rounded-xl p-16 text-center text-muted-foreground/60 glow-soft">
+          <div className="text-3xl mb-3 opacity-30">✦</div>
+          Fill in all inputs above to see live results.
         </div>
       )}
 
