@@ -536,6 +536,14 @@ function AllSubmissionsTab({ sessions, onRefresh }: { sessions: SessionRow[]; on
                 <div style={{ background: bg }} className={cell}>{s.out_scale_cost_annual != null ? fCurrency(s.out_scale_cost_annual) : '—'}</div>
                 <div style={{ background: bg }} className={cell}>{s.out_scale_annual_pipeline != null ? fCurrency(s.out_scale_annual_pipeline) : '—'}</div>
                 <div style={{ background: bg }} className={cn(cell, "flex items-center gap-1")}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button onClick={() => window.open(`/?session=${s.id}`, '_blank')} className="p-1 rounded hover:bg-primary/20 text-muted-foreground hover:text-primary transition-colors">
+                        <ExternalLink className="h-3.5 w-3.5" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent>Present to Client</TooltipContent>
+                  </Tooltip>
                   <button onClick={() => setEditingSession(s)} className="p-1 rounded hover:bg-primary/20 text-muted-foreground hover:text-primary transition-colors">
                     <Pencil className="h-3.5 w-3.5" />
                   </button>
