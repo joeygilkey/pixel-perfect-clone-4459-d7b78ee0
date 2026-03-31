@@ -141,6 +141,7 @@ export default function AdminPanel() {
         <img src={theme === 'light' ? bgLight : bgDark} alt="" className="w-full h-full object-cover" />
       </div>
       {/* Header */}
+      <div className="relative z-10">
       <header className="glass-strong sticky top-0 z-50 p-2.5 flex items-center justify-between">
         <img src={titanxLogo} alt="TitanX" className="h-[26px]" />
         <h1 className="text-base font-semibold text-foreground/80 tracking-wide">Admin Panel</h1>
