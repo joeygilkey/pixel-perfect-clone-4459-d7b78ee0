@@ -720,7 +720,7 @@ function AllSubmissionsTab({ sessions, onRefresh }: { sessions: SessionRow[]; on
         {/* Header */}
         <div className="grid grid-cols-[180px_1fr_1fr_130px_130px_130px_160px] border-b border-border/30">
           {['Date', 'Account', 'User', 'Grow', 'Accelerate', 'Scale', 'Actions'].map(h => (
-            <div key={h} className="px-4 py-3 text-[10px] uppercase tracking-[0.12em] font-bold text-muted-foreground/60">{h}</div>
+            <div key={h} className={cn("px-4 py-3 text-[10px] uppercase tracking-[0.12em] font-bold text-muted-foreground/60", h === 'Actions' && "text-center")}>{h}</div>
           ))}
         </div>
 
