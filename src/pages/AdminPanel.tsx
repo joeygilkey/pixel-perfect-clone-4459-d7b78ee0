@@ -504,7 +504,7 @@ function AllSubmissionsTab({ sessions, onRefresh }: { sessions: SessionRow[]; on
       {/* Table */}
       <div className="overflow-x-auto">
         <div className="rounded-xl overflow-hidden border border-border/30 min-w-[1600px]">
-          <div className="grid" style={{ gridTemplateColumns: '90px 130px 150px 130px 55px 75px 85px 105px 90px 100px 100px 100px 100px 100px 100px 80px' }}>
+          <div className="grid" style={{ gridTemplateColumns: '90px 130px 150px 130px 55px 75px 85px 105px 90px 100px 100px 100px 100px 100px 100px 110px' }}>
             {['Date', 'Submitted By', 'Account', 'SF User', 'Reps', 'Connect %', 'ACV', 'Funnel', 'Tier', 'Grow Cost', 'Grow Pipe', 'Acc Cost', 'Acc Pipe', 'Scale Cost', 'Scale Pipe', 'Actions'].map(h => (
               <div key={h} style={{ background: '#1A1A1A' }} className="px-3 py-3 text-[10px] uppercase tracking-[0.12em] font-bold text-muted-foreground">{h}</div>
             ))}
