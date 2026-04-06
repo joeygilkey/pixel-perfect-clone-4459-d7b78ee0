@@ -4,6 +4,7 @@ import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import titanxLogo from '@/assets/titanx-logo.svg';
+import bgLogin from '@/assets/bg-login.png';
 
 export default function Login() {
   const [email, setEmail] = useState('');
