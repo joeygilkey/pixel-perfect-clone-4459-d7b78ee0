@@ -27,11 +27,11 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center relative overflow-hidden">
-      {/* Ambient glows */}
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-[-20%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-primary/[0.03] blur-[120px]" />
-        <div className="absolute bottom-[-20%] right-[-10%] w-[40vw] h-[40vw] rounded-full bg-primary/[0.02] blur-[100px]" />
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
+      {/* Background image */}
+      <div className="fixed inset-0">
+        <img src={bgLogin} alt="" className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-black/40" />
       </div>
 
       <form onSubmit={handleSubmit} className="glass rounded-xl p-8 w-full max-w-sm space-y-6 relative z-10">
